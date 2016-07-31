@@ -3,16 +3,16 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Hexo
-subtitle:
-description:
-author: John Doe
+title: Graychen
+subtitle: 这个世界需要更多的英雄
+description: 追随大师，成为大师
+author: Graychen
 language:
 timezone:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://yoursite.com
+url: http://graychen.git.io
 root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
@@ -72,19 +72,19 @@ deploy:
 menu:
   主页: /
   所有文章: /archives
-  # 随笔: /tags/随笔
+  随笔: /tags/随笔
 
 # SubNav
 subnav:
   github: "https://github.com/Graychen"
-  weibo: "#"
-  rss: "#"
-  zhihu: "#"
+  #weibo: "#"
+  #rss: "#"
+  #zhihu: "#"
   #douban: "#"
-  #mail: "#"
+  mail: "455803034@qq.com"
   #facebook: "#"
   #google: "#"
-  #twitter: "#"
+  #twitter: ""
   #linkedin: "#"
 
 rss: /atom.xml
@@ -99,7 +99,7 @@ google_analytics: ''
 favicon: /favicon.png
 
 #你的头像url
-avatar: ""
+avatar: https://iavatars3.githubusercontent.com/u/4189971?v=3&s=460
 #是否开启分享
 share: true
 #是否开启多说评论，填写你在多说申请的项目名称 duoshuo: duoshuo-key
