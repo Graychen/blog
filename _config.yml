@@ -65,9 +65,11 @@ pagination_dir: page
 ## Themes: https://hexo.io/themes/
 theme: yilia
 # Deployment
-## Docs: https://hexo.io/docs/deployment.html
+# ## Docs: http://hexo.io/docs/deployment.html
 deploy:
-  type:
+  type: git
+  repository: https://github.com/Graychen/graychen.github.io.git
+  branch: master
 # Header
 menu:
   主页: /
