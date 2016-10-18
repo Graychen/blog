@@ -2,6 +2,7 @@
 title: vichrome像vi一样操作你的chrome浏览器
 date: 2016-10-18 09:24:53
 tag: 工具
+categories: 技术
 
 ---
 **vichrome**是一款chrome浏览器的插件,它让你可以像vi一样使用命令来操作你的浏览器，是提高效率的利器。

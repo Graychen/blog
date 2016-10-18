@@ -2,7 +2,7 @@
 title: vi的使用总结
 date: 2016-09-21 22:15:36
 tags: 编辑器
-categories: 编辑器
+categories: 技术
 
 ---
 # 初级篇
