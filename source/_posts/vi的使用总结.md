@@ -46,6 +46,11 @@ vi的使用总结
 - 替换整句插入 S
 - 替换单个字母 r
 - 接下来的子都要替换 R
+- 当前行替换第一个单词 :s/oldwords/newwords/
+- 替换当前行所有单词 :s/oldwords/newwords/g
+- 替换每一行的第一个单词 :%s/oldwords/newwords/
+- 替换每一行的单词 :%s/oldwords/newwords/g
+
 ### 查    
 - 向后查找 /
 - 向前查找 ?
