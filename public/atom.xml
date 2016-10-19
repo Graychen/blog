@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://graychen.git.io/"/>
-  <updated>2016-10-18T09:26:17.738Z</updated>
+  <updated>2016-10-19T03:11:54.836Z</updated>
   <id>http://graychen.git.io/</id>
   
   <author>
@@ -20,13 +20,20 @@
     <link href="http://graychen.git.io/2016/10/18/%E5%8F%98%E8%BA%AB%E5%90%A7%EF%BC%81%E6%88%91%E7%9A%84linux%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83/"/>
     <id>http://graychen.git.io/2016/10/18/变身吧！我的linux配置环境/</id>
     <published>2016-10-18T06:35:17.000Z</published>
-    <updated>2016-10-18T09:26:17.738Z</updated>
+    <updated>2016-10-19T03:11:54.836Z</updated>
     
     <content type="html"><![CDATA[<p> 我用的linux是ubuntu16长期支持版，自带的桌面太丑，自带的终端一直没有分屏功能，所以我就开始了改造工作。</p>
 <h1 id="先上效果图"><a href="#先上效果图" class="headerlink" title="先上效果图"></a>先上效果图</h1><p> <img src="/assets/blogImg/桌面带终端效果图.png" alt="&quot;我是傲娇的效果图&quot;"></p>
 <h2 id="终端改造-Terminator"><a href="#终端改造-Terminator" class="headerlink" title="终端改造  Terminator"></a>终端改造  Terminator</h2><p>ubuntu自带的终端原本也不错，只是缺少分屏功能和强大的复制粘贴功能，所以就用Terminator来代替，其强大的分屏功能真是我的最爱了。</p>
 <h3 id="安装方式"><a href="#安装方式" class="headerlink" title="安装方式"></a>安装方式</h3><p>sudo apt-get install terminator</p>
-<h3 id="常用快捷键"><a href="#常用快捷键" class="headerlink" title="常用快捷键"></a>常用快捷键</h3><p>垂直分割窗口 <code>Ctrl+Shift+e</code><br>水平分割窗口 <code>Ctrl+Shift+o</code><br>复制         <code>Ctrl+Shift+c</code></p>
+<h3 id="常用快捷键"><a href="#常用快捷键" class="headerlink" title="常用快捷键"></a>常用快捷键</h3><p>垂直分割窗口 <code>Ctrl+Shift+e</code><br>水平分割窗口 <code>Ctrl+Shift+o</code><br>复制         <code>Ctrl+Shift+c</code><br>粘贴         <code>Ctrl+Shift+v</code><br>切换窗口     <code>Ctrl+Shift+n</code><br>将分割的某个窗口放大至全屏使用         <code>Ctrl+Shift+x</code><br>从放大的某一窗口回到多窗口格局         <code>Ctrl+Shift+z</code><br> <img src="/assets/blogImg/多窗终端.png" alt="&quot;我是傲娇的效果图&quot;"></p>
+<h3 id="终端主题"><a href="#终端主题" class="headerlink" title="终端主题"></a>终端主题</h3> <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">apt-get install zsh</div><div class="line">wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh</div><div class="line">chsh -s `which zsh`</div><div class="line">sudo shutdown -r 0</div></pre></td></tr></table></figure>
+<p> 我用的主题是<code>ys</code></p>
+<h3 id="桌面主题"><a href="#桌面主题" class="headerlink" title="桌面主题"></a>桌面主题</h3><p> 首先在这里<a href="https://github.com/anmoljagetia/Flatabulous/archive/master.zip" target="_blank" rel="external">下载</a>主题包，将文件解压后移动到<code>/usr/share/themes/</code>,接着安装图标:<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sudo add-apt-repository ppa:noobslab/icons</div><div class="line">sudo apt-get update</div><div class="line">sudo apt-get install ultra-flat-icons</div></pre></td></tr></table></figure></p>
+<p> 然后需要<code>unity-tweak-tool</code><br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install unity-tweak-tool</div><div class="line">sudo unity-tweak-tool</div></pre></td></tr></table></figure></p>
+<p>在Themes和icons下分别选择刚刚的主题和图标，大功告成！</p>
+<p> <img src="/assets/blogImg/选择主题.png" alt="&quot;我是傲娇的效果图&quot;"></p>
+<p>完成后的样子<br> <img src="/assets/blogImg/桌面效果图.png" alt="&quot;我是傲娇的效果图&quot;"></p>
 ]]></content>
     
     <summary type="html">
@@ -109,7 +116,7 @@
     <link href="http://graychen.git.io/2016/09/21/vi%E7%9A%84%E4%BD%BF%E7%94%A8%E6%80%BB%E7%BB%93/"/>
     <id>http://graychen.git.io/2016/09/21/vi的使用总结/</id>
     <published>2016-09-21T14:15:36.000Z</published>
-    <updated>2016-10-18T06:22:10.938Z</updated>
+    <updated>2016-10-18T08:20:33.412Z</updated>
     
     <content type="html"><![CDATA[<h1 id="初级篇"><a href="#初级篇" class="headerlink" title="初级篇"></a>初级篇</h1><h2 id="移动篇"><a href="#移动篇" class="headerlink" title="移动篇"></a>移动篇</h2><ul>
 <li>上 k</li>
