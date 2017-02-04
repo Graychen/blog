@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+  <title>Composer包是怎样炼成的 | Graychen的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Composer是php用来管理依赖关系的工具，你可以在自己的项目中声明所依赖的外部工具库，Composer会帮助你安装这些依赖的库文件 –Composer中文网
+
+关于Composer的安装和下载可以直接点击上方的链接查看，本篇博文主要讲解该怎样创建自己的Composer包，并把它提交到packgist
+创建组件产商名称和包名在设置命名空间之前，先要确定产商名称和包名，类似于laravel/f">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Composer包是怎样炼成的">
+<meta property="og:url" content="http://yoursite.com/2016/10/19/composer包是怎样炼成的/index.html">
+<meta property="og:site_name" content="Graychen的博客">
+<meta property="og:description" content="Composer是php用来管理依赖关系的工具，你可以在自己的项目中声明所依赖的外部工具库，Composer会帮助你安装这些依赖的库文件 –Composer中文网
+
+关于Composer的安装和下载可以直接点击上方的链接查看，本篇博文主要讲解该怎样创建自己的Composer包，并把它提交到packgist
+创建组件产商名称和包名在设置命名空间之前，先要确定产商名称和包名，类似于laravel/f">
+<meta property="og:image" content="http://yoursite.com/assets/blogImg/Graychen-Container.gif">
+<meta property="og:image" content="http://yoursite.com/assets/blogImg/Packagist.gif">
+<meta property="og:updated_time" content="2017-02-04T05:47:24.756Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Composer包是怎样炼成的">
+<meta name="twitter:description" content="Composer是php用来管理依赖关系的工具，你可以在自己的项目中声明所依赖的外部工具库，Composer会帮助你安装这些依赖的库文件 –Composer中文网
+
+关于Composer的安装和下载可以直接点击上方的链接查看，本篇博文主要讲解该怎样创建自己的Composer包，并把它提交到packgist
+创建组件产商名称和包名在设置命名空间之前，先要确定产商名称和包名，类似于laravel/f">
+<meta name="twitter:image" content="http://yoursite.com/assets/blogImg/Graychen-Container.gif">
+  
+    <link rel="alternative" href="/atom.xml" title="Graychen的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <script src="/style.js"></script>
+  
+
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+      <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img src="/assets/blogImg/avatar.jpg" class="js-avatar">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">Graychen</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">这个世界需要更多的英雄</p>
+		
+
+		<nav class="header-menu">
+			<ul>
+			
+				<li><a href="/">主页</a></li>
+	        
+				<li><a href="/categories/随笔">随笔</a></li>
+	        
+				<li><a href="/categories/技术">技术文章</a></li>
+	        
+			</ul>
+		</nav>
+		<nav class="header-smart-menu">
+	        
+    		
+    			
+    			<a class="js-smart-menu" data-idx="0" href="javascript:void(0)">所有文章</a>
+    			
+    			
+            
+    			
+    			<a class="js-smart-menu" data-idx="1" href="javascript:void(0)">标签</a>
+    			
+    			
+            
+    			
+            
+    			
+    			<a class="js-smart-menu" data-idx="2" href="javascript:void(0)">关于我</a>
+    			
+    			
+            
+		</nav>
+		<nav class="header-nav">
+			<div class="social">
+				
+					<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
+		        
+					<a class="weibo" target="_blank" href="http://weibo.com/u/1763295797/home?wvr=5&lf=reg" title="weibo">weibo</a>
+		        
+					<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+		        
+			</div>
+		</nav>
+	</header>		
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"><i class="icon-list"></i></div>
+  		<h1 class="header-author js-mobile-header hide">Graychen</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				
+					<img src="/assets/blogImg/avatar.jpg" class="js-avatar">
+				
+			</div>
+			<hgroup>
+			  <h1 class="header-author">Graychen</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">这个世界需要更多的英雄</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/categories/随笔">随笔</a></li>
+		        
+					<li><a href="/categories/技术">技术文章</a></li>
+		        
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/u/1763295797/home?wvr=5&lf=reg" title="weibo">weibo</a>
+			        
+						<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap">
+        <article id="post-composer包是怎样炼成的" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Composer包是怎样炼成的
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p><strong>Composer</strong>是php用来管理依赖关系的工具，你可以在自己的项目中声明所依赖的外部工具库，Composer会帮助你安装这些依赖的库文件 –<a href="http://www.phpcomposer.com/" target="_blank" rel="external">Composer中文网</a></p>
+</blockquote>
+<p>关于Composer的安装和下载可以直接点击上方的链接查看，本篇博文主要讲解该怎样创建自己的Composer包，并把它提交到<a href="https://packagist.org/" target="_blank" rel="external">packgist</a></p>
+<h2 id="创建组件"><a href="#创建组件" class="headerlink" title="创建组件"></a>创建组件</h2><h3 id="产商名称和包名"><a href="#产商名称和包名" class="headerlink" title="产商名称和包名"></a>产商名称和包名</h3><p>在设置命名空间之前，先要确定产商名称和包名，类似于<strong>laravel/framework</strong>,确保它的唯一性，在packgist中不存在.厂商名称和包名是为了让packgist识别组件，而组件的命名空间是为了在php中使用组件，这是两个概念。</p>
+<h3 id="文件系统结构"><a href="#文件系统结构" class="headerlink" title="文件系统结构"></a>文件系统结构</h3><ul>
+<li><strong>src</strong>:这个目录用于存放组件的源码   </li>
+<li><strong>tests</strong>:这个目录用于存放测试代码   </li>
+<li><strong>composer.json</strong>:Composer配置文件，用于描述组件，声明组件依赖以及自动加载配置等   </li>
+<li><strong>README.md</strong>:这个Markdown提供组件的相关信息,使用文档说明软件许可证等   </li>
+<li><strong>CONTRIBUTING.md</strong>:这个Markdown文件告知别人如何为这个组件做贡献  </li>
+<li><strong>LICENSE</strong>：纯文本文件，声明组件的软件许可证</li>
+<li><strong>CHANGELOG.md</strong>：Markdown文件，列出组件在每个版本中引入的改动</li>
+</ul>
+<h3 id="文件系统结构-1"><a href="#文件系统结构-1" class="headerlink" title="文件系统结构"></a>文件系统结构</h3><p>我们新建一个组件目录（~/Packages/urlscanner），然后在urlscanner目录下通过如下命令生成composer.json文件：<br>composer init</p>
+<p>然后在终端会让我们按照提示向导一步步填写composer.json内容：<br>最后回车，会生成相应的composer.json文件，我们对该文件作如下修改：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    <span class="string">"name"</span>: <span class="string">"graychen/container"</span>,</div><div class="line">    <span class="string">"description"</span>: <span class="string">"a container for interface and container"</span>,</div><div class="line">    <span class="string">"license"</span>: <span class="string">"MIT"</span>,</div><div class="line">    <span class="string">"authors"</span>: [</div><div class="line">        &#123;</div><div class="line">            <span class="string">"name"</span>: <span class="string">"Graychen"</span>,</div><div class="line">            <span class="string">"email"</span>: <span class="string">"13780185250@sina.cn"</span></div><div class="line">        &#125;</div><div class="line">    ],</div><div class="line">    <span class="string">"minimum-stability"</span>: <span class="string">"dev"</span>,</div><div class="line">    <span class="string">"require"</span>: &#123;&#125;,</div><div class="line">    <span class="string">"require-dev"</span>: &#123;</div><div class="line">            <span class="string">"phpunit/phpunit"</span> : <span class="string">"~4.3"</span> </div><div class="line">        &#125;,</div><div class="line">    <span class="string">"autoload"</span>:&#123;</div><div class="line">        <span class="string">"psr-4"</span>:&#123;</div><div class="line">            <span class="string">"graychen\\container\\"</span> : <span class="string">"src"</span></div><div class="line">        &#125;</div><div class="line">    &#125;,</div><div class="line">    <span class="string">"autoload-dev"</span>:&#123;</div><div class="line">        <span class="string">"psr-4"</span>:&#123;</div><div class="line">            <span class="string">"graychen\\container\\Tests\\"</span>:<span class="string">"tests/"</span></div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>我们来仔细研究一下这个文件，看看每个部分究竟是什么意思：</p>
+<ul>
+<li>name：组件的厂商名和包名，也是Packagist中的组件名</li>
+<li>description：简要说明组件</li>
+<li>keywords：描述属性的关键字</li>
+<li>homepage：组件网站URL</li>
+<li>license：PHP组件采用的软件许可证（更多软件许可证参考：<a href="http://choosealicense.com/）" target="_blank" rel="external">http://choosealicense.com/）</a></li>
+<li>authors：作者信息数组</li>
+<li>support：组件用户获取技术支持的方式</li>
+<li>require：组件自身依赖的组件</li>
+<li>require-dev：开发这个组件所需的依赖</li>
+<li>suggest：建议安装的组件</li>
+<li>autoload：告诉Composer自动加载器如何自动加载这个组件</li>
+</ul>
+<p>READEME.md</p>
+<p>通常这个是用户最先阅读的文件，对托管在Github和Bitbucket中的组件来说，更是如此。标准的READEME.md文件至少提供以下信息：</p>
+<ul>
+<li>组件的名称和描述</li>
+<li>安装说明</li>
+<li>使用说明</li>
+<li>测试说明</li>
+<li>贡献方式</li>
+<li>支持资源</li>
+<li>作者信息</li>
+<li>软件许可证</li>
+</ul>
+<p>实现组件</p>
+<p>开始之前我们使用如下命令安装依赖：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">composer install</div></pre></td></tr></table></figure></p>
+<p>该命令会把依赖组件安装到vendor目录并生成自动加载器。<br>安装好以后我们来实现组件的具体功能。将所有的类，接口和Trait都放到src这个目录下。<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line"><span class="keyword">namespace</span> <span class="title">container</span>;</div><div class="line"><span class="comment">/**</span></div><div class="line">* <span class="doctag">@brief</span> 服务容器</div><div class="line">* author Graychen</div><div class="line"> */</div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Container</span> <span class="keyword">implements</span> \<span class="title">ArrayAccess</span></span>&#123;</div><div class="line">    <span class="keyword">private</span> $_bindings = [];<span class="comment">//服务列表</span></div><div class="line">    <span class="keyword">private</span> $_instances= [];<span class="comment">//已经实例化的服务</span></div><div class="line">    <span class="comment">//获取服务</span></div><div class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">get</span><span class="params">($name,$params=[])</span></span>&#123;</div><div class="line">        <span class="comment">//先从实例化的列表中查找</span></div><div class="line">        <span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="keyword">$this</span>-&gt;$_instances[$name]))&#123;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;$_instances[$name]; </div><div class="line">        &#125;</div><div class="line">        <span class="comment">//检测有没有注册该服务</span></div><div class="line">        <span class="keyword">if</span>(!<span class="keyword">isset</span>(<span class="keyword">$this</span>-&gt;$_bindings[$name]))&#123;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</div><div class="line">        &#125;</div><div class="line">        $concrete = <span class="keyword">$this</span>-&gt;$_bindings[$name][<span class="string">'class'</span>];<span class="comment">//对象具体注册内容</span></div><div class="line">        $obj = <span class="keyword">null</span>;</div><div class="line">        <span class="keyword">if</span>($concrete <span class="keyword">instanceof</span> \Closure)&#123; <span class="comment">//匿名函数方式</span></div><div class="line">            $obj = call_user_func_array($concrete,$params);</div><div class="line">        &#125;<span class="keyword">elseif</span>(is_string($concrete))&#123;     <span class="comment">//字符串方式</span></div><div class="line">            <span class="keyword">if</span>(<span class="keyword">empty</span>($params))&#123;</div><div class="line">                $obj = <span class="keyword">new</span> $concrete;</div><div class="line">            &#125;<span class="keyword">else</span>&#123;</div><div class="line">                <span class="comment">//带参数的类实例化,使用反射</span></div><div class="line">                $class = <span class="keyword">new</span> \reflectionClass($concrete);</div><div class="line">                $obj = $class-&gt;newInstanceArgs($params);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        <span class="comment">//如果是共享服务，则写入_instances列表，下次直接取回</span></div><div class="line">        <span class="keyword">if</span>(<span class="keyword">$this</span>-&gt;_bindings[$name][<span class="string">'shared'</span>]==<span class="keyword">true</span> &amp;&amp; $ojb)&#123;</div><div class="line">            <span class="keyword">$this</span>-&gt;_instances[$name]=$obj;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">return</span> $obj;</div><div class="line">    &#125; </div><div class="line">    <span class="comment">//检测是否已经绑定</span></div><div class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">has</span><span class="params">($name)</span></span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">isset</span>(<span class="keyword">$this</span>-&gt;_bindings[$name]) <span class="keyword">or</span> <span class="keyword">isset</span>(<span class="keyword">$this</span>-&gt;_instances[$name]);</div><div class="line">    &#125;</div><div class="line">    <span class="comment">//卸载服务</span></div><div class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">remove</span><span class="params">($name)</span></span>&#123;</div><div class="line">        <span class="keyword">unset</span>(<span class="keyword">$this</span>-&gt;_bindings[$name],<span class="keyword">$this</span>-&gt;_instances[$name]);</div><div class="line">    &#125;</div><div class="line">    <span class="comment">//设置服务</span></div><div class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">set</span><span class="params">($name,$class)</span></span>&#123;</div><div class="line">        <span class="keyword">$this</span>-&gt;_registerService($name,$class);</div><div class="line">    &#125;</div><div class="line">    <span class="comment">//设置共享服务</span></div><div class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">setShared</span><span class="params">($name,$class)</span></span>&#123;</div><div class="line">        <span class="keyword">$this</span>-&gt;_registerService($name,$class,<span class="keyword">true</span>);</div><div class="line">    &#125;</div><div class="line">    <span class="comment">//注册服务</span></div><div class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">_registerService</span><span class="params">($name,$class,$shared=false)</span></span>&#123;</div><div class="line">        <span class="keyword">$this</span>-&gt;remove($name);</div><div class="line">        <span class="keyword">if</span>(!($class <span class="keyword">instanceof</span> \Closure) &amp;&amp; is_object($class))&#123;</div><div class="line">            <span class="keyword">$this</span>-&gt;_instances[$name]=$class;</div><div class="line">        &#125;<span class="keyword">else</span>&#123;</div><div class="line">            <span class="keyword">$this</span>-&gt;_bindings[$name]=<span class="keyword">array</span>(<span class="string">"class"</span>=&gt;$class,<span class="string">"shared"</span>=&gt;$shared); </div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    <span class="comment">//ArrayAccess接口，检测服务是否存在</span></div><div class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">offsetExists</span><span class="params">($offset)</span></span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;has($offset);</div><div class="line">    &#125;</div><div class="line">    <span class="comment">//ArrayAccess接口,以$di[$name]方式获取服务</span></div><div class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">offsetGet</span><span class="params">($offset)</span></span>&#123;</div><div class="line">       <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;get($offset); </div><div class="line">    &#125;</div><div class="line">    <span class="comment">//ArrayAccess接口,以$di[$name]方式获取服务</span></div><div class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">offsetSet</span><span class="params">($offset,$value)</span></span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;set($offset,$value);</div><div class="line">    &#125;</div><div class="line">    <span class="comment">//卸载服务</span></div><div class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">offsetUnset</span><span class="params">($offset)</span></span>&#123;</div><div class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;remove($offset);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="提交到packglist"><a href="#提交到packglist" class="headerlink" title="提交到packglist"></a>提交到packglist</h3><p>我们先将代码提交到GitHub,注意将vendor目录添加到.gitignore仓库,我的是graychen/container：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">git init</div><div class="line">git remote add origin https://github.com/nonfu/urlscanner.git</div><div class="line">git add .</div><div class="line">git commit -m “urlscanner&quot;</div><div class="line">git pull origin master</div><div class="line">git push origin master</div></pre></td></tr></table></figure></p>
+<p> <img src="/assets/blogImg/Graychen-Container.gif" alt="&quot;我是傲娇的效果图&quot;"><br> 然后在Packagist中通过GitHub账户登录，通过<a href="https://packagist.org/packages/submit提交组件，在输入框中输入刚刚提交的GitHub仓库地址：" target="_blank" rel="external">https://packagist.org/packages/submit提交组件，在输入框中输入刚刚提交的GitHub仓库地址：</a><br> check成功后点击submit即可将组件提交到Packagist：<br> <img src="/assets/blogImg/Packagist.gif" alt="&quot;我是傲娇的效果图&quot;"></p>
+<h2 id="使用组件"><a href="#使用组件" class="headerlink" title="使用组件"></a>使用组件</h2><p> 至此，我们已经成功将自己的组件提交到Packagist，现在任何人都可以使用Composer安装这个URL扫描器组件，然后在自己的PHP应用中使用。在终端执行如下命令安装这个组件：</p>
+<p> composer require graychen/container dev-master</p>
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      <a href="/2016/10/19/composer包是怎样炼成的/" class="archive-article-date">
+  	<time datetime="2016-10-19T03:20:43.000Z" itemprop="datePublished"><i class="icon-clock"></i>2016-10-19</time>
+</a>
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags"></i>
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/php/">php</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<i class="icon-price-tags"></i>
+	<a class="article-category-link" href="/categories/技术/">技术</a>
+	</div>
+
+
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+  
+<nav id="article-nav">
+  
+  
+    <a href="/2016/10/19/深入解析php的容器模式/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">深入解析php的容器模式</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+
+
+<div class="share_jia">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">Share to: &nbsp; </span>
+		<a class="jiathis_button_facebook"></a> 
+	    <a class="jiathis_button_twitter"></a>
+	    <a class="jiathis_button_plus"></a> 
+	    <a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+    <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="//v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+
+
+
+
+
+
+      </div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2017 Graychen
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    <script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: false,
+		animate: true,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: false,
+		root: "/",
+		innerArchive: true
+	}
+</script>
+
+<script src="/./main.js"></script>
+
+
+    
+<div class="tools-col">
+  <ul class="btn-wrap">
+    
+      <li class="chose" data-hook="tools-section-all"><span class="text">全部</span><i class="icon-book"></i></li>
+    
+    
+      <li data-hook="tools-section-tag"><span class="text">标签</span><i class="icon-price-tags"></i></li>
+    
+    
+    
+      <li data-hook="tools-section-me"><span class="text">我</span><i class="icon-smile"></i></li>
+    
+  </ul>
+  <div class="tools-wrap">
+    
+    	<section class="tools-section tools-section-all chose">
+    	</section>
+    
+
+    
+    	<section class="tools-section tools-section-tag">
+    			<div class="widget tagcloud" id="js-tagcloud">
+    				<a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/编辑器/" style="font-size: 10px;">编辑器</a>
+    			</div>
+    	</section>
+    
+
+    
+
+    
+    	<section class="tools-section tools-section-me">
+  	  	
+  	  		<div class="aboutme-wrap" id="js-aboutme">Graychen&lt;br&gt;这片海域最自由的人才是海贼王&lt;/br&gt;&lt;br&gt;我是要成为海贼王的男人!&lt;/br&gt;</div>
+  	  	
+    	</section>
+    
+  </div>
+  
+</div>
+    <!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,20 @@
+theme: yilia
+deploy:
+  type: git
+  repository: https://github.com/Graychen/graychen.github.io.git
+  branch: master
+
+# Header
+
+menu:
+  主页: /
+  随笔: /categories/随笔
+  技术文章: /categories/技术
+
+# Site
+title: Graychen的博客
+subtitle: 这个世界需要更多的英雄
+description: 这片海域最自由的人才是海贼王,我是要成为海贼王的男人。 
+author: Graychen
+email: 13780185250@sina.cn 
+keywords: "前端,js,jquery,javascript,html5,开发者,程序猿极客,编程,代码,开源,IT网站,Developer,Programmer,Coder,Geek,html,css,css3,用户体验"
