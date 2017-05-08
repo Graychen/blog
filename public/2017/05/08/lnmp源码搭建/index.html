@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+  <title>lnmp源码搭建 | Graychen的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="mysql源码安装1.安装编译源码需要的包1sudo apt-get install make cmake gcc g++ bison libncurses5-dev
+2.下载相应源码包12[root@graychen ~]# wget https://sourceforge.net/projects/boost/files/boost/1.59.0/boost_1_59_0.tar.gz[roo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="lnmp源码搭建">
+<meta property="og:url" content="http://graychen.git.io/2017/05/08/lnmp源码搭建/index.html">
+<meta property="og:site_name" content="Graychen的博客">
+<meta property="og:description" content="mysql源码安装1.安装编译源码需要的包1sudo apt-get install make cmake gcc g++ bison libncurses5-dev
+2.下载相应源码包12[root@graychen ~]# wget https://sourceforge.net/projects/boost/files/boost/1.59.0/boost_1_59_0.tar.gz[roo">
+<meta property="og:updated_time" content="2017-05-08T15:35:02.373Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="lnmp源码搭建">
+<meta name="twitter:description" content="mysql源码安装1.安装编译源码需要的包1sudo apt-get install make cmake gcc g++ bison libncurses5-dev
+2.下载相应源码包12[root@graychen ~]# wget https://sourceforge.net/projects/boost/files/boost/1.59.0/boost_1_59_0.tar.gz[roo">
+  
+    <link rel="alternative" href="/atom.xml" title="Graychen的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="//favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img src="/assets/blogImg/avatar.jpg" class="js-avatar" style="width: 100%;height: 100%;opacity: 1;">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">Graychen</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">这个世界需要更多的英雄</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>Menu</li>
+						<li>Tags</li>
+						
+						
+						<li>About</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/categories/随笔">随笔</a></li>
+				        
+							<li><a href="/categories/技术">技术文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
+					        
+								<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/编辑器/" style="font-size: 10px;">编辑器</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">我是谁，我从哪里来，我到哪里去？我就是我，是颜色不一样的吃货…</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">Graychen</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				
+					<img src="/assets/blogImg/avatar.jpg" class="js-avatar" style="width: 100%;height: 100%;opacity: 1;">
+				
+			</div>
+			<hgroup>
+			  <h1 class="header-author">Graychen</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">这个世界需要更多的英雄</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/categories/随笔">随笔</a></li>
+		        
+					<li><a href="/categories/技术">技术文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
+			        
+						<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-lnmp源码搭建" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/05/08/lnmp源码搭建/" class="article-date">
+  	<time datetime="2017-05-08T14:47:02.000Z" itemprop="datePublished">2017-05-08</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      lnmp源码搭建
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+        
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/技术/">技术</a>
+	</div>
+
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="mysql源码安装"><a href="#mysql源码安装" class="headerlink" title="mysql源码安装"></a>mysql源码安装</h2><p>1.安装编译源码需要的包<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install make cmake gcc g++ bison libncurses5-dev</div></pre></td></tr></table></figure></p>
+<p>2.下载相应源码包<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">[root@graychen ~]# wget https://sourceforge.net/projects/boost/files/boost/1.59.0/boost_1_59_0.tar.gz</div><div class="line">[root@graychen ~]# wget http://cdn.mysql.com/Downloads/MySQL-5.7/mysql-5.7.13.tar.gz</div></pre></td></tr></table></figure></p>
+<p>3.新建MySQL用户和用户组<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[root@graychen ~]# groupadd -r mysql &amp;&amp; useradd -r -g mysql -s /sbin/nologin -M mysql</div></pre></td></tr></table></figure></p>
+<p>4.预编译</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">[root@graychen ~]# tar -zxvf boost_1_59_0.tar.gz</div><div class="line">[root@graychen data]# md5sum mysql-5.7.13.tar.gz </div><div class="line">8fab75dbcafcd1374d07796bff88ae00  mysql-5.7.13.tar.gz</div><div class="line">[root@graychen ~]# tar -zxvf mysql-5.7.13.tar.gz</div><div class="line">[root@graychen data]# mkdir -p /data/mysql</div><div class="line">[root@graychen data]# cd mysql-5.7.13</div><div class="line">[root@graychen data]# cmake . -DCMAKE_INSTALL_PREFIX=/usr/local/mysql \</div><div class="line">-DMYSQL_DATADIR=/data/mysql \</div><div class="line">-DWITH_BOOST=../boost_1_59_0 \</div><div class="line">-DSYSCONFDIR=/etc \</div><div class="line">-DWITH_INNOBASE_STORAGE_ENGINE=1 \</div><div class="line">-DWITH_PARTITION_STORAGE_ENGINE=1 \</div><div class="line">-DWITH_FEDERATED_STORAGE_ENGINE=1 \</div><div class="line">-DWITH_BLACKHOLE_STORAGE_ENGINE=1 \</div><div class="line">-DWITH_MYISAM_STORAGE_ENGINE=1 \</div><div class="line">-DENABLED_LOCAL_INFILE=1 \</div><div class="line">-DENABLE_DTRACE=0 \</div><div class="line">-DDEFAULT_CHARSET=utf8mb4 \</div><div class="line">-DDEFAULT_COLLATION=utf8mb4_general_ci \</div><div class="line">-DWITH_EMBEDDED_SERVER=1</div></pre></td></tr></table></figure>
+<p>5.编译安装</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[root@graychen mysql-5.7.13]# make -j `grep processor /proc/cpuinfo | wc -l`</div><div class="line">#编译很消耗系统资源，小内存可能编译通不过make install</div><div class="line">[root@graychen mysql-5.7.13]# make install</div></pre></td></tr></table></figure>
+<p>6.设置启动脚本，开机自启动</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">[root@graychen mysql-5.7.13]# ls -lrt /usr/local/mysql</div><div class="line">[root@graychen mysql-5.7.13]# cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysqld</div><div class="line">[root@graychen mysql-5.7.13]# chmod +x /etc/init.d/mysqld</div><div class="line">[root@graychen mysql-5.7.13]# systemctl enable mysqld</div><div class="line">mysqld.service is not a native service, redirecting to /sbin/chkconfig.</div><div class="line">Executing /sbin/chkconfig mysqld on</div></pre></td></tr></table></figure>
+<p>7.配置文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div></pre></td><td class="code"><pre><div class="line">/etc/my.cnf，仅供参考 </div><div class="line">[root@graychen mysql-5.7.13]# cat &gt; /etc/my.cnf &lt;&lt; EOF</div><div class="line">[client]</div><div class="line">port = 3306</div><div class="line">socket = /dev/shm/mysql.sock</div><div class="line">[mysqld]</div><div class="line">port = 3306</div><div class="line">socket = /dev/shm/mysql.sock</div><div class="line">basedir = /usr/local/mysql</div><div class="line">datadir = /data/mysql</div><div class="line">pid-file = /data/mysql/mysql.pid</div><div class="line">user = mysql</div><div class="line">bind-address = 0.0.0.0</div><div class="line">server-id = 1</div><div class="line">init-connect = &apos;SET NAMES utf8mb4&apos;</div><div class="line">character-set-server = utf8mb4</div><div class="line">#skip-name-resolve</div><div class="line">#skip-networking</div><div class="line">back_log = 300</div><div class="line">max_connections = 1000</div><div class="line">max_connect_errors = 6000</div><div class="line">open_files_limit = 65535</div><div class="line">table_open_cache = 128</div><div class="line">max_allowed_packet = 4M</div><div class="line">binlog_cache_size = 1M</div><div class="line">max_heap_table_size = 8M</div><div class="line">tmp_table_size = 16M</div><div class="line">read_buffer_size = 2M</div><div class="line">read_rnd_buffer_size = 8M</div><div class="line">sort_buffer_size = 8M</div><div class="line">join_buffer_size = 8M</div><div class="line">key_buffer_size = 4M</div><div class="line">thread_cache_size = 8</div><div class="line">query_cache_type = 1</div><div class="line">query_cache_size = 8M</div><div class="line">query_cache_limit = 2M</div><div class="line">ft_min_word_len = 4</div><div class="line">log_bin = mysql-bin</div><div class="line">binlog_format = mixed</div><div class="line">expire_logs_days = 30</div><div class="line">log_error = /data/mysql/mysql-error.log</div><div class="line">slow_query_log = 1</div><div class="line">long_query_time = 1</div><div class="line">slow_query_log_file = /data/mysql/mysql-slow.log</div><div class="line">performance_schema = 0</div><div class="line">explicit_defaults_for_timestamp</div><div class="line">#lower_case_table_names = 1</div><div class="line">skip-external-locking</div><div class="line">default_storage_engine = InnoDB</div><div class="line">#default-storage-engine = MyISAM</div><div class="line">innodb_file_per_table = 1</div><div class="line">innodb_open_files = 500</div><div class="line">innodb_buffer_pool_size = 64M</div><div class="line">innodb_write_io_threads = 4</div><div class="line">innodb_read_io_threads = 4</div><div class="line">innodb_thread_concurrency = 0</div><div class="line">innodb_purge_threads = 1</div><div class="line">innodb_flush_log_at_trx_commit = 2</div><div class="line">innodb_log_buffer_size = 2M</div><div class="line">innodb_log_file_size = 32M</div><div class="line">innodb_log_files_in_group = 3</div><div class="line">innodb_max_dirty_pages_pct = 90</div><div class="line">innodb_lock_wait_timeout = 120</div><div class="line">bulk_insert_buffer_size = 8M</div><div class="line">myisam_sort_buffer_size = 8M</div><div class="line">myisam_max_sort_file_size = 10G</div><div class="line">myisam_repair_threads = 1</div><div class="line">interactive_timeout = 28800</div><div class="line">wait_timeout = 28800</div><div class="line">[mysqldump]</div><div class="line">quick</div><div class="line">max_allowed_packet = 16M</div><div class="line">[myisamchk]</div><div class="line">key_buffer_size = 8M</div><div class="line">sort_buffer_size = 8M</div><div class="line">read_buffer = 4M</div><div class="line">write_buffer = 4M</div><div class="line">EOF</div></pre></td></tr></table></figure>
+<p>9.添加mysql的环境变量</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[root@graychen mysql-5.7.13]# echo -e &apos;\n\nexport PATH=/usr/local/mysql/bin:$PATH\n&apos; &gt;&gt; /etc/profile &amp;&amp; source /etc/profile</div></pre></td></tr></table></figure>
+<p>10.初始化数据库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[root@graychen mysql-5.7.13]# mysqld --initialize-insecure --user=mysql --basedir=/usr/local/mysql --datadir=/data/mysql</div></pre></td></tr></table></figure>
+<p>11.启动数据库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">[root@graychen mysql-5.7.13]# systemctl start mysqld</div><div class="line">[root@graychen mysql-5.7.13]# systemctl status mysqld</div><div class="line">● mysqld.service - LSB: start and stop MySQL</div><div class="line">Loaded: loaded (/etc/rc.d/init.d/mysqld)</div><div class="line">Active: active (running) since 一 2016-07-18 11:15:35 CST; 8s ago</div><div class="line">Docs: man:systemd-sysv-generator(8)</div><div class="line">Process: 23927 ExecStart=/etc/rc.d/init.d/mysqld start (code=exited, status=0/SUCCESS)</div><div class="line">CGroup: /system.slice/mysqld.service</div><div class="line">├─23940 /bin/sh /usr/local/mysql/bin/mysqld_safe --datadir=/data/mysql --pid-file=/data/mysql/mysql.pid</div><div class="line">└─24776 /usr/local/mysql/bin/mysqld --basedir=/usr/local/mysql --datadir=/data/mysql --plugin-dir=/usr/local/mysql/lib/plugin --user=mysql --log-error=/data/mysql/mysql-err...</div><div class="line"></div><div class="line">7月 18 11:15:32 graychen systemd[1]: Starting LSB: start and stop MySQL...</div><div class="line">7月 18 11:15:35 graychen mysqld[23927]: Starting MySQL..[  OK   ]</div><div class="line">7月 18 11:15:35 graychen systemd[1]: Started LSB: start and stop MySQL.</div></pre></td></tr></table></figure>
+<p>12.查看MySQL服务进程和端口<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">[root@graychen mysql-5.7.13]# ps -ef | grep mysql</div><div class="line">root     23940     1  0 11:15 ?        00:00:00 /bin/sh /usr/local/mysql/bin/mysqld_safe --datadir=/data/mysql --pid-file=/data/mysql/mysql.pid</div><div class="line">mysql    24776 23940  0 11:15 ?        00:00:00 /usr/local/mysql/bin/mysqld --basedir=/usr/local/mysql --datadir=/data/mysql --plugin-dir=/usr/local/mysql/lib/plugin --user=mysql --log-error=/data/mysql/mysql-error.log --open-files-limit=65535 --pid-file=/data/mysql/mysql.pid --socket=/dev/shm/mysql.sock --port=3306</div><div class="line">[root@graychen mysql-5.7.13]# netstat -tunpl | grep 3306</div><div class="line">tcp        0      0 0.0.0.0:3306            0.0.0.0:*               LISTEN      24776/mysqld</div></pre></td></tr></table></figure></p>
+<p>13.设置数据库root用户密码</p>
+<p>MySQL和Oracle数据库一样，数据库也默认自带了一个 root 用户（这个和当前Linux主机上的root用户是完全不搭边的），我们在设置好MySQL数据库的安全配置后初始化root用户的密码。配制过程中，一路输入 y 就行了。这里只说明下MySQL5.7.13版本中，用户密码策略分成低级 LOW 、中等 MEDIUM 和超强 STRONG 三种，推荐使用中等 MEDIUM 级别！</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[root@graychen mysql-5.7.13]# mysql_secure_installation</div></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2017/02/04/计划虽然不酷，但是很有用/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">计划虽然不酷，但是很有用</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="lnmp源码搭建" data-title="lnmp源码搭建" data-url="http://graychen.git.io/2017/05/08/lnmp源码搭建/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"true"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2017 Graychen
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: undefined,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: undefined,
+		root: /
+	}
+</script>
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  </div>
+</body>
+</html>
