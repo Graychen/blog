@@ -1,0 +1,18 @@
+{"name":"hexo","hostname":"graychen-To-be-filled-by-O-E-M","pid":24806,"level":20,"msg":"Hexo version: \u001b[35m3.2.2\u001b[39m","time":"2016-10-18T02:30:07.498Z","v":0}
+{"name":"hexo","hostname":"graychen-To-be-filled-by-O-E-M","pid":24806,"level":20,"msg":"Working directory: \u001b[35m~/blog/blog/\u001b[39m","time":"2016-10-18T02:30:07.502Z","v":0}
+{"name":"hexo","hostname":"graychen-To-be-filled-by-O-E-M","pid":24806,"level":20,"msg":"Config loaded: \u001b[35m~/blog/blog/_config.yml\u001b[39m","time":"2016-10-18T02:30:07.588Z","v":0}
+{"name":"hexo","hostname":"graychen-To-be-filled-by-O-E-M","pid":24806,"level":20,"msg":"Plugin loaded: \u001b[35mhexo-deployer-git\u001b[39m","time":"2016-10-18T02:30:07.605Z","v":0}
+{"name":"hexo","hostname":"graychen-To-be-filled-by-O-E-M","pid":24806,"level":20,"msg":"Plugin loaded: \u001b[35mhexo-deployer-openshift\u001b[39m","time":"2016-10-18T02:30:07.607Z","v":0}
+{"name":"hexo","hostname":"graychen-To-be-filled-by-O-E-M","pid":24806,"level":20,"msg":"Plugin loaded: \u001b[35mhexo-deployer-heroku\u001b[39m","time":"2016-10-18T02:30:07.608Z","v":0}
+{"name":"hexo","hostname":"graychen-To-be-filled-by-O-E-M","pid":24806,"level":20,"msg":"Plugin loaded: \u001b[35mhexo-deployer-rsync\u001b[39m","time":"2016-10-18T02:30:07.609Z","v":0}
+{"name":"hexo","hostname":"graychen-To-be-filled-by-O-E-M","pid":24806,"level":20,"msg":"Plugin loaded: \u001b[35mhexo-generator-archive\u001b[39m","time":"2016-10-18T02:30:07.611Z","v":0}
+{"name":"hexo","hostname":"graychen-To-be-filled-by-O-E-M","pid":24806,"level":20,"msg":"Plugin loaded: \u001b[35mhexo-generator-category\u001b[39m","time":"2016-10-18T02:30:07.615Z","v":0}
+{"name":"hexo","hostname":"graychen-To-be-filled-by-O-E-M","pid":24806,"level":20,"msg":"Plugin loaded: \u001b[35mhexo-generator-feed\u001b[39m","time":"2016-10-18T02:30:07.619Z","v":0}
+{"name":"hexo","hostname":"graychen-To-be-filled-by-O-E-M","pid":24806,"level":20,"msg":"Plugin loaded: \u001b[35mhexo-generator-index\u001b[39m","time":"2016-10-18T02:30:07.620Z","v":0}
+{"name":"hexo","hostname":"graychen-To-be-filled-by-O-E-M","pid":24806,"level":20,"msg":"Plugin loaded: \u001b[35mhexo-generator-sitemap\u001b[39m","time":"2016-10-18T02:30:07.621Z","v":0}
+{"name":"hexo","hostname":"graychen-To-be-filled-by-O-E-M","pid":24806,"level":20,"msg":"Plugin loaded: \u001b[35mhexo-generator-tag\u001b[39m","time":"2016-10-18T02:30:07.623Z","v":0}
+{"name":"hexo","hostname":"graychen-To-be-filled-by-O-E-M","pid":24806,"level":20,"msg":"Plugin loaded: \u001b[35mhexo-renderer-ejs\u001b[39m","time":"2016-10-18T02:30:07.626Z","v":0}
+{"name":"hexo","hostname":"graychen-To-be-filled-by-O-E-M","pid":24806,"level":20,"msg":"Plugin loaded: \u001b[35mhexo-renderer-marked\u001b[39m","time":"2016-10-18T02:30:07.631Z","v":0}
+{"name":"hexo","hostname":"graychen-To-be-filled-by-O-E-M","pid":24806,"level":20,"msg":"Plugin loaded: \u001b[35mhexo-renderer-stylus\u001b[39m","time":"2016-10-18T02:30:07.759Z","v":0}
+{"name":"hexo","hostname":"graychen-To-be-filled-by-O-E-M","pid":24806,"level":20,"msg":"Plugin loaded: \u001b[35mhexo-server\u001b[39m","time":"2016-10-18T02:30:07.797Z","v":0}
+{"name":"hexo","hostname":"graychen-To-be-filled-by-O-E-M","pid":24806,"level":20,"msg":"Database saved","time":"2016-10-18T02:30:07.803Z","v":0}
