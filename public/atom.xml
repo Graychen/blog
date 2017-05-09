@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://graychen.git.io/"/>
-  <updated>2017-05-09T15:26:15.693Z</updated>
+  <updated>2017-05-09T15:49:09.456Z</updated>
   <id>http://graychen.git.io/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://graychen.git.io/2017/05/08/lnmp%E6%BA%90%E7%A0%81%E6%90%AD%E5%BB%BA/"/>
     <id>http://graychen.git.io/2017/05/08/lnmp源码搭建/</id>
     <published>2017-05-08T14:47:02.000Z</published>
-    <updated>2017-05-09T15:26:15.693Z</updated>
+    <updated>2017-05-09T15:49:09.456Z</updated>
     
     <content type="html"><![CDATA[<h2 id="mysql源码安装"><a href="#mysql源码安装" class="headerlink" title="mysql源码安装"></a>mysql源码安装</h2><p>1.安装编译源码需要的包<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install make cmake gcc g++ bison libncurses5-dev</div></pre></td></tr></table></figure></p>
 <p>2.下载相应源码包<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">[root@graychen ~]# wget https://sourceforge.net/projects/boost/files/boost/1.59.0/boost_1_59_0.tar.gz</div><div class="line">[root@graychen ~]# wget http://cdn.mysql.com/Downloads/MySQL-5.7/mysql-5.7.13.tar.gz</div></pre></td></tr></table></figure></p>
@@ -43,7 +43,6 @@
 <p>13.设置数据库root用户密码</p>
 <p>MySQL和Oracle数据库一样，数据库也默认自带了一个 root 用户（这个和当前Linux主机上的root用户是完全不搭边的），我们在设置好MySQL数据库的安全配置后初始化root用户的密码。配制过程中，一路输入 y 就行了。这里只说明下MySQL5.7.13版本中，用户密码策略分成低级 LOW 、中等 MEDIUM 和超强 STRONG 三种，推荐使用中等 MEDIUM 级别！</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[root@graychen mysql-5.7.13]# mysql_secure_installation</div></pre></td></tr></table></figure>
-<p>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</p>
 <h2 id="php源码安装"><a href="#php源码安装" class="headerlink" title="php源码安装"></a>php源码安装</h2><p>1.安装编译源码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">wget http://am1.php.net/get/php-7.1.4.tar.bz2/from/mirror</div><div class="line">tar jxvf php-7.1.4.tar.bz2 </div><div class="line">bzip2 -d php-7.1.4.tar.bz2 </div><div class="line">cd php-7.1.4/</div><div class="line">./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --with-config-file-scan-dir=/usr/local/php/etc/php.d --with-mcrypt=/usr/include --enable-mysqlnd --with-mysqli --with-pdo-mysql --enable-fpm --with-fpm-user=nginx --with-fpm-group=nginx --with-iconv --with-zlib --enable-shmop --enable-sysvsem --enable-inline-optimization --enable-mbregex --enable-mbstring --enable-ftp --enable-gd-native-ttf --with-openssl --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --enable-soap --without-pear --with-gettext --enable-session --with-curl --with-jpeg-dir --with-freetype-dir --enable-opcache --with-libxml-dir=/usr</div><div class="line">sudo make test</div><div class="line">sudo make install</div></pre></td></tr></table></figure></p>
 <p>2.配置php.ini<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cp php.ini-development /usr/local/php/etc/php.ini</div><div class="line">sudo mv php-fpm.d/www.conf.default php-fpm.d/www.conf</div></pre></td></tr></table></figure></p>
 <p>3.配置php-fpm.conf<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">cd /usr/local/php/etc/</div><div class="line">mv php-fpm.conf.default php-fpm.conf</div><div class="line">sudo mv php-fpm.conf.default php-fpm.conf</div><div class="line">sudo mv php-fpm.d/www.conf.default php-fpm.d/www.conf</div></pre></td></tr></table></figure></p>
@@ -82,22 +81,6 @@
 <p>vi /usr/local/nginx/html/index.php<br>添加下面内容:<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">phpinfo();</div><div class="line"><span class="meta">?&gt;</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p>保存退出后访问<a href="http://localhost/index.php,看到下面页面表示已经安装配置成功" target="_blank" rel="external">http://localhost/index.php,看到下面页面表示已经安装配置成功</a>:</p>
 <p><img src="/assets/blogImg/php.png" alt="php页面"></p>
-<p>=======</p>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<blockquote>
-<p>43bd18ee2815706ca5416020cd19774dae39bbfc</p>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
-</blockquote>
 ]]></content>
     
     <summary type="html">
