@@ -183,6 +183,7 @@ MySQL和Oracle数据库一样，数据库也默认自带了一个 root 用户（
 ``` shell
 [root@graychen mysql-5.7.13]# mysql_secure_installation
 ```
+<<<<<<< HEAD
 ## php源码安装
 
 1.安装编译源码
@@ -414,3 +415,5 @@ phpinfo();
 ![php页面](/assets/blogImg/php.png)
 
 
+=======
+>>>>>>> 43bd18ee2815706ca5416020cd19774dae39bbfc
