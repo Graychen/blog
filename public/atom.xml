@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://graychen.git.io/"/>
-  <updated>2017-05-09T15:49:09.456Z</updated>
+  <updated>2017-05-10T14:26:51.225Z</updated>
   <id>http://graychen.git.io/</id>
   
   <author>
@@ -14,6 +14,67 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>ubuntu下lnmp快速搭建</title>
+    <link href="http://graychen.git.io/2017/05/10/ubuntu%E4%B8%8Blnmp%E5%BF%AB%E9%80%9F%E6%90%AD%E5%BB%BA/"/>
+    <id>http://graychen.git.io/2017/05/10/ubuntu下lnmp快速搭建/</id>
+    <published>2017-05-10T13:12:37.000Z</published>
+    <updated>2017-05-10T14:26:51.225Z</updated>
+    
+    <content type="html"><![CDATA[<p>我所用的环境是ubuntu16.10，上篇博文是源码安装lnmp，但是大部分情况下没有这么多的精神和时间，这篇博文来介绍下利用apt-get这个工具来快速完成lnmp的搭建。</p>
+<blockquote>
+<p>下面的lnmp包括php7.1,mysql5.7,nginx1.2.8</p>
+</blockquote>
+<h2 id="安装php7-1"><a href="#安装php7-1" class="headerlink" title="安装php7.1"></a>安装php7.1</h2><p>安装 Php7.1 之前，要先安装language-pack-en-base这个包，运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo apt-get update  </div><div class="line">sudo apt-get install -y language-pack-en-base</div></pre></td></tr></table></figure>
+<p>这个包是为了解决系统不同语言之间可能发生的冲突，安装之后可以减少许多因语言编码带来的问题。其中-y参数表明直接安装，无需确认。</p>
+<p>安装完成之后，运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">locale-gen en_US.UTF-8</div></pre></td></tr></table></figure>
+<p>设定语言编码为<font color="red">UTF-8</font>。</p>
+<p>进入正题，安装Php7.1，本教程采用ppa方式安装php7.1，运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install software-properties-common</div></pre></td></tr></table></figure>
+<p>software-properties-common是add-apt-repository所依赖的包，安装成功后，运行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo LC_ALL=en_US.UTF-8 add-apt-repository ppa:ondrej/php</div></pre></td></tr></table></figure>
+<p>安装完成之后，运行<font color="red"><strong>sudo apt-get update</strong></font>更新安装包，把刚才添加的包拉取下来。 运行<strong><font color="red">apt-cache search php7.1</font></strong>搜索php7.1开头的包检验是否安装成功，输出如下：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">root@demo:~<span class="comment"># apt-cache search php7.1  </span></div><div class="line">php-yaml - YAML-1.1 parser and emitter <span class="keyword">for</span> PHP  </div><div class="line">php-apcu - APC User Cache <span class="keyword">for</span> PHP  </div><div class="line">php-ssh2 - Bindings <span class="keyword">for</span> the libssh2 library  </div><div class="line">php-igbinary - igbinary PHP serializer  </div><div class="line">php-mailparse - Email message manipulation <span class="keyword">for</span> PHP  </div><div class="line">php-libsodium - PHP wrapper <span class="keyword">for</span> the Sodium cryptographic library  </div><div class="line">php-propro - propro module <span class="keyword">for</span> PHP</div><div class="line"></div><div class="line">...</div><div class="line">...</div><div class="line">...</div></pre></td></tr></table></figure>
+<p>安装php7.1</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get -y install php7.1</div></pre></td></tr></table></figure>
+<p>安装完成后运行<strong><font color="red">php -v</font></strong>查看是否安装成功,成功的话显示</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">PHP 7.1.0beta2 (cli) ( NTS  )  </div><div class="line">Copyright (c) 1997-2016 The PHP Group  </div><div class="line">Zend Engine v3.1.0-dev, Copyright (c) 1998-2016 Zend Technologies  </div><div class="line">    with Zend OPcache v7.1.0beta2, Copyright (c) 1999-2016, by Zend Technologies</div></pre></td></tr></table></figure>
+<p>接着安装php7.1-mysql，这是php和mysql通信的模块</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get -y install php7.1-mysql</div></pre></td></tr></table></figure>
+<p>安装 fpm，这是Nginx 用来解析php文件的：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install php7.1-fpm</div></pre></td></tr></table></figure>
+<p>安装其他必备模块：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">apt-get install php7.1-curl php7.1-xml php7.1-mcrypt php7.1-json php7.1-gd php7.1-mbstring</div></pre></td></tr></table></figure>
+<p>至此与php相关的模块安装安装完成。</p>
+<h2 id="安装Mysql"><a href="#安装Mysql" class="headerlink" title="安装Mysql"></a>安装Mysql</h2><p>直接安装Mysql5.7吧，5.7 可以说是里程碑式的版本，提高了性能，并增加了很多新的特性。特别是新增加的json字段，用过之后你会爱上她的！！</p>
+<blockquote>
+<p>MySQL 开发团队于 9.12 日宣布 MySQL 8.0.0 开发里程碑版本（DMR）发布！但是目前 8.0.0 还是开发版本，如果你希望体验和测试最新特性，可以从 <a href="http://dev.mysql.com/downloads/mysql/" target="_blank" rel="external">http://dev.mysql.com/downloads/mysql/</a> 下载各个平台的安装包。不过，MySQL 软件包是越来越大了，Linux 平台上的二进制打包后就将近有 1 GB。如果在产品环境中使用，在 8.0 没有进入稳定版本之前，请继续使用 5.7 系列，当前最新的版本是 5.7.15 GA 版本——这只有 600 M 多。<br>下载.deb包到你的服务器：</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">wget http://dev.mysql.com/get/mysql-apt-config_0.5.3-1_all.deb</div></pre></td></tr></table></figure>
+<p> 然后使用dpkg命令添加Mysql的源：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo dpkg -i mysql-apt-config_0.5.3-1_all.deb</div></pre></td></tr></table></figure></p>
+<p>注意在添加源的时候，会叫你选择安装 MySQL 哪个应用，这里选择 Server 即可，再选择 MySQL 5.7 后又会回到选择应用的那个界面，此时选择 Apply 即可<br>安装</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div></pre></td><td class="code"><pre><div class="line">sudo apt-get update  </div><div class="line">sudo apt-get install mysql-server  </div><div class="line">``` </div><div class="line">安装完成之后运行mysql -V查看版本：</div><div class="line"></div><div class="line">``` bash</div><div class="line">root@demo:~<span class="comment"># mysql -V  </span></div><div class="line">``` </div><div class="line">mysql  Ver 14.14 Distrib 5.7.15, <span class="keyword">for</span> Linux (x86_64) using  EditLine wrapper  </div><div class="line">注意</div><div class="line"></div><div class="line">如果你已经通过 ppa 的方式安装了 MySQL 5.6，首先得去掉这个源</div><div class="line"></div><div class="line">``` bash</div><div class="line">sudo apt-add-repository --remove ppa:ondrej/mysql-5.6  </div><div class="line">``` </div><div class="line"> 如果没有 apt-add-repository 先安装上</div><div class="line">``` bash</div><div class="line"> sudo apt-get install software-properties-common</div><div class="line">``` </div><div class="line">然后其它和上面一样，但最后要运行sudo mysql_upgrade -u root -p升级数据库，运行sudo service mysql restart重启数据库，这样你的数据会完好无缺（不出意外的话）。</div><div class="line"><span class="comment">## 安装Nginx</span></div><div class="line">简单，运行：</div><div class="line">``` bash</div><div class="line">sudo apt-get -y install nginx  </div><div class="line">``` </div><div class="line"><span class="comment">## nginx配置php</span></div><div class="line"></div><div class="line">``` bash</div><div class="line">sudo vim /etc/php/7.1/fpm/php.ini  </div><div class="line">``` </div><div class="line">输入/fix_pathinfo搜索，将cgi.fix_pathinfo=1改为cgi.fix_pathinfo=0：</div><div class="line">编辑fpm的配置文件： 运行：</div><div class="line"></div><div class="line">``` bash</div><div class="line">sudo vim /etc/php/7.1/fpm/pool.d/www.conf  </div><div class="line">``` </div><div class="line">找到listen = /run/php/php7.1-fpm.sock修改为listen = 127.0.0.1:9000。使用9000端口。</div><div class="line"></div><div class="line">``` bash</div><div class="line">service php7.1-fpm stop</div><div class="line">service php7.1-fpm start</div><div class="line">``` </div><div class="line">配置Nginx：</div><div class="line"></div><div class="line">运行：</div><div class="line"></div><div class="line">``` bash</div><div class="line">sudo vim /etc/nginx/sites-available/default  </div><div class="line">``` </div><div class="line">下面是配置文件</div><div class="line">``` bash</div><div class="line">server &#123;  </div><div class="line">    <span class="comment">#listen 80 default_server;</span></div><div class="line">    listen 80;</div><div class="line">    <span class="comment">#listen [::]:80 default_server ipv6only=on;</span></div><div class="line">    </div><div class="line">    root /var/www;</div><div class="line">    index index.php index.html index.htm;</div><div class="line">                                        </div><div class="line">    <span class="comment"># Make site accessible from http://localhost/</span></div><div class="line">    server_name lufficc.com www.lufficc.com;</div><div class="line">    </div><div class="line">    location / &#123;</div><div class="line">        <span class="comment"># First attempt to serve request as file, then</span></div><div class="line">        <span class="comment"># as directory, then fall back to displaying a 404.</span></div><div class="line">        try_files <span class="variable">$uri</span> <span class="variable">$uri</span>/ /index.php?<span class="variable">$query_string</span>;</div><div class="line">        <span class="comment"># Uncomment to enable naxsi on this location</span></div><div class="line">        <span class="comment"># include /etc/nginx/naxsi.rules</span></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    location ~ \.php$ &#123;</div><div class="line">        include snippets/fastcgi-php.conf;</div><div class="line">        <span class="comment"># With php7.0-cgi alone:</span></div><div class="line">        fastcgi_pass 127.0.0.1:9000;</div><div class="line">        <span class="comment"># With php7.0-fpm:</span></div><div class="line">        fastcgi_pass unix:/run/php/php7.0-fpm.sock;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">``` </div><div class="line">&gt; </div><div class="line">  - root：是你的项目的public目录，也就是网站的入口</div><div class="line">  - index：添加了，index.php，告诉Nginx先解析index.php文件</div><div class="line">  - server_name：你的域名，没有的话填写localhost</div><div class="line">  - location / try_files修改为了try_files <span class="variable">$uri</span> <span class="variable">$uri</span>/ /index.php?<span class="variable">$query_string</span>;</div><div class="line">  - location ~ \.php$部分告诉Nginx怎么解析Php，原封不动复制即可，但注意：fastcgi_pass unix:/var/run/php/php7.1-fpm.sock;的目录要和fpm的配置文件中的listen一致。</div><div class="line"></div><div class="line"><span class="comment">## 运行nginx服务</span></div><div class="line"></div><div class="line">``` bash</div><div class="line">sudo service nginx restart  </div><div class="line">sudo service php7.1-fpm restart</div></pre></td></tr></table></figure>
+<p>如果出现下列错误<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[emerg]: <span class="built_in">bind</span>() to 0.0.0.0:80 failed (98: Address already <span class="keyword">in</span> use)</div></pre></td></tr></table></figure></p>
+<p>这是80端口被占用，运行下面命令，关闭80端口</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo fuser -k 80/tcp</div><div class="line">service nginx start</div></pre></td></tr></table></figure>
+<p><strong>好了，一切完成！</strong></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;我所用的环境是ubuntu16.10，上篇博文是源码安装lnmp，但是大部分情况下没有这么多的精神和时间，这篇博文来介绍下利用apt-get这个工具来快速完成lnmp的搭建。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;下面的lnmp包括php7.1,mysql5.7,ngin
+    
+    </summary>
+    
+    
+      <category term="技术" scheme="http://graychen.git.io/tags/%E6%8A%80%E6%9C%AF/"/>
+    
+  </entry>
   
   <entry>
     <title>lnmp源码搭建</title>
@@ -136,7 +197,7 @@
     <link href="http://graychen.git.io/2016/10/19/composer%E5%8C%85%E6%98%AF%E6%80%8E%E6%A0%B7%E7%82%BC%E6%88%90%E7%9A%84/"/>
     <id>http://graychen.git.io/2016/10/19/composer包是怎样炼成的/</id>
     <published>2016-10-19T03:20:43.000Z</published>
-    <updated>2017-05-07T14:20:07.502Z</updated>
+    <updated>2017-05-10T13:39:19.297Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p><strong>Composer</strong>是php用来管理依赖关系的工具，你可以在自己的项目中声明所依赖的外部工具库，Composer会帮助你安装这些依赖的库文件 –<a href="http://www.phpcomposer.com/" target="_blank" rel="external">Composer中文网</a></p>
