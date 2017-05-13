@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://graychen.git.io/"/>
-  <updated>2017-05-10T14:26:51.225Z</updated>
+  <updated>2017-05-13T15:56:56.104Z</updated>
   <id>http://graychen.git.io/</id>
   
   <author>
@@ -14,6 +14,32 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Webpack595错误</title>
+    <link href="http://graychen.git.io/2017/05/13/Webpack595%E9%94%99%E8%AF%AF/"/>
+    <id>http://graychen.git.io/2017/05/13/Webpack595错误/</id>
+    <published>2017-05-13T15:39:40.000Z</published>
+    <updated>2017-05-13T15:56:56.104Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="错误情况"><a href="#错误情况" class="headerlink" title="错误情况"></a>错误情况</h2><p>Mix incompatible with Webpack 2.3.0? #595</p>
+<h2 id="错误原因"><a href="#错误原因" class="headerlink" title="错误原因"></a>错误原因</h2><p>这是laravel5.4的错误webpack依赖包兼容问题</p>
+<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><p>在package,json 修改”aravel-mix”: “^0.10.0” 修复这个错误</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;错误情况&quot;&gt;&lt;a href=&quot;#错误情况&quot; class=&quot;headerlink&quot; title=&quot;错误情况&quot;&gt;&lt;/a&gt;错误情况&lt;/h2&gt;&lt;p&gt;Mix incompatible with Webpack 2.3.0? #595&lt;/p&gt;
+&lt;h2 id=&quot;错误原因&quot;&gt;&lt;a
+    
+    </summary>
+    
+      <category term="错误日志" scheme="http://graychen.git.io/categories/%E9%94%99%E8%AF%AF%E6%97%A5%E5%BF%97/"/>
+    
+    
+      <category term="错误日志" scheme="http://graychen.git.io/tags/%E9%94%99%E8%AF%AF%E6%97%A5%E5%BF%97/"/>
+    
+  </entry>
   
   <entry>
     <title>ubuntu下lnmp快速搭建</title>
