@@ -111,7 +111,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/linux/" style="font-size: 10px;">linux</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/技术/" style="font-size: 10px;">技术</a> <a href="/tags/编辑器/" style="font-size: 10px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
+						<a href="/tags/linux/" style="font-size: 15px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 10px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/编辑器/" style="font-size: 10px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
 					</div>
 				</section>
 				
@@ -180,6 +180,278 @@
 </nav>
 
       <div class="body-wrap">
+  
+    <article id="post-探索php中的变量zval结构体" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/06/18/探索php中的变量zval结构体/" class="article-date">
+  	<time datetime="2017-06-18T15:03:30.000Z" itemprop="datePublished">2017-06-18</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/06/18/探索php中的变量zval结构体/">探索php中的变量zval结构体</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="变量的类型"><a href="#变量的类型" class="headerlink" title="变量的类型"></a>变量的类型</h2><p>php是动态语言，c是静态语言，php是c实现的，我以前一直不明白静态的c是怎么实现动态的php的，后面发现php的每个变量都是一个zval结构体，zval中的type存储真正的类型，根据type来获取zvalue_value的值.<br>注意这个php的版本是5.4,最新的php7结构体已经变更<br>PHP在内核中是通过zval这个结构体来存储变量的，它的定义在Zend/zend.h文件里，简短精炼，只有四个成员组成：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">struct</span> <span class="number">_</span>zval_struct &#123;</div><div class="line">        zvalue_value value; <span class="comment">/* 变量的值 */</span></div><div class="line">        zend_uchar type;    <span class="comment">/* 变量当前的数据类型 */</span></div><div class="line">        zend_uint refcount__gc;</div><div class="line">        zend_uchar is_ref__gc;</div><div class="line">&#125;;</div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="number">_</span>zval_struct zval;</div><div class="line"></div><div class="line"><span class="comment">//在Zend/zend_types.h里定义的：</span></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">unsigned</span> <span class="keyword">int</span> zend_uint;</div><div class="line"><span class="keyword">typedef</span> <span class="keyword">unsigned</span> <span class="keyword">char</span> zend_uchar;</div></pre></td></tr></table></figure></p>
+<p>保存变量值的value则是zvalue_value类型(PHP5)，它是一个union，同样定义在了Zend/zend.h文件里：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="keyword">union</span> <span class="number">_</span>zvalue_value &#123;</div><div class="line">        <span class="keyword">long</span> lval;                  <span class="comment">/* long value */</span></div><div class="line">        <span class="keyword">double</span> dval;                <span class="comment">/* double value */</span></div><div class="line">        <span class="keyword">struct</span> &#123;</div><div class="line">                <span class="keyword">char</span> *val;</div><div class="line">                <span class="keyword">int</span> len;</div><div class="line">        &#125; str;</div><div class="line">        HashTable *ht;              <span class="comment">/* hash table value */</span></div><div class="line">        zend_object_value obj;</div><div class="line">&#125; zvalue_value;</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>PHP中常见的变量类型有：</p>
+<ol>
+<li>整型/浮点/长整型/bool值 等等</li>
+<li>字符串</li>
+<li>数组/关联数组</li>
+<li>对象</li>
+<li>资源</li>
+</ol>
+</blockquote>
+<p>PHP根据zval中的type字段来储存一个变量的真正类型，然后根据type来选择如何获取zvalue_value的值，比如对于整型和bool值:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">zval.type = IS_LONG;<span class="comment">//整形</span></div><div class="line">zval.type = IS_BOOL;<span class="comment">//布尔值</span></div></pre></td></tr></table></figure>
+<p>就去取zval.value.lval,对于bool值来说lval∈(0|1);<br>如果是双精度，或者float则会去取zval.value的dval。<br>而如果是字符串，那么:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">zval.type = IS_STRING</div></pre></td></tr></table></figure>
+<p>这个时候，就会取:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">zval.value.str</div></pre></td></tr></table></figure>
+<p>而这个也是个结构，存有C分格的字符串和字符串的长度。<br>而对于数组和对象，则type分别对应IS_ARRAY, IS_OBJECT, 相对应的则分别取zval.value.ht和obj<br>比较特别的是资源，在PHP中，资源是个很特别的变量，任何不属于PHP内建的变量类型的变量，都会被看作成资源来进行保存，比如，数据库句柄，打开的文件句柄等等。 对于资源:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">type = IS_RESOURCE</div></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/php-php扩展-c/">php php扩展 c</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/技术/">技术</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-如何编写测试" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/06/18/如何编写测试/" class="article-date">
+  	<time datetime="2017-06-18T05:38:51.000Z" itemprop="datePublished">2017-06-18</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/06/18/如何编写测试/">Codeception测试框架如何编写测试</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="如何编写测试"><a href="#如何编写测试" class="headerlink" title="如何编写测试"></a>如何编写测试</h2><p>Yii2高级应用程序使用Codeception作为其主要测试框架。</p>
+<h3 id="搭建测试环境"><a href="#搭建测试环境" class="headerlink" title="搭建测试环境"></a>搭建测试环境</h3><p>为了运行测试用例，你需要安装 Codeception 。 一个较好的安装方式是：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">composer <span class="keyword">global</span> <span class="keyword">require</span> <span class="string">"codeception/codeception=2.1.*"</span></div><div class="line">composer <span class="keyword">global</span> <span class="keyword">require</span> <span class="string">"codeception/specify=*"</span></div><div class="line">composer <span class="keyword">global</span> <span class="keyword">require</span> <span class="string">"codeception/verify=*"</span></div></pre></td></tr></table></figure></p>
+<p>创建测试目录<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">codecept bootstrap</div></pre></td></tr></table></figure></p>
+<p>构建测试套件：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">codecept build</div></pre></td></tr></table></figure></p>
+<p>如果测试需要在 Production 环境中执行， yii_test 和 yii_test.bat 必须从 environments/dev 文件夹手动复制到项目根目录。 测试需要一个 额外的数据库 ，这将在测试之间清除。 在mysql中创建数据库 yii2advanced_test （根据 common/config/test.php 中的配置）并执行：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./yii_test migrate</div></pre></td></tr></table></figure></p>
+<p>然后所有的样例测试可以通过运行如下代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">codecept run</div></pre></td></tr></table></figure></p>
+<p>docker环境下运行搭建并运行测试：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">docker exec -it health_web_1 ./vendor/bin/codecept boostrap</div><div class="line">docker exec -it health_web_1 ./vendor/bin/./yii_test migrate</div><div class="line">docker exec -it health_web_1 ./vendor/bin/codecept build</div><div class="line">docker exec -it health_web_1 ./vendor/bin/codecept run</div></pre></td></tr></table></figure></p>
+<p>测试套件描述：</p>
+<ul>
+<li>unit ⇒ 单元测试,对程序模块(类中的方法)来进行正确性检验的测试工作（主要）。</li>
+<li>api ⇒ api接口测试(主要)。</li>
+<li>functional ⇒ 功能测试，应用程序内部请求/响应（无Web服务器）。</li>
+<li>acceptance ⇒ 验收测试，web应用程序，用户界面和javascript交互。</li>
+</ul>
+<h2 id="启动测试"><a href="#启动测试" class="headerlink" title="启动测试"></a>启动测试</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"> docker <span class="built_in">exec</span> -it usercenter_web_1 bash</div><div class="line">//或者</div><div class="line"> docker <span class="built_in">exec</span> -it health_web_1 /bin/sh</div><div class="line">./vendor/bin/codecept run -c tests</div></pre></td></tr></table></figure>
+<p>-c 指定目录<br>api测试需要启动一个web服务器<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">php -S localhost:80 --docroot api/tests &amp;&gt;/dev/null&amp;</div></pre></td></tr></table></figure></p>
+<h2 id="搭建测试环境-1"><a href="#搭建测试环境-1" class="headerlink" title="搭建测试环境"></a>搭建测试环境</h2><p>目录结构</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">├── codeception</div><div class="line">│   ├── api  //api测试</div><div class="line">│   ├── api.suite.yml  //api测试配置</div><div class="line">│   ├── _bootstrap.php</div><div class="line">│   ├── _data</div><div class="line">│   │   └── dump.sql  //初始化sql</div><div class="line">│   ├── _output  //日志</div><div class="line">│   ├── _support                                                    </div><div class="line">│   ├── unit</div><div class="line">│   │   ├── _bootstrap.php   //依赖文件</div><div class="line">│   │   ├── models</div><div class="line">│   │   │   ├── ActivityConfigTest.php  //单元测试</div><div class="line">│   │   └── UnitTester.php</div><div class="line">│   └── unit.suite.yml  //单元测试配置文件</div><div class="line">├── codeception.yml</div><div class="line">├── _envs</div><div class="line">├── _output</div><div class="line">└── _support</div><div class="line">    └── _generated</div></pre></td></tr></table></figure>
+<p>在根目录运行codecept bootstrap 创建test目录和codeception.yml 文件</p>
+<h3 id="api测试详解"><a href="#api测试详解" class="headerlink" title="api测试详解"></a>api测试详解</h3><p>API测试在功能测试级别完成，但是不是测试用户操作的HTML响应，而是通过REST或SOAP等协议来测试请求和响应。要开始写api测试，你应该为他们创建一个套件<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./vendor/bin/codecept g:suite api</div></pre></td></tr></table></figure></p>
+<p>您将需要启用REST，Yii2模块tests/api.suite.yml：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">class_name: ApiTester</div><div class="line">modules:</div><div class="line">    enabled:</div><div class="line">        - REST:</div><div class="line">            url: /api/v1</div><div class="line">            depends: Yii2</div><div class="line">        - \ApiBundle\Helper\Api</div><div class="line">    config:</div><div class="line">        - Yii2</div></pre></td></tr></table></figure></p>
+<p>Yii2模块操作amOnPage或see不应该可用于测试API。这就是为什么Yii2模块没有被启用，但被声明depends为REST模块。</p>
+<p><a href="http://codeception.com/docs/10-WebServices#REST" target="_blank" rel="external">继续执行REST API测试指南»</a></p>
+<h3 id="单位测试详解"><a href="#单位测试详解" class="headerlink" title="单位测试详解"></a>单位测试详解</h3><p>单元测试位于tests/unit目录中，应包含所有类型的单元和集成测试。</p>
+<p>每个测试用例扩展Codeception\Test\Unit类，这是单元测试的标准Codeception格式。在Yii中开发完全隔离的单元测试是非常困难的，所以在每个测试用例之前应用程序是自举的。tests/unit.suite.yml使用Yii2模块启用测试配置文件：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">modules:</div><div class="line">    enabled:</div><div class="line">      - Yii2:</div><div class="line">            part: [orm, email]</div></pre></td></tr></table></figure></p>
+<p>该模块启动测试用例的Yii应用程序，并提供其他帮助方法来简化测试。它只有orm和email零件，以排除需要的只是功能性的测试方法。</p>
+<p>通过访问测试用例中的$this-&gt;tester类可以使用Yii2模块的方法。因此，如果您已启用orm和电子邮件部件，以便您可以调用属于这些部分的方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&lt;?php</div><div class="line">// insert records in database</div><div class="line">$this-&gt;tester-&gt;haveRecord(&apos;app/model/User&apos;, [&apos;username&apos; =&gt; &apos;davert&apos;]);</div><div class="line">// check records in database</div><div class="line">$this-&gt;tester-&gt;seeRecord(&apos;app/model/User&apos;, [&apos;username&apos; =&gt; &apos;davert&apos;]);</div><div class="line">// test email was sent</div><div class="line">$this-&gt;tester-&gt;seeEmailIsSent();</div><div class="line">// get a last sent emails</div><div class="line">$this-&gt;tester-&gt;grabLastSentEmail();</div></pre></td></tr></table></figure></p>
+<p>如果启用fixtures部件，您还将获得在测试中加载和使用灯具的方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">&lt;?php</div><div class="line">// load fixtures</div><div class="line">$this-&gt;tester-&gt;haveFixtures([</div><div class="line">    &apos;user&apos; =&gt; [</div><div class="line">        &apos;class&apos; =&gt; UserFixture::className(),</div><div class="line">        // fixture data located in tests/_data/user.php</div><div class="line">        &apos;dataFile&apos; =&gt; codecept_data_dir() . &apos;user.php&apos;</div><div class="line">    ]</div><div class="line">]);</div><div class="line">// get first user from fixtures</div><div class="line">$this-&gt;tester-&gt;grabFixture(&apos;user&apos;, 0);</div></pre></td></tr></table></figure></p>
+<p>如果Yii2模块启用，您可以安全地调用Yii::$app测试内容，因为应用程序在测试后被初始化和清理。如果你想为你的测试用例添加你的帮助方法或者自定义的断言，你不应该扩展，Codeception\Test\Unit而是写出你自己的单独的Helper类。</p>
+<p><a href="http://codeception.com/docs/05-UnitTests" target="_blank" rel="external">继续进行单元测试指南»</a></p>
+<h3 id="功能测试"><a href="#功能测试" class="headerlink" title="功能测试"></a>功能测试</h3><p>当测试Web应用程序的实际功能时，您不能仅使用单元测试。你想测试应用程序如何处理请求，它提供什么响应，什么数据保存到数据库等等。要在近用户环境中测试应用程序，但不启动真正的Web服务器或浏览器，您可以使用功能测试。它们的写法远比单元测试简单得多。他们在简单的DSL中描述交互场景，所以您不需要直接处理应用程序，而是从用户的角度描述动作：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">&lt;?php</div><div class="line">$I-&gt;amOnPage([&apos;site/contact&apos;]);</div><div class="line">$I-&gt;submitForm(&apos;#contact-form&apos;, []);</div><div class="line">$I-&gt;expectTo(&apos;see validations errors&apos;);</div><div class="line">$I-&gt;see(&apos;Contact&apos;, &apos;h1&apos;);</div><div class="line">$I-&gt;see(&apos;Name cannot be blank&apos;);</div><div class="line">$I-&gt;see(&apos;Email cannot be blank&apos;);</div><div class="line">$I-&gt;see(&apos;Subject cannot be blank&apos;);</div><div class="line">$I-&gt;see(&apos;Body cannot be blank&apos;);</div></pre></td></tr></table></figure></p>
+<p>这样，您不仅可以在站点上测试ContactForm，而且还可以实际输出用户看到的应用程序。Codeception提供了一套标准的动作一样amOnPage，submitForm，see进行测试。Yii2模块提供了特殊的方法，如amLoggedInAs（快速认证）haveRecord，seeRecord，seeEmailIsSent和其他人。它们都列在模块引用中。</p>
+<p>功能测试应该写在Cest 文件中，这是一个场景驱动的Codeception测试格式。您可以通过运行以下方式轻松创建新测试：</p>
+<p>./vendor/bin/codecept g:cest functional MyNewScenarioCest<br> 功能测试非常强大而简单。强烈推荐使用任何Yii应用程序。</p>
+<p><a href="http://codeception.com/docs/04-FunctionalTests" target="_blank" rel="external">继续进行功能测试指南»</a></p>
+<h3 id="验收测试"><a href="#验收测试" class="headerlink" title="验收测试"></a>验收测试</h3><p>从测试的角度来看，验收测试与功能测试相同。他们测试用户与应用程序的交互，但在这种情况下使用真正的浏览器和Web服务器。它们慢得多，脆弱得多。他们不应该在测试功能的问题上重复功能测试，而应该用于测试应用程序的UI。如果您不确定哪些测试应该被接受，哪些是功能性的，那么写入JavaScript丰富应用程序的接受测试，其中UI高度依赖于浏览器处理。您还可以使用快乐路径场景的验收测试，以确保使用真实浏览器的真实用户在功能测试中达到相同的结果。</p>
+<p>默认情况下，基本应用验收测试被禁用（因为它们需要Web服务器，Selenium服务器和浏览器才能运行）。您可以轻松地通过重命名使他们acceptance.suite.yml.example对acceptance.suite.yml<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mv tests/acceptance.suite.yml.example tests/acceptance.suite.yml</div><div class="line">基本模板使用codeception/base不包含facebook/webdriver运行验收测试所需库的软件包。请更改codeception/base为codeception/codeceptionin composer.json并运行update命令。</div></pre></td></tr></table></figure></p>
+<p>那么您将需要在测试模式下启动应用服务器：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./tests/bin/yii serve</div></pre></td></tr></table></figure></p>
+<p>并启动Selenium Server或PhantomJS。对于接受使用WebDriver模块。请检查其参考资料，了解如何使用它。与Yii2模块不同，它对应用程序一无所知，因此，如果要使用Yii像夹具的功能进行验收测试，则应检查是否启用Yii2模块：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"># config at tests/acceptance.yml</div><div class="line">modules:</div><div class="line">    enabled:</div><div class="line">        - WebDriver:</div><div class="line">            url: http://127.0.0.1:8080/</div><div class="line">            browser: firefox</div><div class="line">        - Yii2:</div><div class="line">            part: [orm, fixtures] # allow to use AR methods</div><div class="line">            cleanup: false # don&apos;t wrap test in transaction</div><div class="line">            entryScript: index-test.php</div></pre></td></tr></table></figure></p>
+<p>正如所说，功能和验收测试是相似的，所以为了避免与这些模块的冲突，你应该只加载你真正需要的Yii2模块的一部分。您还必须将cleanup: falseYii2更改设置为数据库，以便在Web服务器上运行的应用程序进行保存和使用。使用entryScript和entryUrl值可以更改应用程序的默认主机和脚本配置。</p>
+<p>与功能测试类似，建议使用Cest格式进行验收测试：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./vendor/bin/codecept g:cest acceptance MyNewScenarioCest</div></pre></td></tr></table></figure></p>
+<p><a href="http://codeception.com/docs/03-AcceptanceTests" target="_blank" rel="external">继续验收测试指南»</a></p>
+<h3 id="手动设置-amp-amp-配置"><a href="#手动设置-amp-amp-配置" class="headerlink" title="手动设置&amp;&amp;配置"></a>手动设置&amp;&amp;配置</h3><p>要开始，您需要通过Composer安装Codeception<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">composer require &quot;codeception/codeception&quot; --dev</div></pre></td></tr></table></figure></p>
+<p>创建基本的测试套件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./vendor/bin/codecept bootstrap</div></pre></td></tr></table></figure></p>
+<p>启用模块Yii2进行功能测试functional.suite.yml：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"># functional.suite.yml</div><div class="line">modules:</div><div class="line">    enabled:</div><div class="line">        - Yii2:</div><div class="line">            configFile: #insert path to config file</div></pre></td></tr></table></figure></p>
+<p>Yii2模块唯一必需的参数是configFile。该文件配置为Yii应用程序的测试配置。它应该合并原始应用程序配置覆盖id值，并提供不同的数据库进行测试：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">&lt;?php</div><div class="line">// config/test.php</div><div class="line">$config =  yii\helpers\ArrayHelper::merge(</div><div class="line">    require(__DIR__ . &apos;/main.php&apos;),</div><div class="line">    require(__DIR__ . &apos;/main-local.php&apos;),</div><div class="line">    [</div><div class="line">        &apos;id&apos; =&gt; &apos;app-tests&apos;,</div><div class="line">        &apos;components&apos; =&gt; [</div><div class="line">            &apos;db&apos; =&gt; [</div><div class="line">                &apos;dsn&apos; =&gt; &apos;mysql:host=localhost;dbname=yii_app_test&apos;,</div><div class="line">            ]</div><div class="line">        ]        </div><div class="line">    ]</div><div class="line">);</div><div class="line">return $config;</div></pre></td></tr></table></figure></p>
+<p>测试配置建议存储在应用程序的config文件夹中。您应该提供相对于codeception.yml文件测试配置的路径。</p>
+<p>还请确保YII_ENV常数设置为test，因为它是在做tests/_bootstrap.php的基本的和高级的应用程序模板文件。</p>
+<p>一旦配置功能测试，就可以轻松地创建单元和验收测试的设置，如本指南中所述。</p>
+<p>在基础和高级应用程序模板configFile中定义了全局配置文件：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"># inside codeception.yml</div><div class="line">modules:</div><div class="line">    config:</div><div class="line">        Yii2:</div><div class="line">            configFile: &apos;config/test.php&apos;</div></pre></td></tr></table></figure></p>
+<p>这样我们不需要为每个定义的套件提供测试配置。</p>
+<h3 id="伪数据生成器"><a href="#伪数据生成器" class="headerlink" title="伪数据生成器"></a>伪数据生成器</h3><p>安装<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">composer require fzaninotto/faker</div></pre></td></tr></table></figure></p>
+<p>使用Faker\Factory::create()创建和初始化一个摊贩发生器，可通过访问你想要的数据类型来命名的属性生成的数据。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">&lt;?php</div><div class="line">// require the Faker autoloader</div><div class="line">require_once &apos;/path/to/Faker/src/autoload.php&apos;;</div><div class="line">// alternatively, use another PSR-0 compliant autoloader (like the Symfony2 ClassLoader for instance)</div><div class="line"></div><div class="line">// use the factory to create a Faker\Generator instance</div><div class="line">$faker = Faker\Factory::create();</div><div class="line"></div><div class="line">// generate data by accessing properties</div><div class="line">echo $faker-&gt;name;</div><div class="line">  // &apos;Lucy Cechtelar&apos;;</div><div class="line">echo $faker-&gt;address;</div><div class="line">  // &quot;426 Jordy Lodge</div><div class="line">  // Cartwrightshire, SC 88120-6700&quot;</div><div class="line">echo $faker-&gt;text;</div><div class="line">  // Dolores sit sint laboriosam dolorem culpa et autem. Beatae nam sunt fugit</div><div class="line">  // et sit et mollitia sed.</div><div class="line">  // Fuga deserunt tempora facere magni omnis. Omnis quia temporibus laudantium</div><div class="line">  // sit minima sint.</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/php/">php</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/技术/">技术</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-谈谈进程和线程" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/06/17/谈谈进程和线程/" class="article-date">
+  	<time datetime="2017-06-17T15:27:02.000Z" itemprop="datePublished">2017-06-17</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/06/17/谈谈进程和线程/">谈谈进程和线程</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近对于进程和线程之间的关系及其本质有所疑惑，在网上查询了多个答案之后有了些感想，记录下</p>
+<h2 id="多任务"><a href="#多任务" class="headerlink" title="多任务"></a>多任务</h2><p>现代操作系统比如Mac OS X，UNIX，Linux，Windows等，都是支持“多任务”的操作系统。<br>什么叫“多任务”呢？简单地说，就是操作系统可以同时运行多个任务。打个比方，你一边在用浏览器上网，一边在听MP3，一边在用Word赶作业，这就是多任务，至少同时有3个任务正在运行。还有很多任务悄悄地在后台同时运行着，只是桌面上没有显示而已。<br>现在，多核CPU已经非常普及了，但是，即使过去的单核CPU，也可以执行多任务。由于CPU执行代码都是顺序执行的，那么，单核CPU是怎么执行多任务的呢？<br>答案就是操作系统轮流让各个任务交替执行，任务1执行0.01秒，切换到任务2，任务2执行0.01秒，再切换到任务3，执行0.01秒……这样反复执行下去。表面上看，每个任务都是交替执行的，但是，由于CPU的执行速度实在是太快了，我们感觉就像所有任务都在同时执行一样。<br>真正的并行执行多任务只能在多核CPU上实现，但是，由于任务数量远远多于CPU的核心数量，所以，操作系统也会自动把很多任务轮流调度到每个核心上执行。</p>
+<h2 id="进程的概念"><a href="#进程的概念" class="headerlink" title="进程的概念"></a>进程的概念</h2><p>对于操作系统来说，一个任务就是一个进程（Process），比如打开一个浏览器就是启动一个浏览器进程，打开一个记事本就启动了一个记事本进程，打开两个记事本就启动了两个记事本进程，打开一个Word就启动了一个Word进程。</p>
+<h2 id="进程的本质"><a href="#进程的本质" class="headerlink" title="进程的本质"></a>进程的本质</h2><p>cpu的单次运算</p>
+<h2 id="线程的概念"><a href="#线程的概念" class="headerlink" title="线程的概念"></a>线程的概念</h2><p>有些进程还不止同时干一件事，比如Word，它可以同时进行打字、拼写检查、打印等事情。在一个进程内部，要同时干多件事，就需要同时运行多个“子任务”，我们把进程内的这些“子任务”称为线程（Thread）。</p>
+<h2 id="线程的本质"><a href="#线程的本质" class="headerlink" title="线程的本质"></a>线程的本质</h2><p>由于每个进程至少要干一件事，所以，一个进程至少有一个线程。当然，像Word这种复杂的进程可以有多个线程，多个线程可以同时执行，多线程的执行方式和多进程是一样的，也是由操作系统在多个线程之间快速切换，让每个线程都短暂地交替运行，看起来就像同时执行一样。当然，真正地同时执行多线程需要多核CPU才可能实现。</p>
+<h2 id="线程的特点"><a href="#线程的特点" class="headerlink" title="线程的特点"></a>线程的特点</h2><p>由于同一进程的多个线程共享同一地址空间，因此Text Segment、Data Segment都是共享的，如果定义一个函数，在各线程中都可以调用，如果定义一个全局变量，在各线程中都可以访问到，除此之外，各线程还共享以下进程资源和环境：<br>文件描述符表<br>每种信号的处理方式（SIG_IGN、SIG_DFL或者自定义的信号处理函数）<br>当前工作目录<br>用户id和组id<br>但有些资源是每个线程各有一份的：<br>线程id<br>上下文，包括各种寄存器的值、程序计数器和栈指针<br>栈空间<br>errno变量<br>信号屏蔽字<br>调度优先级</p>
+<h2 id="进程的通信"><a href="#进程的通信" class="headerlink" title="进程的通信"></a>进程的通信</h2><p>每个进程各自有不同的用户地址空间，任何一个进程的全局变量在另一个进程中都看不到，所以进程之间要交换数据必须通过内核，在内核中开辟一块缓冲区，进程1把数据从用户空间拷到内核缓冲区，进程2再从内核缓冲区把数据读走，内核提供的这种机制称为进程间通信（IPC，InterProcess Communication）。如下图所示。<br>图 30.6. 进程间通信<br>进程间通信<br> <img src="/assets/blogImg/process.png" alt="&quot;我是傲娇的效果图&quot;"></p>
+<h3 id="管道"><a href="#管道" class="headerlink" title="管道"></a>管道</h3><p>管道是一种最基本的IPC机制，由pipe函数创建：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">pipe</span><span class="params">(<span class="keyword">int</span> filedes[<span class="number">2</span>])</span></span>;</div></pre></td></tr></table></figure></p>
+<p>调用pipe函数时在内核中开辟一块缓冲区（称为管道）用于通信，它有一个读端一个写端，然后通过filedes参数传出给用户程序两个文件描述符，filedes[0]指向管道的读端，filedes[1]指向管道的写端（很好记，就像0是标准输入1是标准输出一样）。所以管道在用户程序看起来就像一个打开的文件，通过read(filedes[0]);或者write(filedes[1]);向这个文件读写数据其实是在读写内核缓冲区。pipe函数调用成功返回0，调用失败返回-1。</p>
+<p>开辟了管道之后如何实现两个进程间的通信呢？比如可以按下面的步骤通信。<br>1.父进程调用pipe开辟管道，得到两个文件描述符指向管道的两端。<br>2.父进程调用fork创建子进程，那么子进程也有两个文件描述符指向同一管道。<br>3.父进程关闭管道读端，子进程关闭管道写端。父进程可以往管道里写，子进程可以从管道里读，管道是用环形队列实现的，数据从写端流入从读端流出，这样就实现了进程间通信。<br> <img src="/assets/blogImg/process.pipe.png" alt="&quot;我是傲娇的效果图&quot;"><br> <figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></div><div class="line"><span class="meta">#<span class="meta-keyword">define</span> MAXLINE 80</span></div><div class="line"></div><div class="line"> <span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></div><div class="line">&#123;</div><div class="line">        <span class="keyword">int</span> n;</div><div class="line">        <span class="keyword">int</span> fd[<span class="number">2</span>];</div><div class="line">        <span class="keyword">pid_t</span> pid;</div><div class="line">        <span class="keyword">char</span> line[MAXLINE];</div><div class="line"></div><div class="line">        <span class="keyword">if</span> (pipe(fd) &lt; <span class="number">0</span>) &#123;</div><div class="line">                perror(<span class="string">"pipe"</span>);</div><div class="line">                <span class="built_in">exit</span>(<span class="number">1</span>);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span> ((pid = fork()) &lt; <span class="number">0</span>) &#123;</div><div class="line">                perror(<span class="string">"fork"</span>);</div><div class="line">                <span class="built_in">exit</span>(<span class="number">1</span>);</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span> (pid &gt; <span class="number">0</span>) &#123; <span class="comment">/* parent */</span></div><div class="line">                close(fd[<span class="number">0</span>]);</div><div class="line">                write(fd[<span class="number">1</span>], <span class="string">"hello world\n"</span>, <span class="number">12</span>);</div><div class="line">                wait(<span class="literal">NULL</span>);</div><div class="line">         &#125; <span class="keyword">else</span> &#123;       <span class="comment">/* child */</span></div><div class="line">                close(fd[<span class="number">1</span>]);</div><div class="line">                n = read(fd[<span class="number">0</span>], line, MAXLINE);</div><div class="line">                write(STDOUT_FILENO, line, n);</div><div class="line">         &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>使用管道有一些限制：<br>两个进程通过一个管道只能实现单向通信，比如上面的例子，父进程写子进程读，如果有时候也需要子进程写父进程读，就必须另开一个管道。请读者思考，如果只开一个管道，但是父进程不关闭读端，子进程也不关闭写端，双方都有读端和写端，为什么不能实现双向通信？<br>管道的读写端通过打开的文件描述符来传递，因此要通信的两个进程必须从它们的公共祖先那里继承管道文件描述符。上面的例子是父进程把文件描述符传给子进程之后父子进程之间通信，也可以父进程fork两次，把文件描述符传给两个子进程，然后两个子进程之间通信，总之需要通过fork传递文件描述符使两个进程都能访问同一管道，它们才能通信。<br>使用管道需要注意以下4种特殊情况（假设都是阻塞I/O操作，没有设置O_NONBLOCK标志）：<br>如果所有指向管道写端的文件描述符都关闭了（管道写端的引用计数等于0），而仍然有进程从管道的读端读数据，那么管道中剩余的数据都被读取后，再次read会返回0，就像读到文件末尾一样。<br>如果有指向管道写端的文件描述符没关闭（管道写端的引用计数大于0），而持有管道写端的进程也没有向管道中写数据，这时有进程从管道读端读数据，那么管道中剩余的数据都被读取后，再次read会阻塞，直到管道中有数据可读了才读取数据并返回。<br>如果所有指向管道读端的文件描述符都关闭了（管道读端的引用计数等于0），这时有进程向管道的写端write，那么该进程会收到信号SIGPIPE，通常会导致进程异常终止。在第 33 章 信号会讲到怎样使SIGPIPE信号不终止进程。<br>如果有指向管道读端的文件描述符没关闭（管道读端的引用计数大于0），而持有管道读端的进程也没有从管道中读数据，这时有进程向管道写端写数据，那么在管道被写满时再次write会阻塞，直到管道中有空位置了才写入数据并返回。</p>
+</blockquote>
+<p> 现在把进程之间传递信息的各种途径（包括各种IPC机制）总结如下：<br>-父进程通过fork可以将打开文件的描述符传递给子进程<br>-子进程结束时，父进程调用wait可以得到子进程的终止信息<br>-几个进程可以在文件系统中读写某个共享文件，也可以通过给文件加锁来实现进程间同步<br>-进程之间互发信号，一般使用SIGUSR1和SIGUSR2实现用户自定义功能<br>-管道<br>-FIFO<br>-mmap函数，几个进程可以映射同一内存区<br>-SYS V IPC，以前的SYS V UNIX系统实现的IPC机制，包括消息队列、信号量和共享内存，现在已经基本废弃<br>-UNIX Domain Socket，目前最广泛使用的IPC机制</p>
+<h2 id="线程的通信"><a href="#线程的通信" class="headerlink" title="线程的通信"></a>线程的通信</h2><p>多个线程同时访问共享数据时可能会冲突，线程中的内存是共享的，导致所处理的变量是同一个，比如两个线程都要把某个全局变量增加1，这个操作在某平台需要三条指令完成：<br>1.从内存读变量值到寄存器<br>2.寄存器的值加1<br>3.将寄存器的值写回内存<br>假设两个线程在多处理器平台上同时执行这三条指令，则可能导致下图所示的结果，最后变量只加了一次而非两次。<br> <img src="/assets/blogImg/thread.corrupt.png" alt="&quot;我是傲娇的效果图&quot;"><br> 对于多线程的程序，访问冲突的问题是很普遍的，解决的办法是引入互斥锁（Mutex，Mutual Exclusive Lock），获得锁的线程可以完成“读-修改-写”的操作，然后释放锁给其它线程，没有获得锁的线程只能等待而不能访问共享数据，这样“读-修改-写”三步操作组成一个原子操作，要么都执行，要么都不执行，不会执行到中间被打断，也不会在其它处理器上并行做这个操作。<br> pthread_mutex_init函数对Mutex做初始化，参数attr设定Mutex的属性，如果attr为NULL则表示缺省属性，本章不详细介绍Mutex属性，感兴趣的读者可以参考[APUE2e]。用pthread_mutex_init函数初始化的Mutex可以用pthread_mutex_destroy销毁。如果Mutex变量是静态分配的（全局变量或static变量），也可以用宏定义PTHREAD_MUTEX_INITIALIZER来初始化，相当于用pthread_mutex_init初始化并且attr参数为NULL。Mutex的加锁和解锁操作可以用下列函数：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pthread.h&gt;</span></span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">pthread_mutex_lock</span><span class="params">(<span class="keyword">pthread_mutex_t</span> *mutex)</span></span>;</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">pthread_mutex_trylock</span><span class="params">(<span class="keyword">pthread_mutex_t</span> *mutex)</span></span>;</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">pthread_mutex_unlock</span><span class="params">(<span class="keyword">pthread_mutex_t</span> *mutex)</span></span>;</div></pre></td></tr></table></figure></p>
+<p>返回值：成功返回0，失败返回错误号。<br>一个线程可以调用pthread_mutex_lock获得Mutex，如果这时另一个线程已经调用pthread_mutex_lock获得了该Mutex，则当前线程需要挂起等待，直到另一个线程调用pthread_mutex_unlock释放Mutex，当前线程被唤醒，才能获得该Mutex并继续执行。<br>如果一个线程既想获得锁，又不想挂起等待，可以调用pthread_mutex_trylock，如果Mutex已经被另一个线程获得，这个函数会失败返回EBUSY，而不会使线程挂起等待。<br>Mutex的两个基本操作lock和unlock是如何实现的呢？假设Mutex变量的值为1表示互斥锁空闲，这时某个进程调用lock可以获得锁，而Mutex的值为0表示互斥锁已经被某个线程获得，其它线程再调用lock只能挂起等待。那么lock和unlock的伪代码如下：<br>lock:<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span>(mutex &gt; <span class="number">0</span>)&#123;</div><div class="line">        mutex = <span class="number">0</span>;</div><div class="line">        <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125; <span class="keyword">else</span></div><div class="line">        <span class="comment">//挂起等待;</span></div><div class="line">        <span class="keyword">goto</span> lock;</div><div class="line">unlock:</div><div class="line">        mutex = <span class="number">1</span>;</div><div class="line">        <span class="comment">//唤醒等待Mutex的线程;</span></div><div class="line">        <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">        unlock操作中唤醒等待线程的步骤可以有不同的实现，可以只唤醒一个等待线程，也可以唤醒所有等待该Mutex的线程，然后让被唤醒的这些线程去竞争获得这个Mutex，竞争失败的线程继续挂起等待。</div></pre></td></tr></table></figure></p>
+<h2 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h2><p>1.一般情况下，如果同一个线程先后两次调用lock，在第二次调用时，由于锁已经被占用，该线程会挂起等待别的线程释放锁，然而锁正是被自己占用着的，该线程又被挂起而没有机会释放锁，因此就永远处于挂起等待状态了，这叫做死锁（Deadlock）。<br>2.另一种典型的死锁情形是这样：线程A获得了锁1，线程B获得了锁2，这时线程A调用lock试图获得锁2，结果是需要挂起等待线程B释放锁2，而这时线程B也调用lock试图获得锁1，结果是需要挂起等待线程A释放锁1，于是线程A和B都永远处于挂起状态了。不难想象，如果涉及到更多的线程和更多的锁，有没有可能死锁的问题将会变得复杂和难以判断。</p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title=" 参考文章:"></a> 参考文章:</h2><p><a href="https://akaedu.github.io/book/ch35s04.html" target="_blank" rel="external">线程</a><br><a href="https://akaedu.github.io/book/ch30s04.html" target="_blank" rel="external">进程间通信</a><br><a href="http://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a000/0013868322563729e03f6905ea94f0195528e3647887415000" target="_blank" rel="external">进程和线程</a></p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux基础/">linux基础</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/技术/">技术</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
   
     <article id="post-Webpack595错误" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -317,10 +589,14 @@
       
       
 	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术/">技术</a></li></ul>
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li></ul>
 	</div>
 
       
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/技术/">技术</a>
+	</div>
+
 
       
       <div class="clearfix"></div>
@@ -792,242 +1068,10 @@
 
 
   
-    <article id="post-vichrome像vi一样操作你的chrome浏览器" class="article article-type-post" itemscope itemprop="blogPost">
   
-    <div class="article-meta">
-      <a href="/2016/10/18/vichrome像vi一样操作你的chrome浏览器/" class="article-date">
-  	<time datetime="2016-10-18T01:24:53.000Z" itemprop="datePublished">2016-10-18</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/10/18/vichrome像vi一样操作你的chrome浏览器/">vichrome像vi一样操作你的chrome浏览器</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><strong>vichrome</strong>是一款chrome浏览器的插件,它让你可以像vi一样使用命令来操作你的浏览器，是提高效率的利器。<br>下面是它的操作命令：</p>
-<h2 id="基础篇"><a href="#基础篇" class="headerlink" title="基础篇"></a>基础篇</h2><ul>
-<li>k 上移 </li>
-<li>j 下移 </li>
-<li>H 后退 </li>
-<li>L 前进</li>
-<li>gg 飞到顶部 </li>
-<li>G 掉到底部 </li>
-<li>gt 去下一个标签 (ctrl+l) </li>
-<li>gT 去上一个标签 (ctrl+h)</li>
-<li>t 新开一个标签 </li>
-<li>x 关闭当前标签页 </li>
-<li>X 关闭当前标签页并跳到下一个标签页  </li>
-<li>u 恢复刚刚的标签页 </li>
-<li>r 刷新 </li>
-<li>f 进入f模式(可以点击链接) </li>
-<li>F 在新标签中进入f模式 </li>
-<li>i 聚焦在第一个输入框</li>
-<li>esc 退出<h2 id="进阶篇"><a href="#进阶篇" class="headerlink" title="进阶篇"></a>进阶篇</h2></li>
-<li>ctrl+f 下一页</li>
-<li>ctrl+b 上一页</li>
-<li>ctrl+d 下半页</li>
-<li>ctrl+u 上半页</li>
-<li>/ 搜索</li>
-<li>? 反向搜索</li>
-<li>a 在带链接的文本中搜索</li>
-<li>n 下一个搜索结果</li>
-<li>N 上一个搜索结果</li>
-<li>tab 下一个候补选项</li>
-<li>shift+tab 上一个候补选项</li>
-<li>: 进入命令模式</li>
-<li>yy 复制url</li>
-<li>p/P 打开刚刚复制的url</li>
-<li>o/O 打开(输入url)</li>
-<li>s/S 用搜索引擎搜索</li>
-<li>b/B 打开收藏夹<h2 id="高级篇"><a href="#高级篇" class="headerlink" title="高级篇"></a>高级篇</h2></li>
-<li>gp 新开一个窗口(对当前标签页)</li>
-</ul>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工具/">工具</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/技术/">技术</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-vi的使用总结" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2016/09/21/vi的使用总结/" class="article-date">
-  	<time datetime="2016-09-21T14:15:36.000Z" itemprop="datePublished">2016-09-21</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2016/09/21/vi的使用总结/">vi的使用总结</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="初级篇"><a href="#初级篇" class="headerlink" title="初级篇"></a>初级篇</h1><h2 id="移动篇"><a href="#移动篇" class="headerlink" title="移动篇"></a>移动篇</h2><ul>
-<li>上 k</li>
-<li>下 j</li>
-<li>左 h</li>
-<li><p>右 l</p>
-</li>
-<li><p>至顶 gg</p>
-</li>
-<li>至尾部 Shift+g</li>
-<li><p>行跳转 行号+gg</p>
-</li>
-<li><p>行首 Shift+6 (^)</p>
-</li>
-<li><p>行尾 Shift+4 ($) </p>
-</li>
-<li><p>词组移动(词首) w </p>
-</li>
-<li>词组移动(词首) W </li>
-<li>词组移动(词尾) e </li>
-<li><p>词组移动(词尾) E </p>
-</li>
-<li><p>移动到查找的字母后 f</p>
-</li>
-<li>移动到查找的字母后 F</li>
-</ul>
-<h2 id="操作篇"><a href="#操作篇" class="headerlink" title="操作篇"></a>操作篇</h2><h3 id="增"><a href="#增" class="headerlink" title="增"></a>增</h3><ul>
-<li>在单词前插入 i</li>
-<li>在单词前插入 a</li>
-<li>在句首前插入 I</li>
-<li>在句尾插入 A</li>
-<li>在下一行插入 o</li>
-<li>在上一行插入 O<h3 id="删"><a href="#删" class="headerlink" title="删"></a>删</h3></li>
-<li>删除光标行内容 d</li>
-<li>删除光标至尾行内容 D</li>
-<li>删除当前行及n-1行数 数字dd<h3 id="改"><a href="#改" class="headerlink" title="改"></a>改</h3></li>
-<li>复制 yy</li>
-<li>粘贴 p</li>
-<li>替换插入 s</li>
-<li>替换整句插入 S</li>
-<li>替换单个字母 r</li>
-<li>接下来的子都要替换 R</li>
-<li>当前行替换第一个单词 :s/oldwords/newwords/</li>
-<li>替换当前行所有单词 :s/oldwords/newwords/g</li>
-<li>替换每一行的第一个单词 :%s/oldwords/newwords/</li>
-<li>替换每一行的单词 :%s/oldwords/newwords/g</li>
-</ul>
-<h3 id="查"><a href="#查" class="headerlink" title="查"></a>查</h3><ul>
-<li>向后查找 /</li>
-<li>向前查找 ?</li>
-</ul>
-<h2 id="选中篇"><a href="#选中篇" class="headerlink" title="选中篇"></a>选中篇</h2><ul>
-<li>左选择 v+h</li>
-<li>右选择 v+l</li>
-<li>上选择 v+k</li>
-<li><p>下选择 v+j</p>
-</li>
-<li><p>选择当前行V(shift+v) </p>
-</li>
-<li>选择向上行V+k(shift+v) </li>
-<li><p>选择向下行V+j(shift+v) </p>
-</li>
-<li><p>括号内的选择 v+i+) (不含括号)</p>
-</li>
-<li><p>括号内的选择 v+a+) (包含括号)</p>
-</li>
-<li><p>居中显示 zz </p>
-</li>
-<li>头部显示 zt </li>
-<li>尾巴显示 zb <h2 id="退出篇"><a href="#退出篇" class="headerlink" title="退出篇"></a>退出篇</h2></li>
-<li>不保存退出 :q </li>
-<li>保存退出 :wq </li>
-<li>保存 :w </li>
-<li>强制退出 :q! </li>
-<li>强制退出 ctrl+z </li>
-<li>恢复 fg<h2 id="文件切换篇"><a href="#文件切换篇" class="headerlink" title="文件切换篇"></a>文件切换篇</h2></li>
-<li>向右切换 tg</li>
-<li>向左切换 tG</li>
-</ul>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/编辑器/">编辑器</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/技术/">技术</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
+    <nav id="page-nav">
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+    </nav>
   
 </div>
       <footer id="footer">

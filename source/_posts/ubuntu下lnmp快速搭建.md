@@ -1,7 +1,9 @@
 ---
 title: ubuntu下lnmp快速搭建
 date: 2017-05-10 21:12:37
-tags: 技术
+tags: linux
+categories: 技术
+
 ---
 
 我所用的环境是ubuntu16.10，上篇博文是源码安装lnmp，但是大部分情况下没有这么多的精神和时间，这篇博文来介绍下利用apt-get这个工具来快速完成lnmp的搭建。

@@ -1,0 +1,289 @@
+---
+title: Codeception测试框架如何编写测试
+date: 2017-06-18 13:38:51
+tags: php
+categories: 技术
+
+---
+## 如何编写测试
+Yii2高级应用程序使用Codeception作为其主要测试框架。
+### 搭建测试环境
+为了运行测试用例，你需要安装 Codeception 。 一个较好的安装方式是：
+``` php
+composer global require "codeception/codeception=2.1.*"
+composer global require "codeception/specify=*"
+composer global require "codeception/verify=*"
+```
+创建测试目录
+```
+codecept bootstrap 
+```
+构建测试套件：
+``` php
+codecept build
+```
+如果测试需要在 Production 环境中执行， yii_test 和 yii_test.bat 必须从 environments/dev 文件夹手动复制到项目根目录。 测试需要一个 额外的数据库 ，这将在测试之间清除。 在mysql中创建数据库 yii2advanced_test （根据 common/config/test.php 中的配置）并执行：
+``` php
+./yii_test migrate
+```
+
+然后所有的样例测试可以通过运行如下代码：
+```
+codecept run
+```
+docker环境下运行搭建并运行测试：
+```
+docker exec -it health_web_1 ./vendor/bin/codecept boostrap
+docker exec -it health_web_1 ./vendor/bin/./yii_test migrate
+docker exec -it health_web_1 ./vendor/bin/codecept build
+docker exec -it health_web_1 ./vendor/bin/codecept run
+```
+测试套件描述：
+
+- unit ⇒ 单元测试,对程序模块(类中的方法)来进行正确性检验的测试工作（主要）。
+- api ⇒ api接口测试(主要)。
+- functional ⇒ 功能测试，应用程序内部请求/响应（无Web服务器）。
+- acceptance ⇒ 验收测试，web应用程序，用户界面和javascript交互。
+
+## 启动测试
+
+```
+ docker exec -it usercenter_web_1 bash
+``` 
+或者
+```
+ docker exec -it health_web_1 /bin/sh
+```
+```
+./vendor/bin/codecept run -c tests
+```
+-c 指定目录
+api测试需要启动一个web服务器
+```
+php -S localhost:80 --docroot api/tests &>/dev/null&
+```
+
+## 搭建测试环境
+目录结构
+
+```
+├── codeception
+│   ├── api  //api测试
+│   ├── api.suite.yml  //api测试配置
+│   ├── _bootstrap.php
+│   ├── _data
+│   │   └── dump.sql  //初始化sql
+│   ├── _output  //日志
+│   ├── _support                                                    
+│   ├── unit
+│   │   ├── _bootstrap.php   //依赖文件
+│   │   ├── models
+│   │   │   ├── ActivityConfigTest.php  //单元测试
+│   │   └── UnitTester.php
+│   └── unit.suite.yml  //单元测试配置文件
+├── codeception.yml
+├── _envs
+├── _output
+└── _support
+    └── _generated
+```
+
+在根目录运行codecept bootstrap 创建test目录和codeception.yml 文件
+### api测试详解
+API测试在功能测试级别完成，但是不是测试用户操作的HTML响应，而是通过REST或SOAP等协议来测试请求和响应。要开始写api测试，你应该为他们创建一个套件
+```
+./vendor/bin/codecept g:suite api
+```
+您将需要启用REST，Yii2模块tests/api.suite.yml：
+```
+class_name: ApiTester
+modules:
+    enabled:
+        - REST:
+            url: /api/v1
+            depends: Yii2
+        - \ApiBundle\Helper\Api
+    config:
+        - Yii2
+```
+Yii2模块操作amOnPage或see不应该可用于测试API。这就是为什么Yii2模块没有被启用，但被声明depends为REST模块。
+
+[继续执行REST API测试指南»](http://codeception.com/docs/10-WebServices#REST)
+### 单位测试详解
+单元测试位于tests/unit目录中，应包含所有类型的单元和集成测试。
+
+每个测试用例扩展Codeception\Test\Unit类，这是单元测试的标准Codeception格式。在Yii中开发完全隔离的单元测试是非常困难的，所以在每个测试用例之前应用程序是自举的。tests/unit.suite.yml使用Yii2模块启用测试配置文件：
+```
+modules:
+    enabled:
+      - Yii2:
+            part: [orm, email]
+```
+该模块启动测试用例的Yii应用程序，并提供其他帮助方法来简化测试。它只有orm和email零件，以排除需要的只是功能性的测试方法。
+
+通过访问测试用例中的$this->tester类可以使用Yii2模块的方法。因此，如果您已启用orm和电子邮件部件，以便您可以调用属于这些部分的方法：
+```
+<?php
+// insert records in database
+$this->tester->haveRecord('app/model/User', ['username' => 'davert']);
+// check records in database
+$this->tester->seeRecord('app/model/User', ['username' => 'davert']);
+// test email was sent
+$this->tester->seeEmailIsSent();
+// get a last sent emails
+$this->tester->grabLastSentEmail();
+```
+如果启用fixtures部件，您还将获得在测试中加载和使用灯具的方法：
+```
+<?php
+// load fixtures
+$this->tester->haveFixtures([
+    'user' => [
+        'class' => UserFixture::className(),
+        // fixture data located in tests/_data/user.php
+        'dataFile' => codecept_data_dir() . 'user.php'
+    ]
+]);
+// get first user from fixtures
+$this->tester->grabFixture('user', 0);
+```
+如果Yii2模块启用，您可以安全地调用Yii::$app测试内容，因为应用程序在测试后被初始化和清理。如果你想为你的测试用例添加你的帮助方法或者自定义的断言，你不应该扩展，Codeception\Test\Unit而是写出你自己的单独的Helper类。
+
+ 
+[继续进行单元测试指南»](http://codeception.com/docs/05-UnitTests)
+### 功能测试
+当测试Web应用程序的实际功能时，您不能仅使用单元测试。你想测试应用程序如何处理请求，它提供什么响应，什么数据保存到数据库等等。要在近用户环境中测试应用程序，但不启动真正的Web服务器或浏览器，您可以使用功能测试。它们的写法远比单元测试简单得多。他们在简单的DSL中描述交互场景，所以您不需要直接处理应用程序，而是从用户的角度描述动作：
+```
+<?php
+$I->amOnPage(['site/contact']);
+$I->submitForm('#contact-form', []);
+$I->expectTo('see validations errors');
+$I->see('Contact', 'h1');
+$I->see('Name cannot be blank');
+$I->see('Email cannot be blank');
+$I->see('Subject cannot be blank');
+$I->see('Body cannot be blank');
+```
+这样，您不仅可以在站点上测试ContactForm，而且还可以实际输出用户看到的应用程序。Codeception提供了一套标准的动作一样amOnPage，submitForm，see进行测试。Yii2模块提供了特殊的方法，如amLoggedInAs（快速认证）haveRecord，seeRecord，seeEmailIsSent和其他人。它们都列在模块引用中。
+
+功能测试应该写在Cest 文件中，这是一个场景驱动的Codeception测试格式。您可以通过运行以下方式轻松创建新测试：
+
+./vendor/bin/codecept g:cest functional MyNewScenarioCest
+ 功能测试非常强大而简单。强烈推荐使用任何Yii应用程序。
+
+[继续进行功能测试指南»](http://codeception.com/docs/04-FunctionalTests)
+
+### 验收测试
+从测试的角度来看，验收测试与功能测试相同。他们测试用户与应用程序的交互，但在这种情况下使用真正的浏览器和Web服务器。它们慢得多，脆弱得多。他们不应该在测试功能的问题上重复功能测试，而应该用于测试应用程序的UI。如果您不确定哪些测试应该被接受，哪些是功能性的，那么写入JavaScript丰富应用程序的接受测试，其中UI高度依赖于浏览器处理。您还可以使用快乐路径场景的验收测试，以确保使用真实浏览器的真实用户在功能测试中达到相同的结果。
+
+默认情况下，基本应用验收测试被禁用（因为它们需要Web服务器，Selenium服务器和浏览器才能运行）。您可以轻松地通过重命名使他们acceptance.suite.yml.example对acceptance.suite.yml
+```
+mv tests/acceptance.suite.yml.example tests/acceptance.suite.yml
+基本模板使用codeception/base不包含facebook/webdriver运行验收测试所需库的软件包。请更改codeception/base为codeception/codeceptionin composer.json并运行update命令。
+```
+那么您将需要在测试模式下启动应用服务器：
+```
+./tests/bin/yii serve
+```
+并启动Selenium Server或PhantomJS。对于接受使用WebDriver模块。请检查其参考资料，了解如何使用它。与Yii2模块不同，它对应用程序一无所知，因此，如果要使用Yii像夹具的功能进行验收测试，则应检查是否启用Yii2模块：
+```
+# config at tests/acceptance.yml
+modules:
+    enabled:
+        - WebDriver:
+            url: http://127.0.0.1:8080/
+            browser: firefox
+        - Yii2:
+            part: [orm, fixtures] # allow to use AR methods
+            cleanup: false # don't wrap test in transaction
+            entryScript: index-test.php
+```
+正如所说，功能和验收测试是相似的，所以为了避免与这些模块的冲突，你应该只加载你真正需要的Yii2模块的一部分。您还必须将cleanup: falseYii2更改设置为数据库，以便在Web服务器上运行的应用程序进行保存和使用。使用entryScript和entryUrl值可以更改应用程序的默认主机和脚本配置。
+
+与功能测试类似，建议使用Cest格式进行验收测试：
+```
+./vendor/bin/codecept g:cest acceptance MyNewScenarioCest
+```
+
+[继续验收测试指南»](http://codeception.com/docs/03-AcceptanceTests)
+
+
+### 手动设置&&配置
+要开始，您需要通过Composer安装Codeception
+```
+composer require "codeception/codeception" --dev
+```
+创建基本的测试套件
+```
+./vendor/bin/codecept bootstrap
+```
+启用模块Yii2进行功能测试functional.suite.yml：
+```
+# functional.suite.yml
+modules:
+    enabled:
+        - Yii2:
+            configFile: #insert path to config file
+```
+Yii2模块唯一必需的参数是configFile。该文件配置为Yii应用程序的测试配置。它应该合并原始应用程序配置覆盖id值，并提供不同的数据库进行测试：
+```
+<?php
+// config/test.php
+$config =  yii\helpers\ArrayHelper::merge(
+    require(__DIR__ . '/main.php'),
+    require(__DIR__ . '/main-local.php'),
+    [
+        'id' => 'app-tests',
+        'components' => [
+            'db' => [
+                'dsn' => 'mysql:host=localhost;dbname=yii_app_test',
+            ]
+        ]        
+    ]
+);
+return $config;
+```
+测试配置建议存储在应用程序的config文件夹中。您应该提供相对于codeception.yml文件测试配置的路径。
+
+还请确保YII_ENV常数设置为test，因为它是在做tests/_bootstrap.php的基本的和高级的应用程序模板文件。
+
+一旦配置功能测试，就可以轻松地创建单元和验收测试的设置，如本指南中所述。
+
+在基础和高级应用程序模板configFile中定义了全局配置文件：
+```
+# inside codeception.yml
+modules:
+    config:
+        Yii2:
+            configFile: 'config/test.php'
+```
+这样我们不需要为每个定义的套件提供测试配置。
+### 伪数据生成器
+安装
+```
+composer require fzaninotto/faker
+```
+使用Faker\Factory::create()创建和初始化一个摊贩发生器，可通过访问你想要的数据类型来命名的属性生成的数据。
+```
+<?php
+// require the Faker autoloader
+require_once '/path/to/Faker/src/autoload.php';
+// alternatively, use another PSR-0 compliant autoloader (like the Symfony2 ClassLoader for instance)
+
+// use the factory to create a Faker\Generator instance
+$faker = Faker\Factory::create();
+
+// generate data by accessing properties
+echo $faker->name;
+  // 'Lucy Cechtelar';
+echo $faker->address;
+  // "426 Jordy Lodge
+  // Cartwrightshire, SC 88120-6700"
+echo $faker->text;
+  // Dolores sit sint laboriosam dolorem culpa et autem. Beatae nam sunt fugit
+  // et sit et mollitia sed.
+  // Fuga deserunt tempora facere magni omnis. Omnis quia temporibus laudantium
+  // sit minima sint.
+```
+
+
