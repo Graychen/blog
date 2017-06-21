@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+  <title>解析php的内存管理 | Graychen的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="php的内存管理在PHP内核中，大多数情况下都不应该直接使用C语言中自带着malloc、free、strdup、realloc、calloc等操作内存的函数，而应使用内核提供的操作内存的函数，这样可以由内核整体统一的来管理内存。
+
+内存泄露每个平台操作内存的方式都是差不多的有两个方面，一负责申请，二负责释放。如果应用程序向系统申请内存，系统便会在内存中寻找还没有被使用的地方，如果有合适的，便分配给">
+<meta property="og:type" content="article">
+<meta property="og:title" content="解析php的内存管理">
+<meta property="og:url" content="http://graychen.git.io/2017/06/21/解析php的内存管理/index.html">
+<meta property="og:site_name" content="Graychen的博客">
+<meta property="og:description" content="php的内存管理在PHP内核中，大多数情况下都不应该直接使用C语言中自带着malloc、free、strdup、realloc、calloc等操作内存的函数，而应使用内核提供的操作内存的函数，这样可以由内核整体统一的来管理内存。
+
+内存泄露每个平台操作内存的方式都是差不多的有两个方面，一负责申请，二负责释放。如果应用程序向系统申请内存，系统便会在内存中寻找还没有被使用的地方，如果有合适的，便分配给">
+<meta property="og:image" content="http://graychen.git.io/assets/blogImg/zend_manage.jpg">
+<meta property="og:updated_time" content="2017-06-21T06:06:11.260Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="解析php的内存管理">
+<meta name="twitter:description" content="php的内存管理在PHP内核中，大多数情况下都不应该直接使用C语言中自带着malloc、free、strdup、realloc、calloc等操作内存的函数，而应使用内核提供的操作内存的函数，这样可以由内核整体统一的来管理内存。
+
+内存泄露每个平台操作内存的方式都是差不多的有两个方面，一负责申请，二负责释放。如果应用程序向系统申请内存，系统便会在内存中寻找还没有被使用的地方，如果有合适的，便分配给">
+<meta name="twitter:image" content="http://graychen.git.io/assets/blogImg/zend_manage.jpg">
+  
+    <link rel="alternative" href="/atom.xml" title="Graychen的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="//favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img src="/assets/blogImg/avatar.jpg" class="js-avatar" style="width: 100%;height: 100%;opacity: 1;">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">Graychen</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">这个世界需要更多的英雄</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>Menu</li>
+						<li>Tags</li>
+						
+						
+						<li>Über</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/categories/随笔">随笔</a></li>
+				        
+							<li><a href="/categories/技术">技术文章</a></li>
+				        
+							<li><a href="/categories/错误日志">错误日志</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
+					        
+								<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/编辑器/" style="font-size: 10px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">我是谁，我从哪里来，我到哪里去？我就是我，是颜色不一样的吃货…</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">Graychen</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				
+					<img src="/assets/blogImg/avatar.jpg" class="js-avatar" style="width: 100%;height: 100%;opacity: 1;">
+				
+			</div>
+			<hgroup>
+			  <h1 class="header-author">Graychen</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">这个世界需要更多的英雄</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/categories/随笔">随笔</a></li>
+		        
+					<li><a href="/categories/技术">技术文章</a></li>
+		        
+					<li><a href="/categories/错误日志">错误日志</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
+			        
+						<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-解析php的内存管理" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/06/21/解析php的内存管理/" class="article-date">
+  	<time datetime="2017-06-21T05:59:12.000Z" itemprop="datePublished">2017-06-21</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      解析php的内存管理
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/php-php扩展-c/">php php扩展 c</a></li></ul>
+	</div>
+
+        
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/技术/">技术</a>
+	</div>
+
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="php的内存管理"><a href="#php的内存管理" class="headerlink" title="php的内存管理"></a>php的内存管理</h2><p>在PHP内核中，大多数情况下都不应该直接使用C语言中自带着malloc、free、strdup、realloc、calloc等操作内存的函数，而应使用内核提供的操作内存的函数，这样可以由内核整体统一的来管理内存。</p>
+<blockquote>
+<p>内存泄露<br>每个平台操作内存的方式都是差不多的有两个方面，一负责申请，二负责释放。如果应用程序向系统申请内存，系统便会在内存中寻找还没有被使用的地方，如果有合适的，便分配给这个程序，并标记下来，不再给其它的程序了。如果一个内存块没有释放，而所有者应用程序也永远不再使用它了。<br>对于一些需要长时间运行的程序，比如像Apache这样的web服务器以及它的php模块来说，都是伴随着操作系统长时间运行的，所以OS在很长一段时间内不能主动的回收内存，从而导致这个程序的每一个内存泄漏都会促进量变到质变的进化，最终引起严重的内存泄漏错误，使系统的资源消耗殆尽。</p>
+</blockquote>
+<h2 id="Zend内存管理器"><a href="#Zend内存管理器" class="headerlink" title="Zend内存管理器"></a>Zend内存管理器</h2><p>使用Zend内存管理(Zend Memory Manager,简称ZendMM、ZMM)层。内核的这一部分非常类似于操作系统的内存管理功能——分配内存给调用程序。区别在于，它处于进程空间中非常低的位置而且是”请求感知”的；这样一来，当一个请求结束时，它能够执行与OS在一个进程终止时相同的行为。也就是说，它会隐式地释放所有的为该请求所占用的内存。图1展示了ZendMM与OS以及PHP进程之间的关系。<br><img src="/assets/blogImg/zend_manage.jpg" alt="&quot;我是傲娇的效果图&quot;"><br> 除了提供隐式的内存清除功能之外，ZendMM还能够根据php.ini中memory_limit设置来控制每一次内存请求行为，如果一个脚本试图请求比系统中可用内存更多的内存，或大于它每次应该请求的最大量，那么，ZendMM将自动地发出一个E_ERROR消息并且启动相应的终止进程。这种方法的一个额外优点在于，大多数内存分配调用的返回值并不需要检查，因为如果失败的话将会导致立即跳转到引擎的退出部分。<br> 所有内部分配的内存都要使用一组特定的可选函数实现。例如，PHP内核代码不是使用malloc(16)来分配一个16字节内存块而是使用了emalloc(16)。除了实现实际的内存分配任务外，ZendMM还会使用相应的绑定请求类型来标志该内存块；这样以来，当一个请求”跳出”时，ZendMM可以隐式地释放它。 有些时候，某次申请的内存需要在一个请求结束后仍然存活一段时间，也就是持续性存在于各个请求之间。这种类型的分配（因其在一次请求结束之后仍然存在而被称为”永久性分配”），可以使用传统型内存分配器来实现，因为这些分配并不会添加ZendMM使用的那些额外的相应于每种请求的信息。然而有时，我们必须在程序运行时根据某个数据的具体值或者状态才能确定是否需要进行永久性分配，因此ZendMM定义了一组帮助宏，其行为类似于其它的内存分配函数，但是使用最后一个额外参数来指示是否为永久性分配。 如果你确实想实现一个永久性分配，那么这个参数应该被设置为1；在这种情况下，请求是通过传统型malloc()分配器家族进行传递的。然而，如果运行时刻逻辑认为这个块不需要永久性分配；那么，这个参数可以被设置为零，并且调用将会被调整到针对每种请求的内存分配器函数。 例如，pemalloc(buffer_len，1)将映射到malloc(buffer_len)，而pemalloc(buffer_len，0)将被使用下列语句映射到emalloc(buffer_len)：<br> 所有这些在ZendMM中提供的内存管理函数都能够从下表中找到其在C语言中的函数。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">C语言原生函数</th>
+<th style="text-align:center">PHP内核封装后的函数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">void *malloc(size_t count);</td>
+<td style="text-align:center">void <em>emalloc(size_t count); void </em>pemalloc(size_t count, char persistent);</td>
+</tr>
+<tr>
+<td style="text-align:left">void *calloc(size_t count);</td>
+<td style="text-align:center">void <em>ecalloc(size_t count); void </em>pecalloc(size_t count, char persistent);</td>
+</tr>
+<tr>
+<td style="text-align:left">void <em>realloc(void </em>ptr, size_t count);</td>
+<td style="text-align:center">void <em>erealloc(void </em>ptr, size_t count); void <em>perealloc(void </em>ptr, size_t count, char persistent);</td>
+</tr>
+<tr>
+<td style="text-align:left">void <em>strdup(void </em>ptr);</td>
+<td style="text-align:center">void <em>estrdup(void </em>ptr); void <em>pestrdup(void </em>ptr, char persistent);</td>
+</tr>
+<tr>
+<td style="text-align:left">void free(void *ptr);</td>
+<td style="text-align:center">void efree(void <em>ptr); void pefree(void </em>ptr, char persistent);</td>
+</tr>
+</tbody>
+</table>
+<p>你可能会注意到，即使是pefree()函数也要求使用永久性标志。这是因为在调用pefree()时，它实际上并不知道是否ptr是一种永久性分配。需要注意的是，如果针对一个ZendMM申请的非永久性内存直接调用free()能够导致双倍的空间释放，而针对一种永久性分配调用efree()有可能会导致一个段错误，因为ZendMM需要去查找并不存在的管理信息。因此，你的代码需要记住它申请的内存是否是永久性的，从而选择不同的内存函数，free()或者efree()。 除了上述内存管理函数外，还存在其它一些非常方便的ZendMM函数，例如： <figure class="highlight plain"><figcaption><span>void *estrndup(void *ptr，int len);</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">该函数能够分配len+1个字节的内存并且从ptr处复制len个字节到最新分配的块。这个estrndup()函数的行为可以大致描述如下：</div><div class="line"></div><div class="line">```c</div><div class="line">ZEND_API char *_estrndup(const char *s, uint length ZEND_FILE_LINE_DC ZEND_FILE_LINE_ORIG_DC)</div><div class="line">&#123;</div><div class="line">        char *p;</div><div class="line"></div><div class="line">        p = (char *) _emalloc(length+1 ZEND_FILE_LINE_RELAY_CC ZEND_FILE_LINE_ORIG_RELAY_CC);</div><div class="line">            if (UNEXPECTED(p == NULL))</div><div class="line">            &#123;</div><div class="line">                        return p;</div><div class="line">                            </div><div class="line">            &#125;</div><div class="line">        memcpy(p, s, length);</div><div class="line">        p[length] = 0;</div><div class="line">        return p;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>在此，被隐式放置在缓冲区最后的0可以确保任何使用estrndup()实现字符串复制操作的函数都不需要担心会把结果缓冲区传递给一个例如printf()这样的希望以为NULL为结束符的函数。当使用estrndup()来复制非字符串数据时，最后一个字节实质上浪费了，但其中的利明显大于弊。<br>void <em>safe_emalloc(size_t size, size_t count, size_t addtl);<br>void </em>safe_pemalloc(size_t size, size_t count, size_t addtl, char persistent);<br>这些函数分配的内存空间最终大小都是((size*count)+addtl)。 你可以会问：”为什么还要提供额外函数呢？为什么不使用一个emalloc/pemalloc呢？”。 原因很简单：为了安全，以防万一。尽管有时候可能性相当小，但是，正是这一”可能性相当小”的结果导致宿主平台的内存溢出。 这可能会导致分配负数个数的字节空间，或更有甚者，会导致分配一个小于调用程序要求大小的字节空间。 而safe_emalloc()能够避免这种类型的陷井-通过检查整数溢出并且在发生这样的溢出时显式地预以结束。</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2017/06/20/探索php中的变量zval结构体二/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">探索php中的变量zval结构体二</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="解析php的内存管理" data-title="解析php的内存管理" data-url="http://graychen.git.io/2017/06/21/解析php的内存管理/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"true"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2017 Graychen
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: undefined,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: undefined,
+		root: /
+	}
+</script>
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  </div>
+</body>
+</html>

@@ -270,6 +270,28 @@ Array型变量的值其实是存储在C语言实现的HashTable中的， 我们�
 #define Z_RESVAL_P(zval_p)      Z_RESVAL(*zval_p)
 #define Z_RESVAL_PP(zval_pp)        Z_RESVAL(**zval_pp)
 ```     
+## php的类型转换
+php内核中提供了好多函数专门来帮我们实现类型转换的功能，你需要的只是调用一个函数而已。这一类函数有一个统一的形式：convert_to_*()
+``` c
+//将任意类型的zval转换成字符串
+void change_zval_to_string(zval *value)
+{
+        convert_to_string(value);
+}
+
+//其它基本的类型转换函数
+ZEND_API void convert_to_long(zval *op);
+ZEND_API void convert_to_double(zval *op);
+ZEND_API void convert_to_null(zval *op);
+ZEND_API void convert_to_boolean(zval *op);
+ZEND_API void convert_to_array(zval *op);
+ZEND_API void convert_to_object(zval *op);
+
+ZEND_API void _convert_to_string(zval *op ZEND_FILE_LINE_DC);
+#define convert_to_string(op) if ((op)->type != IS_STRING) { _convert_to_string((op) ZEND_FILE_LINE_CC);  }
+```
+这里面有两个比较特殊，一个就是convert_to_string其实是一个宏函数，调用的另外一个函数；第二个便是没有convert_to_resource()的转换函数，因为资源的值在用户层面上，根本就没有意义，内核不会对它的值(不是指那个数字)进行转换。
+注意，并不是所有的内存分配例程都有一个相应的p*对等实现。例如，不存在pestrndup()，并且在PHP 5.1版本前也不存在safe_pemalloc()。
 
 
 
