@@ -93,6 +93,9 @@ IO复用异步非阻塞程序使用经典的Reactor模型，Reactor顾名思义�
  协程是什么
  协程从底层技术角度看实际上还是异步IO Reactor模型，应用层自行实现了任务调度，借助Reactor切换各个当前执行的用户态线程，但用户代码中完全感知不到Reactor的存在
 
+ 参考文章:
+-------------------
+[PHP并发IO编程之路](http://rango.swoole.com/archives/508)
 
 
 
