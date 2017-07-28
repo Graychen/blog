@@ -72,7 +72,7 @@
 						<li>Tags</li>
 						
 						
-						<li>About</li>
+						<li>Über</li>
 						
 					</ul>
 				</div>
@@ -238,6 +238,231 @@
       
 	<div class="article-tag tagcloud">
 		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/编辑器/">编辑器</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/技术/">技术</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-docker中使用supervisor" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/07/25/docker中使用supervisor/" class="article-date">
+  	<time datetime="2017-07-25T15:04:46.000Z" itemprop="datePublished">2017-07-25</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/25/docker中使用supervisor/">docker中使用supervisor管理队列</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Supervisor<a href="http://supervisord.org" target="_blank" rel="external">链接</a> 是一个用 Python 写的进程管理工具，可以很方便的用来启动、重启、关闭进程（不仅仅是 Python 进程）。除了对单个进程的控制，还可以同时启动、关闭多个进程，比如很不幸的服务器出问题导致所有应用程序都被杀死，此时可以用 supervisor 同时启动所有应用程序而不是一个一个地敲命令启动。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>Supervisor 可以运行在 Linux、Mac OS X 上。如前所述，supervisor 是 Python 编写的，所以安装起来也很方便，可以直接用 pip : sudo pip install supervisor<br> 如果是 Ubuntu 系统，还可以使用 apt-get install supervisor 安装,由于我们的容器是alpine系统,所以可以在Dockerfile里添加<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">RUN apk add supervisor</div></pre></td></tr></table></figure></p>
+<p>这样容器就可以安装superviosr</p>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>然后在docker的服务目录services里创建supervisor目录，创建supervisor.conf文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">[supervisord]</div><div class="line">nodaemon=true</div><div class="line">[program:mqtt-server]</div><div class="line">directory = /var/www/html ;</div><div class="line">command = php yii queue/listen</div><div class="line">autostart = true</div><div class="line">startsecs = 5</div><div class="line">autorestart = true</div><div class="line">startretries = 10</div><div class="line">redirect_stderr=true</div><div class="line">stdout_logfile = /var/www/html/yii-queue-worker.log</div></pre></td></tr></table></figure>
+<p>然后在Dockerfile-web-volumes里面添加</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">- ./services/supervisor:/etc/supervisor/conf.d</div></pre></td></tr></table></figure>
+<p>以此将本地的配置文件映射到docker容器里面的supervisor的默认配置文件</p>
+<h2 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h2><blockquote>
+<p>本来我的想法是在Dockerfile里面直接添加<code>ENTRYPOINT [&#39;/usr/bin/supervisord&#39;,&#39;-c&#39;,&#39;/etc/supervisor/conf.d&#39;]</code>,想在docker build的时候直接启动supervisor管理队列，但是我的队列是其余redis的，运行到这一步的时候redis的docker还没有启动，导致我的页面一直502，虽然supervisor启动了，但是队列的redis驱动还没有启动，所以选择了折中的方法。<code>注意，如果队列基于其它driver的可以这样直接运行的</code></p>
+</blockquote>
+<p>折中的方案是在.gitlab-ci.yml文件中的<strong>testing-server:</strong>-&gt; <strong>script:</strong>和<strong>staging-server:</strong>-&gt;<strong>script:</strong>下分别添加<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">- ssh root@$DEPLOY_SERVER &quot;docker exec -i $CI_PROJECT_NAME /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf &amp;&gt;/dev/null&amp;&quot;</div></pre></td></tr></table></figure></p>
+<p>这样的方式是在部署的时候在启动supervisord,想当于在docker启动后在启动supervisord这个软件，这样就可以实现监听队列了<br>然后将docker-compose.yml和目录supervisor复制到deploy目录里的production,staging,testing三个目录里面</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/php/">php</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/技术/">技术</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-php的并发io" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/06/25/php的并发io/" class="article-date">
+  	<time datetime="2017-06-25T15:04:46.000Z" itemprop="datePublished">2017-06-25</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/06/25/php的并发io/">php的并发io</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>计算领域一直是分为计算密集和IO密集型，web程序一直是io密集型，从最早的同步阻塞直接Fork进程，到Worker进程池，到现在的异步IO协程，io一直是服务器的难点，下面文章，将详细解析php的并发io问题。</p>
+<h2 id="多进程-多线程同步阻塞"><a href="#多进程-多线程同步阻塞" class="headerlink" title="多进程/多线程同步阻塞"></a>多进程/多线程同步阻塞</h2><p>最早的服务器端都是通过多进程来解决IO的问题,通过Accept一个客户端连接就创建一个进程，然后子进程进入循环同步阻塞与客户端进行交互，收发数据。<br> <img src="/assets/blogImg/manyporcess.png" alt="&quot;我是傲娇的效果图&quot;"><br>因为线程之间是共享内存堆栈,所以不同的线程之间进行交互比较容易实现。比如聊天室这样的程序，客户端连接之间可以交互，比聊天室中的玩家可以任意的其他人发消息。用多线程模式实现非常简单，线程中可以直接向某一个客户端连接发送数据。而多进程模式就要用到管道、消息队列、共享内存，统称进程间通信（IPC）复杂的技术才能实现。<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">$serv = stream_socket_server(<span class="string">"tcp://0.0.0.0.8000"</span>,$errno,$errstr) <span class="keyword">or</span> <span class="keyword">die</span>(<span class="string">"create server failed"</span>);</div><div class="line"><span class="keyword">while</span>(<span class="number">1</span>) &#123;</div><div class="line">        $conn = stream_socket_accept($serv);</div><div class="line">        <span class="keyword">if</span>(pcntl_fork() ==<span class="number">0</span>) &#123;</div><div class="line">                $request = fread($conn);</div><div class="line">                fwite($repose);</div><div class="line">                fclose($conn);</div><div class="line">                <span class="keyword">exit</span>(<span class="number">0</span>);</div><div class="line">        &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h2 id="多进程-线程模型的流程"><a href="#多进程-线程模型的流程" class="headerlink" title="多进程/线程模型的流程"></a>多进程/线程模型的流程</h2><p>1创建一个 socket，绑定服务器端口（bind），监听端口（listen），在PHP中用stream_socket_server一个函数就能完成上面3个步骤，当然也可以使用更底层的sockets扩展分别实现<br>2进入while循环，阻塞在accept操作上，等待客户端连接进入。此时程序会进入随眠状态，直到有新的客户端发起connect到服务器，操作系统会唤醒此进程。accept函数返回客户端连接的socket<br>3主进程在多进程模型下通过fork（php: pcntl_fork）创建子进程，多线程模型下使用pthread_create（php: new Thread）创建子线程。下文如无特殊声明将使用进程同时表示进程/线程。<br>4子进程创建成功后进入while循环，阻塞在recv（php: fread）调用上，等待客户端向服务器发送数据。收到数据后服务器程序进行处理然后使用send（php: fwrite）向客户端发送响应。长连接的服务会持续与客户端交互，而短连接服务一般收到响应就会close。<br>5当客户端连接关闭时，子进程退出并销毁所有资源。主进程会回收掉此子进程。<br><strong>这种模式最大的问题是，进程/线程创建和销毁的开销很大。所以上面的模式没办法应用于非常繁忙的服务器程序。对应的改进版解决了此问题，这就是经典的Leader-Follower模型。</strong><br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="meta">&lt;?php</span></div><div class="line">$serv = stream_socket_server(<span class="string">"tcp://0.0.0.0:8000"</span>,$error,$errstr) <span class="keyword">or</span> <span class="keyword">die</span>(<span class="string">"create server failed"</span>);</div><div class="line"><span class="keyword">for</span>($i=<span class="number">0</span>; $i&lt; <span class="number">32</span>;$i++)&#123;</div><div class="line">        <span class="keyword">if</span> (pcntl_fork() == <span class="number">0</span> )&#123;</div><div class="line">                <span class="keyword">while</span>(<span class="number">1</span>) &#123;</div><div class="line">                        $conn = stream_socket_accept($serv);</div><div class="line">                        <span class="keyword">if</span>($conn == <span class="keyword">false</span>) <span class="keyword">continue</span>;</div><div class="line">                        $request = fread($conn);</div><div class="line">                        fwrite($reponse);</div><div class="line">                        fclose($conn);</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">exit</span>(<span class="number">0</span>);</div><div class="line">        &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>他的特点是程序启动后就会创建N个进程。每个子进程就会进入Accept,等待新的连接进入。当客户端连接到服务器时，其中一个子进程就会被唤醒，开始处理客户端请求，并且不再接受新的TCP连接。当连接关闭，子进程才会释放，重新进入Accept,参与处理新的连接。<br>优点:复用进程，没有额外消耗，性能好。应用案例：Apache.PHP-FPM<br>缺点：严重依赖初始创建的进程数，操作系统可以创建的进程数有限。进程带来额外的进程调度，如果启动数千甚至数万个进程，消耗就会直线上升。调度消耗可能占到CPU的百分之几十甚至100%。<br>还有一种场景也是多进程模型的软肋。通常Web服务器启动100个进程，如果一个请求消耗100ms，100个进程可以提供1000qps，这样的处理能力还是不错的。但是如果请求内要调用外网Http接口，像QQ、微博登录，耗时会很长，一个请求需要10s。那一个进程1秒只能处理0.1个请求，100个进程只能达到10qps，这样的处理能力就太差了。</p>
+<p>有没有一种技术可以在一个进程内处理所有并发IO呢？答案是有，这就是IO复用技术。</p>
+<h2 id="IO复用-事件循环-异步非阻塞"><a href="#IO复用-事件循环-异步非阻塞" class="headerlink" title="IO复用/事件循环/异步非阻塞"></a>IO复用/事件循环/异步非阻塞</h2><p>其实IO复用的历史和多进程一样长，Linux很早就提供了select系统调用，可以在一个进程内维持1024个连接。后来又加入了poll系统调用，poll做了一些改进，解决了1024限制的问题，可以维持任意数量的连接。但select/poll还有一个问题就是，它需要循环检测连接是否有事件。这样问题就来了，如果服务器有100万个连接，在某一时间只有一个连接向服务器发送了数据，select/poll需要做循环100万次，其中只有1次是命中的，剩下的99万9999次都是无效的，白白浪费了CPU资源。<br>直到Linux 2.6内核提供了新的epoll系统调用，可以维持无限数量的连接，而且无需轮询，这才真正解决了C10K问题。现在各种高并发异步IO的服务器程序都是基于epoll实现的，比如Nginx、Node.js、Erlang、Golang。像Node.js这样单进程单线程的程序，都可以维持超过1百万TCP连接，全部归功于epoll技术。<br>IO复用异步非阻塞程序使用经典的Reactor模型，Reactor顾名思义就是反应堆的意思，它本身不处理任何数据收发。只是可以监视一个socket句柄的事件变化。<br> <img src="/assets/blogImg/reactor.png" alt="&quot;我是傲娇的效果图&quot;"><br> Reactor有4个核心的操作：<br> add添加socket监听到reactor，可以是listen socket也可以使客户端socket，也可以是管道、eventfd、信号等<br> set修改事件监听，可以设置监听的类型，如可读、可写。可读很好理解，对于listen socket就是有新客户端连接到来了需要accept。对于客户端连接就是收到数据，需要recv。可写事件比较难理解一些。一个SOCKET是有缓存区的，如果要向客户端连接发送2M的数据，一次性是发不出去的，操作系统默认TCP缓存区只有256K。一次性只能发256K，缓存区满了之后send就会返回EAGAIN错误。这时候就要监听可写事件，在纯异步的编程中，必须去监听可写才能保证send操作是完全非阻塞的。<br> del从reactor中移除，不再监听事件<br> callback就是事件发生后对应的处理逻辑，一般在add/set时制定。C语言用函数指针实现，JS可以用匿名函数，PHP可以用匿名函数、对象方法数组、字符串函数名。<br> Reactor只是一个事件发生器，实际对socket句柄的操作，如connect/accept、send/recv、close是在callback中完成的。具体编码可参考下面的伪代码：<br> <figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"> <span class="meta">&lt;?php</span></div><div class="line"> $reactor=<span class="keyword">new</span> Reactor();</div><div class="line"> $svr_sock=stream_socket_server(<span class="string">'tcp://127.0.0.1:9501'</span>);</div><div class="line"> $reactor-&gt;add($svr_sock,EV_READ,<span class="function"><span class="keyword">function</span><span class="params">()</span> <span class="title">use</span> <span class="params">($svr_sock,$reactor)</span></span>&#123;</div><div class="line">         $cli_sock = stream_socket_accept($svr_sock);</div><div class="line">         $reactor-&gt;add($cli_sock,EV_READ,<span class="function"><span class="keyword">function</span><span class="params">()</span> <span class="title">use</span> <span class="params">($cli_sock,$reactor)</span></span>&#123;</div><div class="line">                 $request = fread($cli_sock,<span class="number">8192</span>);</div><div class="line">                 $reactor-&gt;add($cli_sock,EV_WRITE,<span class="function"><span class="keyword">function</span><span class="params">()</span> <span class="title">use</span> <span class="params">($cli_sock,$request,$reactor)</span></span>&#123;</div><div class="line">                         fwrite($cli_sock,<span class="string">"hello world\n"</span>);</div><div class="line">                         $reactor-&gt;del($cli_sock);</div><div class="line">                         fclose($cli_sock);</div><div class="line">                 &#125;);</div><div class="line">         &#125;);</div><div class="line">&#125;);</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>Reactor模型还可以与多进程、多线程结合起来用，既实现异步非阻塞IO，又利用到多核。目前流行的异步服务器程序都是这样的方式：如<br> Nginx：多进程Reactor<br> Nginx+Lua：多进程Reactor+协程<br> Golang：单线程Reactor+多线程协程<br> Swoole：多线程Reactor+多进程Worker</p>
+</blockquote>
+<p> 协程是什么<br> 协程从底层技术角度看实际上还是异步IO Reactor模型，应用层自行实现了任务调度，借助Reactor切换各个当前执行的用户态线程，但用户代码中完全感知不到Reactor的存在</p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title=" 参考文章:"></a> 参考文章:</h2><p><a href="http://rango.swoole.com/archives/508" target="_blank" rel="external">PHP并发IO编程之路</a></p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/php/">php</a></li></ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/技术/">技术</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
+  
+    <article id="post-压力测试，压力山大" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/06/21/压力测试，压力山大/" class="article-date">
+  	<time datetime="2017-06-21T12:09:31.000Z" itemprop="datePublished">2017-06-21</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/06/21/压力测试，压力山大/">压力测试，压力山大</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>压力测试的基本概念</p>
+<h3 id="吞吐率（Requests-per-second）"><a href="#吞吐率（Requests-per-second）" class="headerlink" title="吞吐率（Requests per second）"></a>吞吐率（Requests per second）</h3><p>概念：服务器并发处理能力的量化描述，单位是reqs/s，指的是某个并发用户数下单位时间内处理的请求数。某个并发用户数下单位时间内能处理的最大请求数，称之为最大吞吐率。<br>计算公式：总请求数 / 处理完成这些请求数所花费的时间，即<br>Request per second = Complete requests / Time taken for tests</p>
+<h3 id="并发连接数（The-number-of-concurrent-connections）"><a href="#并发连接数（The-number-of-concurrent-connections）" class="headerlink" title="并发连接数（The number of concurrent connections）"></a>并发连接数（The number of concurrent connections）</h3><p>概念：某个时刻服务器所接受的请求数目，简单的讲，就是一个会话。</p>
+<h3 id="并发用户数（The-number-of-concurrent-users，Concurrency-Level）"><a href="#并发用户数（The-number-of-concurrent-users，Concurrency-Level）" class="headerlink" title="并发用户数（The number of concurrent users，Concurrency Level）"></a>并发用户数（The number of concurrent users，Concurrency Level）</h3><p>概念：要注意区分这个概念和并发连接数之间的区别，一个用户可能同时会产生多个会话，也即连接数。</p>
+<h3 id="用户平均请求等待时间（Time-per-request）"><a href="#用户平均请求等待时间（Time-per-request）" class="headerlink" title="用户平均请求等待时间（Time per request）"></a>用户平均请求等待时间（Time per request）</h3><p>计算公式：处理完成所有请求数所花费的时间/ （总请求数 / 并发用户数），即<br>Time per request = Time taken for tests /（ Complete requests / Concurrency Level）</p>
+<h3 id="服务器平均请求等待时间（Time-per-request-across-all-concurrent-requests）"><a href="#服务器平均请求等待时间（Time-per-request-across-all-concurrent-requests）" class="headerlink" title="服务器平均请求等待时间（Time per request: across all concurrent requests）"></a>服务器平均请求等待时间（Time per request: across all concurrent requests）</h3><p>计算公式：处理完成所有请求数所花费的时间 / 总请求数，即<br>Time taken for / testsComplete requests<br>可以看到，它是吞吐率的倒数。<br>同时，它也=用户平均请求等待时间/并发用户数，即<br>Time per request / Concurrency Level</p>
+<h3 id="压力测试工具"><a href="#压力测试工具" class="headerlink" title="压力测试工具"></a>压力测试工具</h3><h2 id="ab"><a href="#ab" class="headerlink" title="ab"></a>ab</h2><p>ab工具简介<br>ab全称为：apache bench<br>在官网上的解释如下：<br>ab是Apache超文本传输协议(HTTP)的性能测试工具。其设计意图是描绘当前所安装的Apache的执行性能，主要是显示你安装的Apache每秒可以处理多少个请求。<br>开始测试:<br>输入命令<br><code>ab -n 100 -c 10 https://www.baidu.com/</code></p>
+<blockquote>
+<p>其中－n表示请求数，－c表示并发数</p>
+</blockquote>
+<p>测试结果分析<br>上面的命令运行完毕后就出来测试报告了<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">graychen@graychen-VPCEG27YC:/blog$ ab -n 100 -c 10 https://www.baidu.com/</div><div class="line">This is ApacheBench, Version 2.3 &lt;<span class="variable">$Revision</span>: 1706008 $&gt;</div><div class="line">Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/</div><div class="line">Licensed to The Apache Software Foundation, http://www.apache.org/</div><div class="line"></div><div class="line">Benchmarking www.baidu.com (be patient).....done</div><div class="line"></div><div class="line"></div><div class="line">Server Software:        bfe/1.0.8.18</div><div class="line">Server Hostname:        www.baidu.com</div><div class="line">Server Port:            443</div><div class="line">SSL/TLS Protocol:       TLSv1.2,ECDHE-RSA-AES128-GCM-SHA256,2048,128</div><div class="line"></div><div class="line">Document Path:          /</div><div class="line">Document Length:        227 bytes</div><div class="line"></div><div class="line">Concurrency Level:      10</div><div class="line">Time taken <span class="keyword">for</span> tests:   1.765 seconds</div><div class="line">Complete requests:      100</div><div class="line">Failed requests:        0</div><div class="line">Total transferred:      103255 bytes</div><div class="line">HTML transferred:       22700 bytes</div><div class="line">Requests per second:    56.65 [<span class="comment">#/sec] (mean)</span></div><div class="line">Time per request:       176.522 [ms] (mean)</div><div class="line">Time per request:       17.652 [ms] (mean, across all concurrent requests)</div><div class="line">Transfer rate:          57.12 [Kbytes/sec] received</div><div class="line"></div><div class="line">Connection Times (ms)</div><div class="line">min  mean[+/-sd] median   max</div><div class="line">Connect:      104  126  12.3    125     162</div><div class="line">Processing:    32   39   5.7     38      68</div><div class="line">Waiting:       32   38   5.0     37      60</div><div class="line">Total:        138  165  14.1    164     220</div><div class="line"></div><div class="line">Percentage of the requests served within a certain time (ms)</div><div class="line">        50%    164</div><div class="line">        66%    170</div><div class="line">        75%    173</div><div class="line">        80%    177</div><div class="line">        90%    184</div></pre></td></tr></table></figure></p>
+<p>这段展示的是web服务器的信息，可以看到服务器采用的是bfe/1.0.8.18,这是类似与nginx的软件，域名是www.baidu.com，端口是80<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Server Software:        bfe/1.0.8.18</div><div class="line">Server Hostname:        www.baidu.com</div><div class="line">Server Port:            443</div><div class="line">SSL/TLS Protocol:       TLSv1.2,ECDHE-RSA-AES128-GCM-SHA256,2048,128</div></pre></td></tr></table></figure></p>
+<p>这段是关于请求的文档的相关信息，所在位置“/”，文档的大小为 227bytes（此为http响应的正文长度）<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">Document Path:          /</div><div class="line">Document Length:        227 bytes</div><div class="line">这段展示了压力测试的几个重要指标</div><div class="line">Concurrency Level:      10</div><div class="line">Time taken <span class="keyword">for</span> tests:   1.765 seconds</div><div class="line">Complete requests:      100</div><div class="line">Failed requests:        0</div><div class="line">Total transferred:      103255 bytes</div><div class="line">HTML transferred:       22700 bytes</div><div class="line">Requests per second:    56.65 [<span class="comment">#/sec] (mean)</span></div><div class="line">Time per request:       176.522 [ms] (mean)</div><div class="line">Time per request:       17.652 [ms] (mean, across all concurrent requests)</div><div class="line">Transfer rate:          57.12 [Kbytes/sec] received</div></pre></td></tr></table></figure></p>
+<p><code>Concurrency Level: 10</code><br>//并发请求数<br><code>Time taken for tests: 1.765 seconds</code><br>//整个测试持续的时间<br><code>Complete requests: 100</code><br>//完成的请求数<br><code>Failed requests: 0</code><br>//失败的请求数</p>
+<p><code>Total transferred:      103255 bytes</code><br>//整个场景中的网络传输量<br><code>HTML transferred:       22700 bytes</code><br>//整个场景中的HTML内容传输量<br><strong>//吞吐率，大家最关心的指标之一，相当于 LR 中的每秒事务数，后面括号中的 mean 表示这是一个平均值</strong><br><code>Time per request:       176.522 [ms] (mean)</code><br><strong>//用户平均请求等待时间，大家最关心的指标之二，相当于 LR 中的平均事务响应时间，后面括号中的 mean 表示这是一个平均值</strong><br><code>Time per request:       17.652 [ms] (mean, across all concurrent requests)</code><br><strong>//服务器平均请求处理时间，大家最关心的指标之三</strong></p>
+<p><code>Transfer rate:          57.12 [Kbytes/sec] received</code><br>//平均每秒网络上的流量，可以帮助排除是否存在网络流量过大导致响应时间延长的问题</p>
+<p>这段表示网络上消耗的时间的分解<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Connection Times (ms)</div><div class="line">min  mean[+/-sd] median   max</div><div class="line">Connect:      104  126  12.3    125     162</div><div class="line">Processing:    32   39   5.7     38      68</div><div class="line">Waiting:       32   38   5.0     37      60</div><div class="line">Total:        138  165  14.1    164     220</div></pre></td></tr></table></figure></p>
+<p>这段是每个请求处理时间的分布情况，50%的处理时间在4930ms内，66%的处理时间在5008ms内…，重要的是看90%的处理时间。<br><figure class="highlight zsh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">Percentage of the requests served within a certain time (ms)</div><div class="line">        50%    164</div><div class="line">        66%    170</div><div class="line">        75%    173</div><div class="line">        80%    177</div><div class="line">        90%    184</div></pre></td></tr></table></figure></p>
+<h2 id="登陆的测试"><a href="#登陆的测试" class="headerlink" title="登陆的测试"></a>登陆的测试</h2><p>有时候进行压力测试需要用户登录，怎么办？<br>请参考以下步骤：</p>
+<p>先用账户和密码登录后，用开发者工具找到标识这个会话的Cookie值（Session ID）记下来<br>如果只用到一个Cookie，那么只需键入命令：<br>ab －n 100 －C key＝value <a href="http://test.com/" target="_blank" rel="external">http://test.com/</a></p>
+<p>如果需要多个Cookie，就直接设Header：<br>ab -n 100 -H “Cookie: Key1=Value1; Key2=Value2” <a href="http://test.com/" target="_blank" rel="external">http://test.com/</a></p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/php-php扩展-c/">php php扩展 c</a></li></ul>
 	</div>
 
       
@@ -808,295 +1033,6 @@
       
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/categories/错误日志/">错误日志</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-ubuntu下lnmp快速搭建" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2017/05/10/ubuntu下lnmp快速搭建/" class="article-date">
-  	<time datetime="2017-05-10T13:12:37.000Z" itemprop="datePublished">2017-05-10</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/05/10/ubuntu下lnmp快速搭建/">ubuntu下lnmp快速搭建</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>我所用的环境是ubuntu16.10，上篇博文是源码安装lnmp，但是大部分情况下没有这么多的精神和时间，这篇博文来介绍下利用apt-get这个工具来快速完成lnmp的搭建。</p>
-<blockquote>
-<p>下面的lnmp包括php7.1,mysql5.7,nginx1.2.8</p>
-</blockquote>
-<h2 id="安装php7-1"><a href="#安装php7-1" class="headerlink" title="安装php7.1"></a>安装php7.1</h2><p>安装 Php7.1 之前，要先安装language-pack-en-base这个包，运行：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo apt-get update  </div><div class="line">sudo apt-get install -y language-pack-en-base</div></pre></td></tr></table></figure>
-<p>这个包是为了解决系统不同语言之间可能发生的冲突，安装之后可以减少许多因语言编码带来的问题。其中-y参数表明直接安装，无需确认。</p>
-<p>安装完成之后，运行：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">locale-gen en_US.UTF-8</div></pre></td></tr></table></figure>
-<p>设定语言编码为<font color="red">UTF-8</font>。</p>
-<p>进入正题，安装Php7.1，本教程采用ppa方式安装php7.1，运行：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install software-properties-common</div></pre></td></tr></table></figure>
-<p>software-properties-common是add-apt-repository所依赖的包，安装成功后，运行：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo LC_ALL=en_US.UTF-8 add-apt-repository ppa:ondrej/php</div></pre></td></tr></table></figure>
-<p>安装完成之后，运行<font color="red"><strong>sudo apt-get update</strong></font>更新安装包，把刚才添加的包拉取下来。 运行<strong><font color="red">apt-cache search php7.1</font></strong>搜索php7.1开头的包检验是否安装成功，输出如下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">root@demo:~<span class="comment"># apt-cache search php7.1  </span></div><div class="line">php-yaml - YAML-1.1 parser and emitter <span class="keyword">for</span> PHP  </div><div class="line">php-apcu - APC User Cache <span class="keyword">for</span> PHP  </div><div class="line">php-ssh2 - Bindings <span class="keyword">for</span> the libssh2 library  </div><div class="line">php-igbinary - igbinary PHP serializer  </div><div class="line">php-mailparse - Email message manipulation <span class="keyword">for</span> PHP  </div><div class="line">php-libsodium - PHP wrapper <span class="keyword">for</span> the Sodium cryptographic library  </div><div class="line">php-propro - propro module <span class="keyword">for</span> PHP</div><div class="line"></div><div class="line">...</div><div class="line">...</div><div class="line">...</div></pre></td></tr></table></figure>
-<p>安装php7.1</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get -y install php7.1</div></pre></td></tr></table></figure>
-<p>安装完成后运行<strong><font color="red">php -v</font></strong>查看是否安装成功,成功的话显示</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">PHP 7.1.0beta2 (cli) ( NTS  )  </div><div class="line">Copyright (c) 1997-2016 The PHP Group  </div><div class="line">Zend Engine v3.1.0-dev, Copyright (c) 1998-2016 Zend Technologies  </div><div class="line">    with Zend OPcache v7.1.0beta2, Copyright (c) 1999-2016, by Zend Technologies</div></pre></td></tr></table></figure>
-<p>接着安装php7.1-mysql，这是php和mysql通信的模块</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get -y install php7.1-mysql</div></pre></td></tr></table></figure>
-<p>安装 fpm，这是Nginx 用来解析php文件的：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install php7.1-fpm</div></pre></td></tr></table></figure>
-<p>安装其他必备模块：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">apt-get install php7.1-curl php7.1-xml php7.1-mcrypt php7.1-json php7.1-gd php7.1-mbstring</div></pre></td></tr></table></figure>
-<p>至此与php相关的模块安装安装完成。</p>
-<h2 id="安装Mysql"><a href="#安装Mysql" class="headerlink" title="安装Mysql"></a>安装Mysql</h2><p>直接安装Mysql5.7吧，5.7 可以说是里程碑式的版本，提高了性能，并增加了很多新的特性。特别是新增加的json字段，用过之后你会爱上她的！！</p>
-<blockquote>
-<p>MySQL 开发团队于 9.12 日宣布 MySQL 8.0.0 开发里程碑版本（DMR）发布！但是目前 8.0.0 还是开发版本，如果你希望体验和测试最新特性，可以从 <a href="http://dev.mysql.com/downloads/mysql/" target="_blank" rel="external">http://dev.mysql.com/downloads/mysql/</a> 下载各个平台的安装包。不过，MySQL 软件包是越来越大了，Linux 平台上的二进制打包后就将近有 1 GB。如果在产品环境中使用，在 8.0 没有进入稳定版本之前，请继续使用 5.7 系列，当前最新的版本是 5.7.15 GA 版本——这只有 600 M 多。<br>下载.deb包到你的服务器：</p>
-</blockquote>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">wget http://dev.mysql.com/get/mysql-apt-config_0.5.3-1_all.deb</div></pre></td></tr></table></figure>
-<p> 然后使用dpkg命令添加Mysql的源：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo dpkg -i mysql-apt-config_0.5.3-1_all.deb</div></pre></td></tr></table></figure></p>
-<p>注意在添加源的时候，会叫你选择安装 MySQL 哪个应用，这里选择 Server 即可，再选择 MySQL 5.7 后又会回到选择应用的那个界面，此时选择 Apply 即可<br>安装</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div></pre></td><td class="code"><pre><div class="line">sudo apt-get update  </div><div class="line">sudo apt-get install mysql-server  </div><div class="line">``` </div><div class="line">安装完成之后运行mysql -V查看版本：</div><div class="line"></div><div class="line">``` bash</div><div class="line">root@demo:~<span class="comment"># mysql -V  </span></div><div class="line">``` </div><div class="line">mysql  Ver 14.14 Distrib 5.7.15, <span class="keyword">for</span> Linux (x86_64) using  EditLine wrapper  </div><div class="line">注意</div><div class="line"></div><div class="line">如果你已经通过 ppa 的方式安装了 MySQL 5.6，首先得去掉这个源</div><div class="line"></div><div class="line">``` bash</div><div class="line">sudo apt-add-repository --remove ppa:ondrej/mysql-5.6  </div><div class="line">``` </div><div class="line"> 如果没有 apt-add-repository 先安装上</div><div class="line">``` bash</div><div class="line"> sudo apt-get install software-properties-common</div><div class="line">``` </div><div class="line">然后其它和上面一样，但最后要运行sudo mysql_upgrade -u root -p升级数据库，运行sudo service mysql restart重启数据库，这样你的数据会完好无缺（不出意外的话）。</div><div class="line"><span class="comment">## 安装Nginx</span></div><div class="line">简单，运行：</div><div class="line">``` bash</div><div class="line">sudo apt-get -y install nginx  </div><div class="line">``` </div><div class="line"><span class="comment">## nginx配置php</span></div><div class="line"></div><div class="line">``` bash</div><div class="line">sudo vim /etc/php/7.1/fpm/php.ini  </div><div class="line">``` </div><div class="line">输入/fix_pathinfo搜索，将cgi.fix_pathinfo=1改为cgi.fix_pathinfo=0：</div><div class="line">编辑fpm的配置文件： 运行：</div><div class="line"></div><div class="line">``` bash</div><div class="line">sudo vim /etc/php/7.1/fpm/pool.d/www.conf  </div><div class="line">``` </div><div class="line">找到listen = /run/php/php7.1-fpm.sock修改为listen = 127.0.0.1:9000。使用9000端口。</div><div class="line"></div><div class="line">``` bash</div><div class="line">service php7.1-fpm stop</div><div class="line">service php7.1-fpm start</div><div class="line">``` </div><div class="line">配置Nginx：</div><div class="line"></div><div class="line">运行：</div><div class="line"></div><div class="line">``` bash</div><div class="line">sudo vim /etc/nginx/sites-available/default  </div><div class="line">``` </div><div class="line">下面是配置文件</div><div class="line">``` bash</div><div class="line">server &#123;  </div><div class="line">    <span class="comment">#listen 80 default_server;</span></div><div class="line">    listen 80;</div><div class="line">    <span class="comment">#listen [::]:80 default_server ipv6only=on;</span></div><div class="line">    </div><div class="line">    root /var/www;</div><div class="line">    index index.php index.html index.htm;</div><div class="line">                                        </div><div class="line">    <span class="comment"># Make site accessible from http://localhost/</span></div><div class="line">    server_name lufficc.com www.lufficc.com;</div><div class="line">    </div><div class="line">    location / &#123;</div><div class="line">        <span class="comment"># First attempt to serve request as file, then</span></div><div class="line">        <span class="comment"># as directory, then fall back to displaying a 404.</span></div><div class="line">        try_files <span class="variable">$uri</span> <span class="variable">$uri</span>/ /index.php?<span class="variable">$query_string</span>;</div><div class="line">        <span class="comment"># Uncomment to enable naxsi on this location</span></div><div class="line">        <span class="comment"># include /etc/nginx/naxsi.rules</span></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    location ~ \.php$ &#123;</div><div class="line">        include snippets/fastcgi-php.conf;</div><div class="line">        <span class="comment"># With php7.0-cgi alone:</span></div><div class="line">        fastcgi_pass 127.0.0.1:9000;</div><div class="line">        <span class="comment"># With php7.0-fpm:</span></div><div class="line">        fastcgi_pass unix:/run/php/php7.0-fpm.sock;</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">``` </div><div class="line">&gt; </div><div class="line">  - root：是你的项目的public目录，也就是网站的入口</div><div class="line">  - index：添加了，index.php，告诉Nginx先解析index.php文件</div><div class="line">  - server_name：你的域名，没有的话填写localhost</div><div class="line">  - location / try_files修改为了try_files <span class="variable">$uri</span> <span class="variable">$uri</span>/ /index.php?<span class="variable">$query_string</span>;</div><div class="line">  - location ~ \.php$部分告诉Nginx怎么解析Php，原封不动复制即可，但注意：fastcgi_pass unix:/var/run/php/php7.1-fpm.sock;的目录要和fpm的配置文件中的listen一致。</div><div class="line"></div><div class="line"><span class="comment">## 运行nginx服务</span></div><div class="line"></div><div class="line">``` bash</div><div class="line">sudo service nginx restart  </div><div class="line">sudo service php7.1-fpm restart</div></pre></td></tr></table></figure>
-<p>如果出现下列错误<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[emerg]: <span class="built_in">bind</span>() to 0.0.0.0:80 failed (98: Address already <span class="keyword">in</span> use)</div></pre></td></tr></table></figure></p>
-<p>这是80端口被占用，运行下面命令，关闭80端口</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo fuser -k 80/tcp</div><div class="line">service nginx start</div></pre></td></tr></table></figure>
-<p><strong>好了，一切完成！</strong></p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/">linux</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/技术/">技术</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-lnmp源码搭建" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2017/05/08/lnmp源码搭建/" class="article-date">
-  	<time datetime="2017-05-08T14:47:02.000Z" itemprop="datePublished">2017-05-08</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/05/08/lnmp源码搭建/">lnmp源码搭建</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="mysql源码安装"><a href="#mysql源码安装" class="headerlink" title="mysql源码安装"></a>mysql源码安装</h2><p>1.安装编译源码需要的包<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install make cmake gcc g++ bison libncurses5-dev</div></pre></td></tr></table></figure></p>
-<p>2.下载相应源码包<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">[root@graychen ~]# wget https://sourceforge.net/projects/boost/files/boost/1.59.0/boost_1_59_0.tar.gz</div><div class="line">[root@graychen ~]# wget http://cdn.mysql.com/Downloads/MySQL-5.7/mysql-5.7.13.tar.gz</div></pre></td></tr></table></figure></p>
-<p>3.新建MySQL用户和用户组<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[root@graychen ~]# groupadd -r mysql &amp;&amp; useradd -r -g mysql -s /sbin/nologin -M mysql</div></pre></td></tr></table></figure></p>
-<p>4.预编译</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">[root@graychen ~]# tar -zxvf boost_1_59_0.tar.gz</div><div class="line">[root@graychen data]# md5sum mysql-5.7.13.tar.gz </div><div class="line">8fab75dbcafcd1374d07796bff88ae00  mysql-5.7.13.tar.gz</div><div class="line">[root@graychen ~]# tar -zxvf mysql-5.7.13.tar.gz</div><div class="line">[root@graychen data]# mkdir -p /data/mysql</div><div class="line">[root@graychen data]# cd mysql-5.7.13</div><div class="line">[root@graychen data]# cmake . -DCMAKE_INSTALL_PREFIX=/usr/local/mysql \</div><div class="line">-DMYSQL_DATADIR=/data/mysql \</div><div class="line">-DWITH_BOOST=../boost_1_59_0 \</div><div class="line">-DSYSCONFDIR=/etc \</div><div class="line">-DWITH_INNOBASE_STORAGE_ENGINE=1 \</div><div class="line">-DWITH_PARTITION_STORAGE_ENGINE=1 \</div><div class="line">-DWITH_FEDERATED_STORAGE_ENGINE=1 \</div><div class="line">-DWITH_BLACKHOLE_STORAGE_ENGINE=1 \</div><div class="line">-DWITH_MYISAM_STORAGE_ENGINE=1 \</div><div class="line">-DENABLED_LOCAL_INFILE=1 \</div><div class="line">-DENABLE_DTRACE=0 \</div><div class="line">-DDEFAULT_CHARSET=utf8mb4 \</div><div class="line">-DDEFAULT_COLLATION=utf8mb4_general_ci \</div><div class="line">-DWITH_EMBEDDED_SERVER=1</div></pre></td></tr></table></figure>
-<p>5.编译安装</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[root@graychen mysql-5.7.13]# make -j `grep processor /proc/cpuinfo | wc -l`</div><div class="line">#编译很消耗系统资源，小内存可能编译通不过make install</div><div class="line">[root@graychen mysql-5.7.13]# make install</div></pre></td></tr></table></figure>
-<p>6.设置启动脚本，开机自启动</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">[root@graychen mysql-5.7.13]# ls -lrt /usr/local/mysql</div><div class="line">[root@graychen mysql-5.7.13]# cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysqld</div><div class="line">[root@graychen mysql-5.7.13]# chmod +x /etc/init.d/mysqld</div><div class="line">[root@graychen mysql-5.7.13]# systemctl enable mysqld</div><div class="line">mysqld.service is not a native service, redirecting to /sbin/chkconfig.</div><div class="line">Executing /sbin/chkconfig mysqld on</div></pre></td></tr></table></figure>
-<p>7.配置文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div></pre></td><td class="code"><pre><div class="line">/etc/my.cnf，仅供参考 </div><div class="line">[root@graychen mysql-5.7.13]# cat &gt; /etc/my.cnf &lt;&lt; EOF</div><div class="line">[client]</div><div class="line">port = 3306</div><div class="line">socket = /dev/shm/mysql.sock</div><div class="line">[mysqld]</div><div class="line">port = 3306</div><div class="line">socket = /dev/shm/mysql.sock</div><div class="line">basedir = /usr/local/mysql</div><div class="line">datadir = /data/mysql</div><div class="line">pid-file = /data/mysql/mysql.pid</div><div class="line">user = mysql</div><div class="line">bind-address = 0.0.0.0</div><div class="line">server-id = 1</div><div class="line">init-connect = &apos;SET NAMES utf8mb4&apos;</div><div class="line">character-set-server = utf8mb4</div><div class="line">#skip-name-resolve</div><div class="line">#skip-networking</div><div class="line">back_log = 300</div><div class="line">max_connections = 1000</div><div class="line">max_connect_errors = 6000</div><div class="line">open_files_limit = 65535</div><div class="line">table_open_cache = 128</div><div class="line">max_allowed_packet = 4M</div><div class="line">binlog_cache_size = 1M</div><div class="line">max_heap_table_size = 8M</div><div class="line">tmp_table_size = 16M</div><div class="line">read_buffer_size = 2M</div><div class="line">read_rnd_buffer_size = 8M</div><div class="line">sort_buffer_size = 8M</div><div class="line">join_buffer_size = 8M</div><div class="line">key_buffer_size = 4M</div><div class="line">thread_cache_size = 8</div><div class="line">query_cache_type = 1</div><div class="line">query_cache_size = 8M</div><div class="line">query_cache_limit = 2M</div><div class="line">ft_min_word_len = 4</div><div class="line">log_bin = mysql-bin</div><div class="line">binlog_format = mixed</div><div class="line">expire_logs_days = 30</div><div class="line">log_error = /data/mysql/mysql-error.log</div><div class="line">slow_query_log = 1</div><div class="line">long_query_time = 1</div><div class="line">slow_query_log_file = /data/mysql/mysql-slow.log</div><div class="line">performance_schema = 0</div><div class="line">explicit_defaults_for_timestamp</div><div class="line">#lower_case_table_names = 1</div><div class="line">skip-external-locking</div><div class="line">default_storage_engine = InnoDB</div><div class="line">#default-storage-engine = MyISAM</div><div class="line">innodb_file_per_table = 1</div><div class="line">innodb_open_files = 500</div><div class="line">innodb_buffer_pool_size = 64M</div><div class="line">innodb_write_io_threads = 4</div><div class="line">innodb_read_io_threads = 4</div><div class="line">innodb_thread_concurrency = 0</div><div class="line">innodb_purge_threads = 1</div><div class="line">innodb_flush_log_at_trx_commit = 2</div><div class="line">innodb_log_buffer_size = 2M</div><div class="line">innodb_log_file_size = 32M</div><div class="line">innodb_log_files_in_group = 3</div><div class="line">innodb_max_dirty_pages_pct = 90</div><div class="line">innodb_lock_wait_timeout = 120</div><div class="line">bulk_insert_buffer_size = 8M</div><div class="line">myisam_sort_buffer_size = 8M</div><div class="line">myisam_max_sort_file_size = 10G</div><div class="line">myisam_repair_threads = 1</div><div class="line">interactive_timeout = 28800</div><div class="line">wait_timeout = 28800</div><div class="line">[mysqldump]</div><div class="line">quick</div><div class="line">max_allowed_packet = 16M</div><div class="line">[myisamchk]</div><div class="line">key_buffer_size = 8M</div><div class="line">sort_buffer_size = 8M</div><div class="line">read_buffer = 4M</div><div class="line">write_buffer = 4M</div><div class="line">EOF</div></pre></td></tr></table></figure>
-<p>9.添加mysql的环境变量</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[root@graychen mysql-5.7.13]# echo -e &apos;\n\nexport PATH=/usr/local/mysql/bin:$PATH\n&apos; &gt;&gt; /etc/profile &amp;&amp; source /etc/profile</div></pre></td></tr></table></figure>
-<p>10.初始化数据库</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[root@graychen mysql-5.7.13]# mysqld --initialize-insecure --user=mysql --basedir=/usr/local/mysql --datadir=/data/mysql</div></pre></td></tr></table></figure>
-<p>11.启动数据库</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">[root@graychen mysql-5.7.13]# systemctl start mysqld</div><div class="line">[root@graychen mysql-5.7.13]# systemctl status mysqld</div><div class="line">● mysqld.service - LSB: start and stop MySQL</div><div class="line">Loaded: loaded (/etc/rc.d/init.d/mysqld)</div><div class="line">Active: active (running) since 一 2016-07-18 11:15:35 CST; 8s ago</div><div class="line">Docs: man:systemd-sysv-generator(8)</div><div class="line">Process: 23927 ExecStart=/etc/rc.d/init.d/mysqld start (code=exited, status=0/SUCCESS)</div><div class="line">CGroup: /system.slice/mysqld.service</div><div class="line">├─23940 /bin/sh /usr/local/mysql/bin/mysqld_safe --datadir=/data/mysql --pid-file=/data/mysql/mysql.pid</div><div class="line">└─24776 /usr/local/mysql/bin/mysqld --basedir=/usr/local/mysql --datadir=/data/mysql --plugin-dir=/usr/local/mysql/lib/plugin --user=mysql --log-error=/data/mysql/mysql-err...</div><div class="line"></div><div class="line">7月 18 11:15:32 graychen systemd[1]: Starting LSB: start and stop MySQL...</div><div class="line">7月 18 11:15:35 graychen mysqld[23927]: Starting MySQL..[  OK   ]</div><div class="line">7月 18 11:15:35 graychen systemd[1]: Started LSB: start and stop MySQL.</div></pre></td></tr></table></figure>
-<p>12.查看MySQL服务进程和端口<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">[root@graychen mysql-5.7.13]# ps -ef | grep mysql</div><div class="line">root     23940     1  0 11:15 ?        00:00:00 /bin/sh /usr/local/mysql/bin/mysqld_safe --datadir=/data/mysql --pid-file=/data/mysql/mysql.pid</div><div class="line">mysql    24776 23940  0 11:15 ?        00:00:00 /usr/local/mysql/bin/mysqld --basedir=/usr/local/mysql --datadir=/data/mysql --plugin-dir=/usr/local/mysql/lib/plugin --user=mysql --log-error=/data/mysql/mysql-error.log --open-files-limit=65535 --pid-file=/data/mysql/mysql.pid --socket=/dev/shm/mysql.sock --port=3306</div><div class="line">[root@graychen mysql-5.7.13]# netstat -tunpl | grep 3306</div><div class="line">tcp        0      0 0.0.0.0:3306            0.0.0.0:*               LISTEN      24776/mysqld</div></pre></td></tr></table></figure></p>
-<p>13.设置数据库root用户密码</p>
-<p>MySQL和Oracle数据库一样，数据库也默认自带了一个 root 用户（这个和当前Linux主机上的root用户是完全不搭边的），我们在设置好MySQL数据库的安全配置后初始化root用户的密码。配制过程中，一路输入 y 就行了。这里只说明下MySQL5.7.13版本中，用户密码策略分成低级 LOW 、中等 MEDIUM 和超强 STRONG 三种，推荐使用中等 MEDIUM 级别！</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">[root@graychen mysql-5.7.13]# mysql_secure_installation</div></pre></td></tr></table></figure>
-<h2 id="php源码安装"><a href="#php源码安装" class="headerlink" title="php源码安装"></a>php源码安装</h2><p>1.安装编译源码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">wget http://am1.php.net/get/php-7.1.4.tar.bz2/from/mirror</div><div class="line">tar jxvf php-7.1.4.tar.bz2 </div><div class="line">bzip2 -d php-7.1.4.tar.bz2 </div><div class="line">cd php-7.1.4/</div><div class="line">./configure --prefix=/usr/local/php --with-config-file-path=/usr/local/php/etc --with-config-file-scan-dir=/usr/local/php/etc/php.d --with-mcrypt=/usr/include --enable-mysqlnd --with-mysqli --with-pdo-mysql --enable-fpm --with-fpm-user=nginx --with-fpm-group=nginx --with-iconv --with-zlib --enable-shmop --enable-sysvsem --enable-inline-optimization --enable-mbregex --enable-mbstring --enable-ftp --enable-gd-native-ttf --with-openssl --enable-pcntl --enable-sockets --with-xmlrpc --enable-zip --enable-soap --without-pear --with-gettext --enable-session --with-curl --with-jpeg-dir --with-freetype-dir --enable-opcache --with-libxml-dir=/usr</div><div class="line">sudo make test</div><div class="line">sudo make install</div></pre></td></tr></table></figure></p>
-<p>2.配置php.ini<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">cp php.ini-development /usr/local/php/etc/php.ini</div><div class="line">sudo mv php-fpm.d/www.conf.default php-fpm.d/www.conf</div></pre></td></tr></table></figure></p>
-<p>3.配置php-fpm.conf<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">cd /usr/local/php/etc/</div><div class="line">mv php-fpm.conf.default php-fpm.conf</div><div class="line">sudo mv php-fpm.conf.default php-fpm.conf</div><div class="line">sudo mv php-fpm.d/www.conf.default php-fpm.d/www.conf</div></pre></td></tr></table></figure></p>
-<p>4.配置php-fpm开机启动<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">cd ~/src/php-7.1.4/sapi/fpm</div><div class="line">sudo cp init.d.php-fpm /etc/init.d/php-fpm</div><div class="line">sudo chmod +x /etc/init.d/php-fpm </div><div class="line">chkconfig --add php-fpm</div><div class="line">systemctl --add php-fpm</div><div class="line">sudo /sbin/chkconfig</div><div class="line">sudo vi /etc/init.d/php-fpm</div><div class="line">update-rc.d -f php-fpm defaults</div><div class="line">runlevel</div><div class="line">sudo service php-fpm start</div></pre></td></tr></table></figure></p>
-<h2 id="nginx源码安装"><a href="#nginx源码安装" class="headerlink" title="nginx源码安装"></a>nginx源码安装</h2><p>1.下载源码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">wget http://nginx.org/download/nginx-1.11.2.tar.gz</div><div class="line">tar -xzvf nginx-1.11.2.tar.gz -C /usr/src</div></pre></td></tr></table></figure></p>
-<p>2.安装依赖<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install gcc libpcre3 libpcre3-dev openssl libssl-dev libssl0.9.8 perl libperl-dev</div></pre></td></tr></table></figure></p>
-<p>3.编译安装源码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">cd /usr/src/nginx-1.11.2</div><div class="line"># 以下是一行。。用于生成makefile。如果需要添加第三方模块，使用--add-module=/path/module1的方法编译</div><div class="line">./configure --prefix=/usr/local/nginx --with-ipv6 --with-http_ssl_module --with-http_realip_module --with-http_addition_module --with-http_dav_module --with-http_flv_module --with-http_mp4_module --with-http_gzip_static_module --with-http_perl_module --with-mail --with-mail_ssl_module</div><div class="line"># make是生成在objs目录中，make install则安装到prefix所示的目录中</div><div class="line">make &amp;&amp; make install</div><div class="line"># 没有错误出现的话，就可以进入nginx安装目录(/usr/local/nginx)配置。</div></pre></td></tr></table></figure></p>
-<blockquote>
-<p>成功安装后，进入/usr/local/nginx，可以看到4个目录：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">root@graychen:/usr/local/nginx# ll</div><div class="line">total 44</div><div class="line">drwxr-xr-x 11 root   root 4096 Jul 26 10:06 ./</div><div class="line">drwxr-xr-x 12 root   root 4096 Jul 26 10:03 ../</div><div class="line">drwxr-xr-x  2 root   root 4096 Jul 26 10:11 conf/</div><div class="line">drwxr-xr-x  2 root   root 4096 Jul 26 10:03 html/</div><div class="line">drwxr-xr-x  2 root   root 4096 Jul 26 10:07 logs/</div><div class="line">drwxr-xr-x  2 root   root 4096 Jul 26 10:03 sbin/</div></pre></td></tr></table></figure></p>
-</blockquote>
-<p>其中，</p>
-<p> conf：放置nginx相关的配置文件，最核心的是nginx.conf<br> html：默认的网站根目录<br> logs：日志文件目录(访问日志，错误日志，运行时的进程id cat logs/nginx.pid)<br> sbin：主程序(nginx)目录<br>4.配置Nginx开机自启动<br>Ubuntu/Linux系统开机自启动，很简单，在/etc/init.d/目录下编写一个服务脚本(比如nginx)，然后在/etc/init.d/rc.local中添加一行启动命令。操作步骤如下</p>
-<blockquote>
-<ul>
-<li><p>vi /etc/init.d/nginx ,其中具体的脚本展示如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div></pre></td><td class="code"><pre><div class="line">[plain] view plain copy</div><div class="line"></div><div class="line"> #!/bin/bash</div><div class="line"> # nginx Startup script for the Nginx HTTP Server</div><div class="line"> # it is v.0.0.2 version.</div><div class="line"> # chkconfig: - 85 15</div><div class="line"> # description: Nginx is a high-performance web and proxy server.</div><div class="line"> #              It has a lot of features, but it&apos;s not for everyone.</div><div class="line"> # processname: nginx</div><div class="line"> # pidfile: /var/run/nginx.pid</div><div class="line"> # config: /usr/local/nginx/conf/nginx.conf</div><div class="line"></div><div class="line"> #注意：这里的三个变量需要根据具体的环境而做修改。</div><div class="line"> nginxd=/opt/nginx/sbin/nginx</div><div class="line"> nginx_config=/opt/nginx/conf/nginx.conf</div><div class="line"> nginx_pid=/opt/nginx/logs/nginx.pid</div><div class="line"> RETVAL=0</div><div class="line"> prog=&quot;nginx&quot;</div><div class="line"></div><div class="line"> # Check that networking is up.</div><div class="line"> [ -x $nginxd  ] || exit 0</div><div class="line"> # Start nginx daemons functions.</div><div class="line"> start() &#123;</div><div class="line">     if [ -e $nginx_pid  ];then</div><div class="line">        echo &quot;nginx already running....&quot;</div><div class="line">        exit 1</div><div class="line">     fi</div><div class="line">        echo -n $&quot;Starting $prog: &quot;</div><div class="line">        $nginxd -c $&#123;nginx_config&#125;</div><div class="line">        RETVAL=$?</div><div class="line">        echo</div><div class="line">        [ $RETVAL = 0  ]</div><div class="line">        return $RETVAL</div><div class="line">     </div><div class="line">&#125;</div><div class="line"> # Stop nginx daemons functions.</div><div class="line"> stop() &#123;</div><div class="line">       echo -n $&quot;Stopping $prog: &quot;</div><div class="line">       $nginxd -s stop</div><div class="line">       RETVAL=$?</div><div class="line">       echo</div><div class="line">       [ $RETVAL = 0  ] &amp;&amp; rm -f /var/lock/subsys/nginx $nginx_pid</div><div class="line">     </div><div class="line">&#125;</div><div class="line"> # reload nginx service functions.</div><div class="line"> reload() &#123;</div><div class="line">       echo -n $&quot;Reloading $prog: &quot;</div><div class="line">       kill -HUP `cat $&#123;nginx_pid&#125;`</div><div class="line">       RETVAL=$?</div><div class="line">       echo</div><div class="line">     </div><div class="line">&#125;</div><div class="line"> # See how we were called.</div><div class="line"> case &quot;$1&quot; in</div><div class="line">   start)</div><div class="line">           start</div><div class="line">           ;;</div><div class="line">   stop)</div><div class="line">           stop</div><div class="line">           ;;</div><div class="line">   reload)</div><div class="line">           reload</div><div class="line">           ;;</div><div class="line">   restart)</div><div class="line">           stop</div><div class="line">           start</div><div class="line">           ;;</div><div class="line">   status)</div><div class="line">           status $prog</div><div class="line">           RETVAL=$?</div><div class="line">           ;;</div><div class="line">   *)</div><div class="line">           echo $&quot;Usage: $prog &#123;start|stop|restart|reload|status|help&#125;&quot;</div><div class="line">           exit 1</div><div class="line"> esac</div><div class="line"> exit $RETVAL</div></pre></td></tr></table></figure>
-</li>
-<li><p>sudo chmod a+x /etc/init.d/nginx</p>
-</li>
-<li>在rc.local文件的最后中添加如下的一行: /etc/init.d/nginx start<br>最后，nginx可以通过 /etc/init.d/nginx start或者 service nginx start进行启动。</li>
-</ul>
-</blockquote>
-<p>到这里整个LNMP已经安装完成.</p>
-<h2 id="nginx和php的关联"><a href="#nginx和php的关联" class="headerlink" title="nginx和php的关联"></a>nginx和php的关联</h2><p>下面我们就配置php和nginx能运行php网站: 首先为php创建配置文件:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">cp php.ini-production /usr/local/php/php.ini # 如果是开发就复制php.ini-development</div><div class="line">cp /usr/local/php/etc/php-fpm.conf.default /usr/local/php/etc/php-fpm.conf</div><div class="line">ln -s /usr/local/php/bin/php /usr/bin/</div></pre></td></tr></table></figure></p>
-<p>配置php-fpm,编辑php-fpm.conf</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vi /usr/local/php/etc/php-fpm.conf</div></pre></td></tr></table></figure>
-<p>找到listen那一行,修改成如下内容:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">listen = /var/run/php-fpm/php-fpm.sock   # 使用unix socket</div></pre></td></tr></table></figure>
-<p>启动php-fpm</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">mkdir /var/run/php-fpm</div><div class="line">/usr/local/php/sbin/php-fpm</div></pre></td></tr></table></figure>
-<p>然后配置nginx,编辑nginx配置文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vi /usr/local/nginx/conf/nginx.conf</div></pre></td></tr></table></figure>
-<p>修改nginx配置文件支持php:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">server &#123;</div><div class="line">        listen       80;</div><div class="line">        server_name  localhost;</div><div class="line"></div><div class="line">        #charset koi8-r;</div><div class="line"></div><div class="line">        #access_log  logs/host.access.log  main;</div><div class="line"></div><div class="line">        location / &#123;</div><div class="line">            root   html;</div><div class="line">            index  index.php index.html index.htm;         # 添加index.php的首页文件</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        # 添加下面内容</div><div class="line">        location ~ \.php$ &#123;</div><div class="line">            fastcgi_pass        unix:/var/run/php-fpm/php-fpm.sock;</div><div class="line">            fastcgi_index       index.php;</div><div class="line">            fastcgi_param SCRIPT_FILENAME $document_root/$fastcgi_script_name;</div><div class="line">            include fastcgi_params;</div><div class="line">            include fastcgi.conf;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>修改完毕后保存退出重启nginx:</p>
-<p>pkill -9 nignx<br>/usr/local/nginx/sbin/nginx<br>然后在/usr/local/nginx/html下创建index.php,</p>
-<p>vi /usr/local/nginx/html/index.php<br>添加下面内容:<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">phpinfo();</div><div class="line"><span class="meta">?&gt;</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p>保存退出后访问<a href="http://localhost/index.php,看到下面页面表示已经安装配置成功" target="_blank" rel="external">http://localhost/index.php,看到下面页面表示已经安装配置成功</a>:</p>
-<p><img src="/assets/blogImg/php.png" alt="php页面"></p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/技术/">技术</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-计划虽然不酷，但是很有用" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2017/02/04/计划虽然不酷，但是很有用/" class="article-date">
-  	<time datetime="2017-02-04T06:26:37.000Z" itemprop="datePublished">2017-02-04</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/02/04/计划虽然不酷，但是很有用/">计划虽然不酷，但是很有用</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>这是一遍迟到的年度计划了，这篇文章的名字是取自我最近看的日剧《逃避虽然可耻，但是很有用》,说到这里，女神镇楼！<br> <img src="/assets/blogImg/女神2.jpg" alt="&quot;我是傲娇的女神&quot;"><br> 请收下这波安利，好了，安利结束，我们谈正事，写这篇文章的目的是自己过于散漫，做事不够坚持，然后看到有人凭着年度计划，一步步完善自己，所以我也想试试，学习优秀的人的习惯，总不至于让自己变得太差。</p>
-<h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><p> 我的目标是什么呢？在工作之余，以三个月为限，做出上线运营的项目，也就是说我的2017要产出4个上线的项目，每个季度都要产出一个线上运营的项目，而且这都是业余时间完成的，这对我真是一个不小的挑战了，<br> 我希望自己能产出卓越的产品，但是我认为没有量的积累，这永远都不可能，千里之行，始于足下，我这几个产品可能不会优秀,不够细致，过于粗糙，但是<br> 完成比完美重要，上线就是我的目的。之前都是学习技术，今年我会转向输出,输出产品。</p>
-<h2 id="计划"><a href="#计划" class="headerlink" title="计划"></a>计划</h2><p> 我的计划是什么呢？一个季度是三个月，每个月是4个星期，这是一个系列文章，我会在每个周日的晚上发博文(很可能是微博)来报告这周的完成情况和下周的计划安排,并且这个过程是透明的，我写下的所有源码我都会放到github上，从这个网站上<br> 你将会看到我的行动轨迹，我有没有食言，只要方格是绿色的，那就表示我输出了很多的代码，否则我可能就是食言了，但愿不要吧,我还是比较虚的！</p>
-<h2 id="计划详情"><a href="#计划详情" class="headerlink" title="计划详情"></a>计划详情</h2><p> 事先声明，这篇博客我会持续更新的，我思考了下决定了我的第一个项目，我会给它起一个有趣的代号，因为我喜欢看一些动漫，所以我决定给他们起动漫中的物品</p>
-<h2 id="我是傲娇的分割线O-∩-∩-O"><a href="#我是傲娇的分割线O-∩-∩-O" class="headerlink" title="我是傲娇的分割线O(∩_∩)O~~"></a>我是傲娇的分割线O(∩_∩)O~~</h2><h3 id="第一个项目"><a href="#第一个项目" class="headerlink" title="第一个项目"></a>第一个项目</h3><h4 id="代号：OnePiece"><a href="#代号：OnePiece" class="headerlink" title="代号：OnePiece"></a>代号：<strong>OnePiece</strong></h4><p><img src="/assets/blogImg/onepiece.png" alt="&quot;我是伟大的OnePiece&quot;"></p>
-<blockquote>
-<p>这是海贼王的伟大冒险的终点，当然也是所有故事的起点，是引起这个海贼世界变革的重要地点，我特别欣赏里面的对梦想的执着和对友情的重视,所以我的第一个项目以此为名。</p>
-</blockquote>
-<h4 id="项目介绍"><a href="#项目介绍" class="headerlink" title="项目介绍"></a>项目介绍</h4><p>这个项目我决定做一个租借平台,总有一些东西让我们食之无味，弃之可惜，这个项目要把那些人们不舍得的东西放到网上出租，第一个月我想把最核心的浏览列表和上传物品的功能做完，有别于寻常的项目，我这次要从前台开始做起，<br>前台做完之后再开始做后台功能，我要倒过来做。</p>
-<h4 id="可能会用到的技术"><a href="#可能会用到的技术" class="headerlink" title="可能会用到的技术"></a>可能会用到的技术</h4><ul>
-<li>语言：php+js</li>
-<li>框架：laravel+vue.js</li>
-<li>平台：移动端</li>
-<li>类型：移动端的网站<br>做这些项目当然也要提要自己啦，我会尽可能尝试不同的语言，第一个项目我的技术选型相对保守，先从最熟悉的技术开始实现吧。由于我不是专业的设计，前期的页面可能相对粗糙，还请见谅。<h4 id="项目时间安排"><a href="#项目时间安排" class="headerlink" title="项目时间安排"></a>项目时间安排</h4>今天已经是二月5日了，由于我这个人懒得算数，就以二月份开始吧，那么截止时间就定在4月30号，4月30号我会做项目演示，会公布线上网址（如果我做好的话）</li>
-</ul>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/php/">php</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/随笔/">随笔</a>
 	</div>
 
 

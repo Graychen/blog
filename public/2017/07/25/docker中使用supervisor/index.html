@@ -4,57 +4,21 @@
   <meta charset="utf-8">
   
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
-  <title>vichrome像vi一样操作你的chrome浏览器 | Graychen的博客</title>
+  <title>docker中使用supervisor管理队列 | Graychen的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="vichrome是一款chrome浏览器的插件,它让你可以像vi一样使用命令来操作你的浏览器，是提高效率的利器。下面是它的操作命令：
-基础篇
-k 上移 
-j 下移 
-H 后退 
-L 前进
-gg 飞到顶部 
-G 掉到底部 
-gt 去下一个标签 (ctrl+l) 
-gT 去上一个标签 (ctrl+h)
-t 新开一个标签 
-x 关闭当前标签页 
-X 关闭当前标签页并跳到下一个标签页  
-u 恢复刚刚的标">
+  <meta name="description" content="简介Supervisor链接 是一个用 Python 写的进程管理工具，可以很方便的用来启动、重启、关闭进程（不仅仅是 Python 进程）。除了对单个进程的控制，还可以同时启动、关闭多个进程，比如很不幸的服务器出问题导致所有应用程序都被杀死，此时可以用 supervisor 同时启动所有应用程序而不是一个一个地敲命令启动。
+安装Supervisor 可以运行在 Linux、Mac OS X 上。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="vichrome像vi一样操作你的chrome浏览器">
-<meta property="og:url" content="http://graychen.git.io/2016/10/18/vichrome像vi一样操作你的chrome浏览器/index.html">
+<meta property="og:title" content="docker中使用supervisor管理队列">
+<meta property="og:url" content="http://graychen.git.io/2017/07/25/docker中使用supervisor/index.html">
 <meta property="og:site_name" content="Graychen的博客">
-<meta property="og:description" content="vichrome是一款chrome浏览器的插件,它让你可以像vi一样使用命令来操作你的浏览器，是提高效率的利器。下面是它的操作命令：
-基础篇
-k 上移 
-j 下移 
-H 后退 
-L 前进
-gg 飞到顶部 
-G 掉到底部 
-gt 去下一个标签 (ctrl+l) 
-gT 去上一个标签 (ctrl+h)
-t 新开一个标签 
-x 关闭当前标签页 
-X 关闭当前标签页并跳到下一个标签页  
-u 恢复刚刚的标">
-<meta property="og:updated_time" content="2017-05-26T04:22:03.690Z">
+<meta property="og:description" content="简介Supervisor链接 是一个用 Python 写的进程管理工具，可以很方便的用来启动、重启、关闭进程（不仅仅是 Python 进程）。除了对单个进程的控制，还可以同时启动、关闭多个进程，比如很不幸的服务器出问题导致所有应用程序都被杀死，此时可以用 supervisor 同时启动所有应用程序而不是一个一个地敲命令启动。
+安装Supervisor 可以运行在 Linux、Mac OS X 上。">
+<meta property="og:updated_time" content="2017-07-28T07:03:16.015Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="vichrome像vi一样操作你的chrome浏览器">
-<meta name="twitter:description" content="vichrome是一款chrome浏览器的插件,它让你可以像vi一样使用命令来操作你的浏览器，是提高效率的利器。下面是它的操作命令：
-基础篇
-k 上移 
-j 下移 
-H 后退 
-L 前进
-gg 飞到顶部 
-G 掉到底部 
-gt 去下一个标签 (ctrl+l) 
-gT 去上一个标签 (ctrl+h)
-t 新开一个标签 
-x 关闭当前标签页 
-X 关闭当前标签页并跳到下一个标签页  
-u 恢复刚刚的标">
+<meta name="twitter:title" content="docker中使用supervisor管理队列">
+<meta name="twitter:description" content="简介Supervisor链接 是一个用 Python 写的进程管理工具，可以很方便的用来启动、重启、关闭进程（不仅仅是 Python 进程）。除了对单个进程的控制，还可以同时启动、关闭多个进程，比如很不幸的服务器出问题导致所有应用程序都被杀死，此时可以用 supervisor 同时启动所有应用程序而不是一个一个地敲命令启动。
+安装Supervisor 可以运行在 Linux、Mac OS X 上。">
   
     <link rel="alternative" href="/atom.xml" title="Graychen的博客" type="application/atom+xml">
   
@@ -219,11 +183,11 @@ u 恢复刚刚的标">
 	</div>
 </nav>
 
-      <div class="body-wrap"><article id="post-vichrome像vi一样操作你的chrome浏览器" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-docker中使用supervisor" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/10/18/vichrome像vi一样操作你的chrome浏览器/" class="article-date">
-  	<time datetime="2016-10-18T01:24:53.000Z" itemprop="datePublished">2016-10-18</time>
+      <a href="/2017/07/25/docker中使用supervisor/" class="article-date">
+  	<time datetime="2017-07-25T15:04:46.000Z" itemprop="datePublished">2017-07-25</time>
 </a>
     </div>
   
@@ -236,7 +200,7 @@ u 恢复刚刚的标">
         
   
     <h1 class="article-title" itemprop="name">
-      vichrome像vi一样操作你的chrome浏览器
+      docker中使用supervisor管理队列
     </h1>
   
 
@@ -245,7 +209,7 @@ u 恢复刚刚的标">
       <div class="article-info article-info-post">
         
 	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/工具/">工具</a></li></ul>
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/php/">php</a></li></ul>
 	</div>
 
         
@@ -260,44 +224,19 @@ u 恢复刚刚的标">
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p><strong>vichrome</strong>是一款chrome浏览器的插件,它让你可以像vi一样使用命令来操作你的浏览器，是提高效率的利器。<br>下面是它的操作命令：</p>
-<h2 id="基础篇"><a href="#基础篇" class="headerlink" title="基础篇"></a>基础篇</h2><ul>
-<li>k 上移 </li>
-<li>j 下移 </li>
-<li>H 后退 </li>
-<li>L 前进</li>
-<li>gg 飞到顶部 </li>
-<li>G 掉到底部 </li>
-<li>gt 去下一个标签 (ctrl+l) </li>
-<li>gT 去上一个标签 (ctrl+h)</li>
-<li>t 新开一个标签 </li>
-<li>x 关闭当前标签页 </li>
-<li>X 关闭当前标签页并跳到下一个标签页  </li>
-<li>u 恢复刚刚的标签页 </li>
-<li>r 刷新 </li>
-<li>f 进入f模式(可以点击链接) </li>
-<li>F 在新标签中进入f模式 </li>
-<li>i 聚焦在第一个输入框</li>
-<li>esc 退出<h2 id="进阶篇"><a href="#进阶篇" class="headerlink" title="进阶篇"></a>进阶篇</h2></li>
-<li>ctrl+f 下一页</li>
-<li>ctrl+b 上一页</li>
-<li>ctrl+d 下半页</li>
-<li>ctrl+u 上半页</li>
-<li>/ 搜索</li>
-<li>? 反向搜索</li>
-<li>a 在带链接的文本中搜索</li>
-<li>n 下一个搜索结果</li>
-<li>N 上一个搜索结果</li>
-<li>tab 下一个候补选项</li>
-<li>shift+tab 上一个候补选项</li>
-<li>: 进入命令模式</li>
-<li>yy 复制url</li>
-<li>p/P 打开刚刚复制的url</li>
-<li>o/O 打开(输入url)</li>
-<li>s/S 用搜索引擎搜索</li>
-<li>b/B 打开收藏夹<h2 id="高级篇"><a href="#高级篇" class="headerlink" title="高级篇"></a>高级篇</h2></li>
-<li>gp 新开一个窗口(对当前标签页)</li>
-</ul>
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Supervisor<a href="http://supervisord.org" target="_blank" rel="external">链接</a> 是一个用 Python 写的进程管理工具，可以很方便的用来启动、重启、关闭进程（不仅仅是 Python 进程）。除了对单个进程的控制，还可以同时启动、关闭多个进程，比如很不幸的服务器出问题导致所有应用程序都被杀死，此时可以用 supervisor 同时启动所有应用程序而不是一个一个地敲命令启动。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>Supervisor 可以运行在 Linux、Mac OS X 上。如前所述，supervisor 是 Python 编写的，所以安装起来也很方便，可以直接用 pip : sudo pip install supervisor<br> 如果是 Ubuntu 系统，还可以使用 apt-get install supervisor 安装,由于我们的容器是alpine系统,所以可以在Dockerfile里添加<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">RUN apk add supervisor</div></pre></td></tr></table></figure></p>
+<p>这样容器就可以安装superviosr</p>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>然后在docker的服务目录services里创建supervisor目录，创建supervisor.conf文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">[supervisord]</div><div class="line">nodaemon=true</div><div class="line">[program:mqtt-server]</div><div class="line">directory = /var/www/html ;</div><div class="line">command = php yii queue/listen</div><div class="line">autostart = true</div><div class="line">startsecs = 5</div><div class="line">autorestart = true</div><div class="line">startretries = 10</div><div class="line">redirect_stderr=true</div><div class="line">stdout_logfile = /var/www/html/yii-queue-worker.log</div></pre></td></tr></table></figure>
+<p>然后在Dockerfile-web-volumes里面添加</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">- ./services/supervisor:/etc/supervisor/conf.d</div></pre></td></tr></table></figure>
+<p>以此将本地的配置文件映射到docker容器里面的supervisor的默认配置文件</p>
+<h2 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h2><blockquote>
+<p>本来我的想法是在Dockerfile里面直接添加<code>ENTRYPOINT [&#39;/usr/bin/supervisord&#39;,&#39;-c&#39;,&#39;/etc/supervisor/conf.d&#39;]</code>,想在docker build的时候直接启动supervisor管理队列，但是我的队列是其余redis的，运行到这一步的时候redis的docker还没有启动，导致我的页面一直502，虽然supervisor启动了，但是队列的redis驱动还没有启动，所以选择了折中的方法。<code>注意，如果队列基于其它driver的可以这样直接运行的</code></p>
+</blockquote>
+<p>折中的方案是在.gitlab-ci.yml文件中的<strong>testing-server:</strong>-&gt; <strong>script:</strong>和<strong>staging-server:</strong>-&gt;<strong>script:</strong>下分别添加<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">- ssh root@$DEPLOY_SERVER &quot;docker exec -i $CI_PROJECT_NAME /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf &amp;&gt;/dev/null&amp;&quot;</div></pre></td></tr></table></figure></p>
+<p>这样的方式是在部署的时候在启动supervisord,想当于在docker启动后在启动supervisord这个软件，这样就可以实现监听队列了<br>然后将docker-compose.yml和目录supervisor复制到deploy目录里的production,staging,testing三个目录里面</p>
 
       
     </div>
@@ -307,18 +246,18 @@ u 恢复刚刚的标">
     
 <nav id="article-nav">
   
-    <a href="/2016/10/18/变身吧！我的linux配置环境/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2017/07/28/yii2-queue队列的使用说明/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption"><</strong>
       <div class="article-nav-title">
         
-          变身吧！我的linux配置环境
+          yii2-queue队列的使用说明
         
       </div>
     </a>
   
   
-    <a href="/2016/09/21/vi的使用总结/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">vi的使用总结</div>
+    <a href="/2017/06/25/php的并发io/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">php的并发io</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
@@ -334,7 +273,7 @@ u 恢复刚刚的标">
 
 <div class="duoshuo">
 	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="vichrome像vi一样操作你的chrome浏览器" data-title="vichrome像vi一样操作你的chrome浏览器" data-url="http://graychen.git.io/2016/10/18/vichrome像vi一样操作你的chrome浏览器/"></div>
+	<div class="ds-thread" data-thread-key="docker中使用supervisor" data-title="docker中使用supervisor管理队列" data-url="http://graychen.git.io/2017/07/25/docker中使用supervisor/"></div>
 	<!-- 多说评论框 end -->
 	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 	<script type="text/javascript">
