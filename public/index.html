@@ -209,27 +209,9 @@
       
         <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>yii2-queue是一个yii官方推出的队列扩展库，主要通过队列异步运行任务，它支持基于DB，Redis，RabbitMQ，Beanstalk和Gearman的队列。</p>
 <h2 id="来源"><a href="#来源" class="headerlink" title="来源"></a>来源</h2><ul>
-<li><a href="https://github.com/yiisoft/yii2-queue" target="_blank" rel="external">github</a></li>
-<li><a href="https://packagist.org/packages/yiisoft/yii2-queue" target="_blank" rel="external">packaglist</a></li>
+<li><a href="https://github.com/yiisoft/yii2-queue">github</a></li>
+<li><a href="https://packagist.org/packages/yiisoft/yii2-queue">packaglist</a></li>
 </ul>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">composer <span class="keyword">require</span> yiisoft/yii2-queue</div></pre></td></tr></table></figure>
-<p>或者</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">在composer中添加<span class="string">"yiisoft/yii2-queue"</span>: <span class="string">"~2.0.0"</span>,然后持续composer install</div></pre></td></tr></table></figure>
-<h2 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h2><p>发送到队列的每个任务应该被定义为一个单独的类。例如，如果您需要下载并保存文件，则该类可能如下所示：<br>下面的例子以redis作为驱动，<a href="https://github.com/yiisoft/yii2-queue/blob/master/docs/guide/README.md" target="_blank" rel="external">其它驱动</a><br>首先我们配置redis的驱动，注意如果没有yiisoft/yii2-redis包的话要先执行composer require yiisoft/yii2-redis,再在/common/config/<br>注意要为queue配置一个queue的redis配置<br><figure class="highlight plain"><figcaption><span>[</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">&apos;bootstrap&apos; =&gt; [</div><div class="line">        &apos;queue&apos;, // The component registers own console commands</div><div class="line">],</div><div class="line">&apos;compoents&apos; =&gt; [</div><div class="line">    ...//其它的配置</div><div class="line">    &apos;redis_queue&apos; =&gt; [</div><div class="line">        &apos;class&apos; =&gt; &apos;yii\redis\Connection&apos;,</div><div class="line">        &apos;hostname&apos; =&gt; &apos;redis&apos;,</div><div class="line">        &apos;port&apos; =&gt; &apos;6379&apos;,</div><div class="line">        &apos;database&apos; =&gt; 0,</div><div class="line">    ],</div><div class="line">    &apos;queue&apos; =&gt; [</div><div class="line">        &apos;class&apos; =&gt; \yii\queue\redis\Queue::class,</div><div class="line">        &apos;redis&apos; =&gt; &apos;redis2&apos;, // Redis connection component or its config</div><div class="line">        &apos;channel&apos; =&gt; &apos;queue&apos;, // Queue channel key</div><div class="line">        &apos;as log&apos; =&gt; \yii\queue\LogBehavior::class</div><div class="line">    ],</div><div class="line">]</div></pre></td></tr></table></figure></p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">DownloadJob</span> <span class="keyword">extends</span> <span class="title">Object</span> <span class="keyword">implements</span> \<span class="title">yii</span>\<span class="title">queue</span>\<span class="title">Job</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">public</span> $url;</div><div class="line">    <span class="keyword">public</span> $file;</div><div class="line">                </div><div class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">execute</span><span class="params">($queue)</span></span></div><div class="line">    &#123;</div><div class="line">        file_put_contents(<span class="keyword">$this</span>-&gt;file, file_get_contents(<span class="keyword">$this</span>-&gt;url));</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>以下是将任务发送到队列中的方法：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Yii::$app-&gt;queue-&gt;push(<span class="keyword">new</span> DownloadJob([</div><div class="line">    <span class="string">'url'</span> =&gt; <span class="string">'http://example.com/image.jpg'</span>,</div><div class="line">    <span class="string">'file'</span> =&gt; <span class="string">'/tmp/image.jpg'</span>,</div><div class="line">]));</div></pre></td></tr></table></figure>
-<p>将作业推入5分钟后运行的队列：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Yii::$app-&gt;queue-&gt;delay(<span class="number">5</span> * <span class="number">60</span>)-&gt;push(<span class="keyword">new</span> DownloadJob([</div><div class="line">    <span class="string">'url'</span> =&gt; <span class="string">'http://example.com/image.jpg'</span>,</div><div class="line">    <span class="string">'file'</span> =&gt; <span class="string">'/tmp/image.jpg'</span>,</div><div class="line">]));</div></pre></td></tr></table></figure>
-<p>执行任务的方式取决于所使用的驱动程序。大部分的驱动程序可以使用控制台命令运行，组件应该在应用程序中注册。<br>在循环中获取并执行任务的命令，直到队列为空：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">yii queue/run</div></pre></td></tr></table></figure>
-<p>命令启动一个无限查询队列的守护程序：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">yii queue/listen</div></pre></td></tr></table></figure>
-<p>该组件具有跟踪被推入队列的作业的状态的能力。</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="comment">//将作业推入队列并获取按摩ID。</span></div><div class="line">$id = Yii::$app-&gt;queue-&gt;push(<span class="keyword">new</span> SomeJob());</div><div class="line"></div><div class="line"><span class="comment">//工作正在等待执行。</span></div><div class="line">Yii::$app-&gt;queue-&gt;isWaiting($id);</div><div class="line"></div><div class="line"><span class="comment">// Worker从队列中获取作业并执行它。</span></div><div class="line">Yii::$app-&gt;queue-&gt;isReserved($id);</div><div class="line"></div><div class="line"><span class="comment">// Worker已经执行了这个工作。</span></div><div class="line">Yii::$app-&gt;queue-&gt;isDone($id);</div></pre></td></tr></table></figure>
-<h2 id="使用Supervisor管理php-yii-queue-listen"><a href="#使用Supervisor管理php-yii-queue-listen" class="headerlink" title="使用Supervisor管理php yii queue/listen"></a>使用Supervisor管理php yii queue/listen</h2><p>Supervisor是Linux的进程监视器。它会自动启动您的控制台进程。要在Ubuntu上安装，您需要运行命令：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install supervisor</div></pre></td></tr></table></figure></p>
-<p>主管配置文件通常可用/etc/supervisor/conf.d。您可以创建任意数量的配置文件。<br>配置示例:<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">[program:yii-queue-worker]</div><div class="line">process_name=%(program_name)s_%(process_num)<span class="number">02</span>d</div><div class="line">command=/usr/bin/php /<span class="keyword">var</span>/www/my_project/yii queue/listen --verbose=<span class="number">1</span> --color=<span class="number">0</span></div><div class="line">autostart=<span class="keyword">true</span></div><div class="line">autorestart=<span class="keyword">true</span></div><div class="line">user=www-data</div><div class="line">numprocs=<span class="number">4</span></div><div class="line">redirect_stderr=<span class="keyword">true</span></div><div class="line">stdout_logfile=/<span class="keyword">var</span>/www/my_project/log/yii-queue-worker.log</div></pre></td></tr></table></figure></p>
-
       
     </div>
     
@@ -246,6 +228,10 @@
 	</div>
 
 
+      
+        <p class="article-more-link">
+          <a  href="/2017/07/28/yii2-queue队列的使用说明/#more">more >></a>
+        </p>
       
       <div class="clearfix"></div>
     </div>
@@ -289,20 +275,10 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Supervisor<a href="http://supervisord.org" target="_blank" rel="external">链接</a> 是一个用 Python 写的进程管理工具，可以很方便的用来启动、重启、关闭进程（不仅仅是 Python 进程）。除了对单个进程的控制，还可以同时启动、关闭多个进程，比如很不幸的服务器出问题导致所有应用程序都被杀死，此时可以用 supervisor 同时启动所有应用程序而不是一个一个地敲命令启动。</p>
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Supervisor<a href="http://supervisord.org">链接</a> 是一个用 Python 写的进程管理工具，可以很方便的用来启动、重启、关闭进程（不仅仅是 Python 进程）。除了对单个进程的控制，还可以同时启动、关闭多个进程，比如很不幸的服务器出问题导致所有应用程序都被杀死，此时可以用 supervisor 同时启动所有应用程序而不是一个一个地敲命令启动。</p>
 <h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>Supervisor 可以运行在 Linux、Mac OS X 上。如前所述，supervisor 是 Python 编写的，所以安装起来也很方便，可以直接用 pip : sudo pip install supervisor<br> 如果是 Ubuntu 系统，还可以使用 apt-get install supervisor 安装,由于我们的容器是alpine系统,所以可以在Dockerfile里添加<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">RUN apk add supervisor</div></pre></td></tr></table></figure></p>
 <p>这样容器就可以安装superviosr</p>
-<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>然后在docker的服务目录services里创建supervisor目录，创建supervisor.conf文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">[supervisord]</div><div class="line">nodaemon=true</div><div class="line">[program:mqtt-server]</div><div class="line">directory = /var/www/html ;</div><div class="line">command = php yii queue/listen</div><div class="line">autostart = true</div><div class="line">startsecs = 5</div><div class="line">autorestart = true</div><div class="line">startretries = 10</div><div class="line">redirect_stderr=true</div><div class="line">stdout_logfile = /var/www/html/yii-queue-worker.log</div></pre></td></tr></table></figure>
-<p>然后在Dockerfile-web-volumes里面添加</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">- ./services/supervisor:/etc/supervisor/conf.d</div></pre></td></tr></table></figure>
-<p>以此将本地的配置文件映射到docker容器里面的supervisor的默认配置文件</p>
-<h2 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h2><blockquote>
-<p>本来我的想法是在Dockerfile里面直接添加<code>ENTRYPOINT [&#39;/usr/bin/supervisord&#39;,&#39;-c&#39;,&#39;/etc/supervisor/conf.d&#39;]</code>,想在docker build的时候直接启动supervisor管理队列，但是我的队列是其余redis的，运行到这一步的时候redis的docker还没有启动，导致我的页面一直502，虽然supervisor启动了，但是队列的redis驱动还没有启动，所以选择了折中的方法。<code>注意，如果队列基于其它driver的可以这样直接运行的</code></p>
-</blockquote>
-<p>折中的方案是在.gitlab-ci.yml文件中的<strong>testing-server:</strong>-&gt; <strong>script:</strong>和<strong>staging-server:</strong>-&gt;<strong>script:</strong>下分别添加<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">- ssh root@$DEPLOY_SERVER &quot;docker exec -i $CI_PROJECT_NAME /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf &amp;&gt;/dev/null&amp;&quot;</div></pre></td></tr></table></figure></p>
-<p>这样的方式是在部署的时候在启动supervisord,想当于在docker启动后在启动supervisord这个软件，这样就可以实现监听队列了<br>然后将docker-compose.yml和目录supervisor复制到deploy目录里的production,staging,testing三个目录里面</p>
-
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>然后在docker的服务目录services里创建supervisor目录，创建supervisor.conf文件<br>
       
     </div>
     
@@ -319,6 +295,10 @@
 	</div>
 
 
+      
+        <p class="article-more-link">
+          <a  href="/2017/07/25/docker中使用supervisor/#more">more >></a>
+        </p>
       
       <div class="clearfix"></div>
     </div>

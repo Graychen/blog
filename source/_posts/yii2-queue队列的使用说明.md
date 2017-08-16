@@ -14,6 +14,7 @@ yii2-queue是一个yii官方推出的队列扩展库，主要通过队列异步�
 + [github](https://github.com/yiisoft/yii2-queue)
 + [packaglist](https://packagist.org/packages/yiisoft/yii2-queue)
 
+<!--more-->
 ## 安装 
 
 ``` php

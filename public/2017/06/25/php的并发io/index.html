@@ -16,7 +16,7 @@
 多进程/多线程同步阻塞最早的服务器端都是通过多进程来解决IO的问题,通过Accept一个客户端连接就创建一个进程，然后子进程进入循环同步阻塞与客户端进行交互，收发数据。 因为线程之间是共">
 <meta property="og:image" content="http://graychen.git.io/assets/blogImg/manyporcess.png">
 <meta property="og:image" content="http://graychen.git.io/assets/blogImg/reactor.png">
-<meta property="og:updated_time" content="2017-07-28T04:51:07.562Z">
+<meta property="og:updated_time" content="2017-08-16T15:48:31.076Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="php的并发io">
 <meta name="twitter:description" content="计算领域一直是分为计算密集和IO密集型，web程序一直是io密集型，从最早的同步阻塞直接Fork进程，到Worker进程池，到现在的异步IO协程，io一直是服务器的难点，下面文章，将详细解析php的并发io问题。

@@ -17,7 +17,8 @@ RUN apk add supervisor
 这样容器就可以安装superviosr
 ## 配置
 然后在docker的服务目录services里创建supervisor目录，创建supervisor.conf文件
-
+<!--more-->
+#
 ``` 
 [supervisord]
 nodaemon=true

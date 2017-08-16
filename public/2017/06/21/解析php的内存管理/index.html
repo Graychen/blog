@@ -17,7 +17,7 @@
 
 内存泄露每个平台操作内存的方式都是差不多的有两个方面，一负责申请，二负责释放。如果应用程序向系统申请内存，系统便会在内存中寻找还没有被使用的地方，如果有合适的，便分配给">
 <meta property="og:image" content="http://graychen.git.io/assets/blogImg/zend_manage.jpg">
-<meta property="og:updated_time" content="2017-06-21T06:06:11.260Z">
+<meta property="og:updated_time" content="2017-08-16T15:48:31.076Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="解析php的内存管理">
 <meta name="twitter:description" content="php的内存管理在PHP内核中，大多数情况下都不应该直接使用C语言中自带着malloc、free、strdup、realloc、calloc等操作内存的函数，而应使用内核提供的操作内存的函数，这样可以由内核整体统一的来管理内存。
