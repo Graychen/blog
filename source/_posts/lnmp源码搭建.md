@@ -43,6 +43,7 @@ sudo apt-get install make cmake gcc g++ bison libncurses5-dev
 ```
 5.编译安装
 
+<!--more-->
 ``` shell
 [root@graychen mysql-5.7.13]# make -j `grep processor /proc/cpuinfo | wc -l`
 #编译很消耗系统资源，小内存可能编译通不过make install

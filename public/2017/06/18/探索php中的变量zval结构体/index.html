@@ -12,7 +12,7 @@
 <meta property="og:url" content="http://graychen.git.io/2017/06/18/探索php中的变量zval结构体/index.html">
 <meta property="og:site_name" content="Graychen的博客">
 <meta property="og:description" content="变量的类型php是动态语言，c是静态语言，php是c实现的，我以前一直不明白静态的c是怎么实现动态的php的，后面发现php的每个变量都是一个zval结构体，zval中的type存储真正的类型，根据type来获取zvalue_value的值.注意这个php的版本是5.4,最新的php7结构体已经变更PHP在内核中是通过zval这个结构体来存储变量的，它的定义在Zend/zend.h文件里，简短精炼">
-<meta property="og:updated_time" content="2017-06-21T06:08:17.290Z">
+<meta property="og:updated_time" content="2017-09-27T16:12:18.370Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="探索php中的变量zval结构体">
 <meta name="twitter:description" content="变量的类型php是动态语言，c是静态语言，php是c实现的，我以前一直不明白静态的c是怎么实现动态的php的，后面发现php的每个变量都是一个zval结构体，zval中的type存储真正的类型，根据type来获取zvalue_value的值.注意这个php的版本是5.4,最新的php7结构体已经变更PHP在内核中是通过zval这个结构体来存储变量的，它的定义在Zend/zend.h文件里，简短精炼">
@@ -101,9 +101,7 @@
 							
 								<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
 					        
-								<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
-					        
-								<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+								<a class="mail" target="_blank" href="/455803034@qq.com" title="mail">mail</a>
 					        
 						</div>
 					</nav>
@@ -112,7 +110,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
+						<a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/技术-php/" style="font-size: 10px;">技术 php</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
 					</div>
 				</section>
 				
@@ -170,9 +168,7 @@
 					
 						<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
 			        
-						<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
-			        
-						<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+						<a class="mail" target="_blank" href="/455803034@qq.com" title="mail">mail</a>
 			        
 				</div>
 			</nav>
@@ -222,6 +218,7 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h2 id="变量的类型"><a href="#变量的类型" class="headerlink" title="变量的类型"></a>变量的类型</h2><p>php是动态语言，c是静态语言，php是c实现的，我以前一直不明白静态的c是怎么实现动态的php的，后面发现php的每个变量都是一个zval结构体，zval中的type存储真正的类型，根据type来获取zvalue_value的值.<br>注意这个php的版本是5.4,最新的php7结构体已经变更<br>PHP在内核中是通过zval这个结构体来存储变量的，它的定义在Zend/zend.h文件里，简短精炼，只有四个成员组成：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="keyword">struct</span> <span class="number">_</span>zval_struct &#123;</div><div class="line">        zvalue_value value; <span class="comment">/* 变量的值 */</span></div><div class="line">        zend_uchar type;    <span class="comment">/* 变量当前的数据类型 */</span></div><div class="line">        zend_uint refcount__gc;</div><div class="line">        zend_uchar is_ref__gc;</div><div class="line">&#125;;</div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="number">_</span>zval_struct zval;</div><div class="line"></div><div class="line"><span class="comment">//在Zend/zend_types.h里定义的：</span></div><div class="line"><span class="keyword">typedef</span> <span class="keyword">unsigned</span> <span class="keyword">int</span> zend_uint;</div><div class="line"><span class="keyword">typedef</span> <span class="keyword">unsigned</span> <span class="keyword">char</span> zend_uchar;</div></pre></td></tr></table></figure></p>
+<a id="more"></a>
 <p>保存变量值的value则是zvalue_value类型(PHP5)，它是一个union，同样定义在了Zend/zend.h文件里：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typedef</span> <span class="keyword">union</span> <span class="number">_</span>zvalue_value &#123;</div><div class="line">        <span class="keyword">long</span> lval;                  <span class="comment">/* long value */</span></div><div class="line">        <span class="keyword">double</span> dval;                <span class="comment">/* double value */</span></div><div class="line">        <span class="keyword">struct</span> &#123;</div><div class="line">                <span class="keyword">char</span> *val;</div><div class="line">                <span class="keyword">int</span> len;</div><div class="line">        &#125; str;</div><div class="line">        HashTable *ht;              <span class="comment">/* hash table value */</span></div><div class="line">        zend_object_value obj;</div><div class="line">&#125; zvalue_value;</div></pre></td></tr></table></figure></p>
 <blockquote>
 <p>PHP中常见的变量类型有：</p>

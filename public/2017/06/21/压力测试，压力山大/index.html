@@ -14,7 +14,7 @@
 <meta property="og:site_name" content="Graychen的博客">
 <meta property="og:description" content="压力测试的基本概念
 吞吐率（Requests per second）概念：服务器并发处理能力的量化描述，单位是reqs/s，指的是某个并发用户数下单位时间内处理的请求数。某个并发用户数下单位时间内能处理的最大请求数，称之为最大吞吐率。计算公式：总请求数 / 处理完成这些请求数所花费的时间，即Request per second = Complete requests / Time taken fo">
-<meta property="og:updated_time" content="2017-07-28T04:51:07.562Z">
+<meta property="og:updated_time" content="2017-09-27T16:11:57.742Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="压力测试，压力山大">
 <meta name="twitter:description" content="压力测试的基本概念
@@ -104,9 +104,7 @@
 							
 								<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
 					        
-								<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
-					        
-								<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+								<a class="mail" target="_blank" href="/455803034@qq.com" title="mail">mail</a>
 					        
 						</div>
 					</nav>
@@ -115,7 +113,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
+						<a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/技术-php/" style="font-size: 10px;">技术 php</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
 					</div>
 				</section>
 				
@@ -173,9 +171,7 @@
 					
 						<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
 			        
-						<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
-			        
-						<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+						<a class="mail" target="_blank" href="/455803034@qq.com" title="mail">mail</a>
 			        
 				</div>
 			</nav>
@@ -229,6 +225,7 @@
 <h3 id="并发连接数（The-number-of-concurrent-connections）"><a href="#并发连接数（The-number-of-concurrent-connections）" class="headerlink" title="并发连接数（The number of concurrent connections）"></a>并发连接数（The number of concurrent connections）</h3><p>概念：某个时刻服务器所接受的请求数目，简单的讲，就是一个会话。</p>
 <h3 id="并发用户数（The-number-of-concurrent-users，Concurrency-Level）"><a href="#并发用户数（The-number-of-concurrent-users，Concurrency-Level）" class="headerlink" title="并发用户数（The number of concurrent users，Concurrency Level）"></a>并发用户数（The number of concurrent users，Concurrency Level）</h3><p>概念：要注意区分这个概念和并发连接数之间的区别，一个用户可能同时会产生多个会话，也即连接数。</p>
 <h3 id="用户平均请求等待时间（Time-per-request）"><a href="#用户平均请求等待时间（Time-per-request）" class="headerlink" title="用户平均请求等待时间（Time per request）"></a>用户平均请求等待时间（Time per request）</h3><p>计算公式：处理完成所有请求数所花费的时间/ （总请求数 / 并发用户数），即<br>Time per request = Time taken for tests /（ Complete requests / Concurrency Level）</p>
+<a id="more"></a>
 <h3 id="服务器平均请求等待时间（Time-per-request-across-all-concurrent-requests）"><a href="#服务器平均请求等待时间（Time-per-request-across-all-concurrent-requests）" class="headerlink" title="服务器平均请求等待时间（Time per request: across all concurrent requests）"></a>服务器平均请求等待时间（Time per request: across all concurrent requests）</h3><p>计算公式：处理完成所有请求数所花费的时间 / 总请求数，即<br>Time taken for / testsComplete requests<br>可以看到，它是吞吐率的倒数。<br>同时，它也=用户平均请求等待时间/并发用户数，即<br>Time per request / Concurrency Level</p>
 <h3 id="压力测试工具"><a href="#压力测试工具" class="headerlink" title="压力测试工具"></a>压力测试工具</h3><h2 id="ab"><a href="#ab" class="headerlink" title="ab"></a>ab</h2><p>ab工具简介<br>ab全称为：apache bench<br>在官网上的解释如下：<br>ab是Apache超文本传输协议(HTTP)的性能测试工具。其设计意图是描绘当前所安装的Apache的执行性能，主要是显示你安装的Apache每秒可以处理多少个请求。<br>开始测试:<br>输入命令<br><code>ab -n 100 -c 10 https://www.baidu.com/</code></p>
 <blockquote>

@@ -22,7 +22,7 @@
 
 安装php7.1安装 Php7.1 之前，要先安装language-pack-en-base这个包，运行：
 12sudo apt-get updat">
-<meta property="og:updated_time" content="2017-06-20T06:30:10.856Z">
+<meta property="og:updated_time" content="2017-09-27T16:11:17.090Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ubuntu下lnmp快速搭建">
 <meta name="twitter:description" content="我所用的环境是ubuntu16.10，上篇博文是源码安装lnmp，但是大部分情况下没有这么多的精神和时间，这篇博文来介绍下利用apt-get这个工具来快速完成lnmp的搭建。
@@ -116,9 +116,7 @@
 							
 								<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
 					        
-								<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
-					        
-								<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+								<a class="mail" target="_blank" href="/455803034@qq.com" title="mail">mail</a>
 					        
 						</div>
 					</nav>
@@ -127,7 +125,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
+						<a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/技术-php/" style="font-size: 10px;">技术 php</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
 					</div>
 				</section>
 				
@@ -185,9 +183,7 @@
 					
 						<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
 			        
-						<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
-			        
-						<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+						<a class="mail" target="_blank" href="/455803034@qq.com" title="mail">mail</a>
 			        
 				</div>
 			</nav>
@@ -248,6 +244,7 @@
 <p>设定语言编码为<font color="red">UTF-8</font>。</p>
 <p>进入正题，安装Php7.1，本教程采用ppa方式安装php7.1，运行：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-get install software-properties-common</div></pre></td></tr></table></figure>
+<a id="more"></a>
 <p>software-properties-common是add-apt-repository所依赖的包，安装成功后，运行：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo LC_ALL=en_US.UTF-8 add-apt-repository ppa:ondrej/php</div></pre></td></tr></table></figure>
 <p>安装完成之后，运行<font color="red"><strong>sudo apt-get update</strong></font>更新安装包，把刚才添加的包拉取下来。 运行<strong><font color="red">apt-cache search php7.1</font></strong>搜索php7.1开头的包检验是否安装成功，输出如下：</p>

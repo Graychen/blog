@@ -33,6 +33,7 @@ locale-gen en_US.UTF-8
 sudo apt-get install software-properties-common  
 ```
 
+<!--more-->
 software-properties-common是add-apt-repository所依赖的包，安装成功后，运行：
 
 ``` bash

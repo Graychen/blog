@@ -14,7 +14,7 @@
 <meta property="og:description" content="上篇博文我们探索了php中的zval中的类型和值，现在我们探究下php的zval结构体中的:       zend_uint refcount__gc       zend_uchar is_ref__gc1234567struct _zval_struct &amp;#123;        zvalue_value value; /* 变量的值 */        zend_uchar type;">
 <meta property="og:image" content="http://graychen.git.io/assets/blogImg/is_ref1.jpg">
 <meta property="og:image" content="http://graychen.git.io/assets/blogImg/is_ref2.jpg">
-<meta property="og:updated_time" content="2017-06-21T06:56:58.164Z">
+<meta property="og:updated_time" content="2017-09-27T16:12:24.966Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="探索php中的变量zval结构体二">
 <meta name="twitter:description" content="上篇博文我们探索了php中的zval中的类型和值，现在我们探究下php的zval结构体中的:       zend_uint refcount__gc       zend_uchar is_ref__gc1234567struct _zval_struct &amp;#123;        zvalue_value value; /* 变量的值 */        zend_uchar type;">
@@ -104,9 +104,7 @@
 							
 								<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
 					        
-								<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
-					        
-								<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+								<a class="mail" target="_blank" href="/455803034@qq.com" title="mail">mail</a>
 					        
 						</div>
 					</nav>
@@ -115,7 +113,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
+						<a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/技术-php/" style="font-size: 10px;">技术 php</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
 					</div>
 				</section>
 				
@@ -173,9 +171,7 @@
 					
 						<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
 			        
-						<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
-			        
-						<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+						<a class="mail" target="_blank" href="/455803034@qq.com" title="mail">mail</a>
 			        
 				</div>
 			</nav>
@@ -227,6 +223,7 @@
         <p>上篇博文我们探索了php中的zval中的类型和值，现在我们探究下php的zval结构体中的:<br>       <code>zend_uint refcount__gc</code><br>       <code>zend_uchar is_ref__gc</code><br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">struct</span> <span class="number">_</span>zval_struct &#123;</div><div class="line">        zvalue_value value; <span class="comment">/* 变量的值 */</span></div><div class="line">        zend_uchar type;    <span class="comment">/* 变量当前的数据类型 */</span></div><div class="line">        zend_uint refcount__gc; <span class="comment">/*  */</span></div><div class="line">        zend_uchar is_ref__gc;</div><div class="line">&#125;;</div><div class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="number">_</span>zval_struct zval;</div></pre></td></tr></table></figure></p>
 <p>php中的引用计数<br>先看例子</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">$a = <span class="string">'Hello World'</span>;</div><div class="line">$b = $a;</div><div class="line"><span class="keyword">unset</span>($a);</div></pre></td></tr></table></figure>
+<a id="more"></a>
 <p>PHP变量的名称和值在php内核中是保存在两个不同的地方的，值是通过一个与名字毫无关系的zval结构来保存，而这个变量的名字a则保存在符号表里，两者之间通过指针联系着。在我们上面的例子里，$a是一个字符串，我们通过zend_hash_add把它添加到符号表里，然后又把它赋值给$b,两者拥有相同的内容！如果两者指向完全相同的内容，我们有什么优化措施吗？<br>这里我们主要讲解refcount<strong>gc这个成员。当一个变量被第一次创建的时候，它对应的zval结构体的refcount</strong>gc成员的值会被初始化为1，理由很简单，因为只有这个变量自己在用它。但是当你把这个变量赋值给别的变量时，refcount__gc属性便会加1变成2，因为现在有两个变量在用这个zval结构了！ 以上描述转为内核中的代码大体如下：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">zval *helloval;</div><div class="line">MAKE_STD_ZVAL(helloval);</div><div class="line">ZVAL_STRING(helloval, <span class="string">"Hello World"</span>, <span class="number">1</span>);</div><div class="line">zend_hash_add(EG(active_symbol_table), <span class="string">"a"</span>, <span class="keyword">sizeof</span>(<span class="string">"a"</span>),&amp;helloval, <span class="keyword">sizeof</span>(zval*), <span class="literal">NULL</span>);</div><div class="line">ZVAL_ADDREF(helloval); <span class="comment">//这句很特殊，我们显式的增加了helloval结构体的refcount</span></div><div class="line">zend_hash_add(EG(active_symbol_table), <span class="string">"b"</span>, <span class="keyword">sizeof</span>(<span class="string">"b"</span>),&amp;helloval, <span class="keyword">sizeof</span>(zval*), <span class="literal">NULL</span>)</div></pre></td></tr></table></figure>
 <p>这个时候当我们再用unset删除$a的时候，它删除符号表里的$a的信息，然后清理它的值部分，这时它发现$a的值对应的zval结构的refcount值是2，也就是有另外一个变量在一起用着这个zval，所以unset只需把这个zval的refcount减去1就行了！<br>引用计数绝对是节省内存的一个超棒的模式！但是当我们修改$b的值，而且还需要继续使用$a时，该怎么办呢？</p>

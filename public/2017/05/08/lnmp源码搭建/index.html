@@ -15,7 +15,7 @@
 <meta property="og:description" content="mysql源码安装1.安装编译源码需要的包1sudo apt-get install make cmake gcc g++ bison libncurses5-dev
 2.下载相应源码包12[root@graychen ~]# wget https://sourceforge.net/projects/boost/files/boost/1.59.0/boost_1_59_0.tar.gz[roo">
 <meta property="og:image" content="http://graychen.git.io/assets/blogImg/php.png">
-<meta property="og:updated_time" content="2017-05-26T04:22:03.690Z">
+<meta property="og:updated_time" content="2017-09-27T16:10:59.174Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="lnmp源码搭建">
 <meta name="twitter:description" content="mysql源码安装1.安装编译源码需要的包1sudo apt-get install make cmake gcc g++ bison libncurses5-dev
@@ -106,9 +106,7 @@
 							
 								<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
 					        
-								<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
-					        
-								<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+								<a class="mail" target="_blank" href="/455803034@qq.com" title="mail">mail</a>
 					        
 						</div>
 					</nav>
@@ -117,7 +115,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
+						<a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/技术-php/" style="font-size: 10px;">技术 php</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
 					</div>
 				</section>
 				
@@ -175,9 +173,7 @@
 					
 						<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
 			        
-						<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
-			        
-						<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+						<a class="mail" target="_blank" href="/455803034@qq.com" title="mail">mail</a>
 			        
 				</div>
 			</nav>
@@ -228,6 +224,7 @@
 <p>4.预编译</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">[root@graychen ~]# tar -zxvf boost_1_59_0.tar.gz</div><div class="line">[root@graychen data]# md5sum mysql-5.7.13.tar.gz </div><div class="line">8fab75dbcafcd1374d07796bff88ae00  mysql-5.7.13.tar.gz</div><div class="line">[root@graychen ~]# tar -zxvf mysql-5.7.13.tar.gz</div><div class="line">[root@graychen data]# mkdir -p /data/mysql</div><div class="line">[root@graychen data]# cd mysql-5.7.13</div><div class="line">[root@graychen data]# cmake . -DCMAKE_INSTALL_PREFIX=/usr/local/mysql \</div><div class="line">-DMYSQL_DATADIR=/data/mysql \</div><div class="line">-DWITH_BOOST=../boost_1_59_0 \</div><div class="line">-DSYSCONFDIR=/etc \</div><div class="line">-DWITH_INNOBASE_STORAGE_ENGINE=1 \</div><div class="line">-DWITH_PARTITION_STORAGE_ENGINE=1 \</div><div class="line">-DWITH_FEDERATED_STORAGE_ENGINE=1 \</div><div class="line">-DWITH_BLACKHOLE_STORAGE_ENGINE=1 \</div><div class="line">-DWITH_MYISAM_STORAGE_ENGINE=1 \</div><div class="line">-DENABLED_LOCAL_INFILE=1 \</div><div class="line">-DENABLE_DTRACE=0 \</div><div class="line">-DDEFAULT_CHARSET=utf8mb4 \</div><div class="line">-DDEFAULT_COLLATION=utf8mb4_general_ci \</div><div class="line">-DWITH_EMBEDDED_SERVER=1</div></pre></td></tr></table></figure>
 <p>5.编译安装</p>
+<a id="more"></a>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">[root@graychen mysql-5.7.13]# make -j `grep processor /proc/cpuinfo | wc -l`</div><div class="line">#编译很消耗系统资源，小内存可能编译通不过make install</div><div class="line">[root@graychen mysql-5.7.13]# make install</div></pre></td></tr></table></figure>
 <p>6.设置启动脚本，开机自启动</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">[root@graychen mysql-5.7.13]# ls -lrt /usr/local/mysql</div><div class="line">[root@graychen mysql-5.7.13]# cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysqld</div><div class="line">[root@graychen mysql-5.7.13]# chmod +x /etc/init.d/mysqld</div><div class="line">[root@graychen mysql-5.7.13]# systemctl enable mysqld</div><div class="line">mysqld.service is not a native service, redirecting to /sbin/chkconfig.</div><div class="line">Executing /sbin/chkconfig mysqld on</div></pre></td></tr></table></figure>

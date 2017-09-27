@@ -44,6 +44,7 @@ ZEND_API char *_estrndup(const char *s, uint length ZEND_FILE_LINE_DC ZEND_FILE_
         return p;
 }
 ```
+<!--more-->
 
 在此，被隐式放置在缓冲区最后的0可以确保任何使用estrndup()实现字符串复制操作的函数都不需要担心会把结果缓冲区传递给一个例如printf()这样的希望以为NULL为结束符的函数。当使用estrndup()来复制非字符串数据时，最后一个字节实质上浪费了，但其中的利明显大于弊。
 void *safe_emalloc(size_t size, size_t count, size_t addtl);

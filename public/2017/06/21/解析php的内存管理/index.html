@@ -17,7 +17,7 @@
 
 内存泄露每个平台操作内存的方式都是差不多的有两个方面，一负责申请，二负责释放。如果应用程序向系统申请内存，系统便会在内存中寻找还没有被使用的地方，如果有合适的，便分配给">
 <meta property="og:image" content="http://graychen.git.io/assets/blogImg/zend_manage.jpg">
-<meta property="og:updated_time" content="2017-06-21T06:06:11.260Z">
+<meta property="og:updated_time" content="2017-09-27T16:13:07.314Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="解析php的内存管理">
 <meta name="twitter:description" content="php的内存管理在PHP内核中，大多数情况下都不应该直接使用C语言中自带着malloc、free、strdup、realloc、calloc等操作内存的函数，而应使用内核提供的操作内存的函数，这样可以由内核整体统一的来管理内存。
@@ -109,9 +109,7 @@
 							
 								<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
 					        
-								<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
-					        
-								<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+								<a class="mail" target="_blank" href="/455803034@qq.com" title="mail">mail</a>
 					        
 						</div>
 					</nav>
@@ -120,7 +118,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
+						<a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/技术-php/" style="font-size: 10px;">技术 php</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
 					</div>
 				</section>
 				
@@ -178,9 +176,7 @@
 					
 						<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
 			        
-						<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
-			        
-						<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+						<a class="mail" target="_blank" href="/455803034@qq.com" title="mail">mail</a>
 			        
 				</div>
 			</nav>
@@ -265,6 +261,7 @@
 </tbody>
 </table>
 <p>你可能会注意到，即使是pefree()函数也要求使用永久性标志。这是因为在调用pefree()时，它实际上并不知道是否ptr是一种永久性分配。需要注意的是，如果针对一个ZendMM申请的非永久性内存直接调用free()能够导致双倍的空间释放，而针对一种永久性分配调用efree()有可能会导致一个段错误，因为ZendMM需要去查找并不存在的管理信息。因此，你的代码需要记住它申请的内存是否是永久性的，从而选择不同的内存函数，free()或者efree()。 除了上述内存管理函数外，还存在其它一些非常方便的ZendMM函数，例如： <figure class="highlight plain"><figcaption><span>void *estrndup(void *ptr，int len);</span></figcaption><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">该函数能够分配len+1个字节的内存并且从ptr处复制len个字节到最新分配的块。这个estrndup()函数的行为可以大致描述如下：</div><div class="line"></div><div class="line">```c</div><div class="line">ZEND_API char *_estrndup(const char *s, uint length ZEND_FILE_LINE_DC ZEND_FILE_LINE_ORIG_DC)</div><div class="line">&#123;</div><div class="line">        char *p;</div><div class="line"></div><div class="line">        p = (char *) _emalloc(length+1 ZEND_FILE_LINE_RELAY_CC ZEND_FILE_LINE_ORIG_RELAY_CC);</div><div class="line">            if (UNEXPECTED(p == NULL))</div><div class="line">            &#123;</div><div class="line">                        return p;</div><div class="line">                            </div><div class="line">            &#125;</div><div class="line">        memcpy(p, s, length);</div><div class="line">        p[length] = 0;</div><div class="line">        return p;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<a id="more"></a>
 <p>在此，被隐式放置在缓冲区最后的0可以确保任何使用estrndup()实现字符串复制操作的函数都不需要担心会把结果缓冲区传递给一个例如printf()这样的希望以为NULL为结束符的函数。当使用estrndup()来复制非字符串数据时，最后一个字节实质上浪费了，但其中的利明显大于弊。<br>void <em>safe_emalloc(size_t size, size_t count, size_t addtl);<br>void </em>safe_pemalloc(size_t size, size_t count, size_t addtl, char persistent);<br>这些函数分配的内存空间最终大小都是((size*count)+addtl)。 你可以会问：”为什么还要提供额外函数呢？为什么不使用一个emalloc/pemalloc呢？”。 原因很简单：为了安全，以防万一。尽管有时候可能性相当小，但是，正是这一”可能性相当小”的结果导致宿主平台的内存溢出。 这可能会导致分配负数个数的字节空间，或更有甚者，会导致分配一个小于调用程序要求大小的字节空间。 而safe_emalloc()能够避免这种类型的陷井-通过检查整数溢出并且在发生这样的溢出时显式地预以结束。</p>
 
       

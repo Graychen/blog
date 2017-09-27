@@ -24,7 +24,7 @@
 <meta property="og:image" content="http://graychen.git.io/assets/blogImg/多窗终端.png">
 <meta property="og:image" content="http://graychen.git.io/assets/blogImg/选择主题.png">
 <meta property="og:image" content="http://graychen.git.io/assets/blogImg/桌面效果图.png">
-<meta property="og:updated_time" content="2017-05-26T04:22:03.690Z">
+<meta property="og:updated_time" content="2017-09-27T16:12:04.558Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="变身吧！我的linux配置环境">
 <meta name="twitter:description" content="我用的linux是ubuntu16长期支持版，自带的桌面太丑，自带的终端一直没有分屏功能，所以我就开始了改造工作。
@@ -118,9 +118,7 @@
 							
 								<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
 					        
-								<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
-					        
-								<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+								<a class="mail" target="_blank" href="/455803034@qq.com" title="mail">mail</a>
 					        
 						</div>
 					</nav>
@@ -129,7 +127,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
+						<a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/技术-php/" style="font-size: 10px;">技术 php</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
 					</div>
 				</section>
 				
@@ -187,9 +185,7 @@
 					
 						<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
 			        
-						<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
-			        
-						<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+						<a class="mail" target="_blank" href="/455803034@qq.com" title="mail">mail</a>
 			        
 				</div>
 			</nav>
@@ -243,6 +239,7 @@
 <h2 id="终端改造-Terminator"><a href="#终端改造-Terminator" class="headerlink" title="终端改造  Terminator"></a>终端改造  Terminator</h2><p>ubuntu自带的终端原本也不错，只是缺少分屏功能和强大的复制粘贴功能，所以就用Terminator来代替，其强大的分屏功能真是我的最爱了。</p>
 <h3 id="安装方式"><a href="#安装方式" class="headerlink" title="安装方式"></a>安装方式</h3><p>sudo apt-get install terminator</p>
 <h3 id="常用快捷键"><a href="#常用快捷键" class="headerlink" title="常用快捷键"></a>常用快捷键</h3><p>垂直分割窗口 <code>Ctrl+Shift+e</code><br>水平分割窗口 <code>Ctrl+Shift+o</code><br>复制         <code>Ctrl+Shift+c</code><br>粘贴         <code>Ctrl+Shift+v</code><br>切换窗口     <code>Ctrl+Shift+n</code><br>将分割的某个窗口放大至全屏使用         <code>Ctrl+Shift+x</code><br>从放大的某一窗口回到多窗口格局         <code>Ctrl+Shift+z</code><br> <img src="/assets/blogImg/多窗终端.png" alt="&quot;我是傲娇的效果图&quot;"></p>
+<a id="more"></a>
 <h3 id="终端主题"><a href="#终端主题" class="headerlink" title="终端主题"></a>终端主题</h3> <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">apt-get install zsh</div><div class="line">wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh</div><div class="line">chsh -s `which zsh`</div><div class="line">sudo shutdown -r 0</div></pre></td></tr></table></figure>
 <p> 我用的主题是<code>ys</code></p>
 <h3 id="桌面主题"><a href="#桌面主题" class="headerlink" title="桌面主题"></a>桌面主题</h3><p> 首先在这里<a href="https://github.com/anmoljagetia/Flatabulous/archive/master.zip" target="_blank" rel="external">下载</a>主题包，将文件解压后移动到<code>/usr/share/themes/</code>,接着安装图标:<br> <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sudo add-apt-repository ppa:noobslab/icons</div><div class="line">sudo apt-get update</div><div class="line">sudo apt-get install ultra-flat-icons</div></pre></td></tr></table></figure></p>
@@ -259,11 +256,11 @@
     
 <nav id="article-nav">
   
-    <a href="/2016/10/19/composer包是怎样炼成的/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2016/10/19/深入解析php的容器模式/" id="article-nav-newer" class="article-nav-link-wrap">
       <strong class="article-nav-caption"><</strong>
       <div class="article-nav-title">
         
-          Composer包是怎样炼成的
+          深入解析php的容器模式
         
       </div>
     </a>

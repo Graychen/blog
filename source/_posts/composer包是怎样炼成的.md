@@ -26,6 +26,7 @@ categories: 技术
 我们新建一个组件目录（~/Packages/urlscanner），然后在urlscanner目录下通过如下命令生成composer.json文件：
 composer init
 
+<!--more-->
 然后在终端会让我们按照提示向导一步步填写composer.json内容：
 最后回车，会生成相应的composer.json文件，我们对该文件作如下修改：
 ``` javascript
