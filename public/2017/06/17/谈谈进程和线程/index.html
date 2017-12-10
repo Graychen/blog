@@ -17,7 +17,11 @@
 <meta property="og:image" content="http://graychen.git.io/assets/blogImg/process.png">
 <meta property="og:image" content="http://graychen.git.io/assets/blogImg/process.pipe.png">
 <meta property="og:image" content="http://graychen.git.io/assets/blogImg/thread.corrupt.png">
+<<<<<<< HEAD
 <meta property="og:updated_time" content="2017-08-16T15:48:31.076Z">
+=======
+<meta property="og:updated_time" content="2017-09-27T16:13:22.054Z">
+>>>>>>> origin/master
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="谈谈进程和线程">
 <meta name="twitter:description" content="最近对于进程和线程之间的关系及其本质有所疑惑，在网上查询了多个答案之后有了些感想，记录下
@@ -108,9 +112,7 @@
 							
 								<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
 					        
-								<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
-					        
-								<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+								<a class="mail" target="_blank" href="/455803034@qq.com" title="mail">mail</a>
 					        
 						</div>
 					</nav>
@@ -119,7 +121,11 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
+<<<<<<< HEAD
 						<a href="/tags/devops/" style="font-size: 10px;">devops</a> <a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
+=======
+						<a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/技术-php/" style="font-size: 10px;">技术 php</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
+>>>>>>> origin/master
 					</div>
 				</section>
 				
@@ -177,9 +183,7 @@
 					
 						<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
 			        
-						<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
-			        
-						<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+						<a class="mail" target="_blank" href="/455803034@qq.com" title="mail">mail</a>
 			        
 				</div>
 			</nav>
@@ -234,7 +238,7 @@
 <h2 id="进程的本质"><a href="#进程的本质" class="headerlink" title="进程的本质"></a>进程的本质</h2><p>cpu的单次运算</p>
 <h2 id="线程的概念"><a href="#线程的概念" class="headerlink" title="线程的概念"></a>线程的概念</h2><p>有些进程还不止同时干一件事，比如Word，它可以同时进行打字、拼写检查、打印等事情。在一个进程内部，要同时干多件事，就需要同时运行多个“子任务”，我们把进程内的这些“子任务”称为线程（Thread）。</p>
 <h2 id="线程的本质"><a href="#线程的本质" class="headerlink" title="线程的本质"></a>线程的本质</h2><p>由于每个进程至少要干一件事，所以，一个进程至少有一个线程。当然，像Word这种复杂的进程可以有多个线程，多个线程可以同时执行，多线程的执行方式和多进程是一样的，也是由操作系统在多个线程之间快速切换，让每个线程都短暂地交替运行，看起来就像同时执行一样。当然，真正地同时执行多线程需要多核CPU才可能实现。</p>
-<h2 id="线程的特点"><a href="#线程的特点" class="headerlink" title="线程的特点"></a>线程的特点</h2><p>由于同一进程的多个线程共享同一地址空间，因此Text Segment、Data Segment都是共享的，如果定义一个函数，在各线程中都可以调用，如果定义一个全局变量，在各线程中都可以访问到，除此之外，各线程还共享以下进程资源和环境：<br>文件描述符表<br>每种信号的处理方式（SIG_IGN、SIG_DFL或者自定义的信号处理函数）<br>当前工作目录<br>用户id和组id<br>但有些资源是每个线程各有一份的：<br>线程id<br>上下文，包括各种寄存器的值、程序计数器和栈指针<br>栈空间<br>errno变量<br>信号屏蔽字<br>调度优先级</p>
+<h2 id="线程的特点"><a href="#线程的特点" class="headerlink" title="线程的特点"></a>线程的特点</h2><p>由于同一进程的多个线程共享同一地址空间，因此Text Segment、Data Segment都是共享的，如果定义一个函数，在各线程中都可以调用，如果定义一个全局变量，在各线程中都可以访问到，除此之外，各线程还共享以下进程资源和环境：<br>文件描述符表<br>每种信号的处理方式（SIG_IGN、SIG_DFL或者自定义的信号处理函数）<br>当前工作目录<br>用户id和组id<br>但有些资源是每个线程各有一份的：<br>线程id<br><a id="more"></a><br>上下文，包括各种寄存器的值、程序计数器和栈指针<br>栈空间<br>errno变量<br>信号屏蔽字<br>调度优先级</p>
 <h2 id="进程的通信"><a href="#进程的通信" class="headerlink" title="进程的通信"></a>进程的通信</h2><p>每个进程各自有不同的用户地址空间，任何一个进程的全局变量在另一个进程中都看不到，所以进程之间要交换数据必须通过内核，在内核中开辟一块缓冲区，进程1把数据从用户空间拷到内核缓冲区，进程2再从内核缓冲区把数据读走，内核提供的这种机制称为进程间通信（IPC，InterProcess Communication）。如下图所示。<br>图 30.6. 进程间通信<br>进程间通信<br> <img src="/assets/blogImg/process.png" alt="&quot;我是傲娇的效果图&quot;"></p>
 <h3 id="管道"><a href="#管道" class="headerlink" title="管道"></a>管道</h3><p>管道是一种最基本的IPC机制，由pipe函数创建：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">pipe</span><span class="params">(<span class="keyword">int</span> filedes[<span class="number">2</span>])</span></span>;</div></pre></td></tr></table></figure></p>
 <p>调用pipe函数时在内核中开辟一块缓冲区（称为管道）用于通信，它有一个读端一个写端，然后通过filedes参数传出给用户程序两个文件描述符，filedes[0]指向管道的读端，filedes[1]指向管道的写端（很好记，就像0是标准输入1是标准输出一样）。所以管道在用户程序看起来就像一个打开的文件，通过read(filedes[0]);或者write(filedes[1]);向这个文件读写数据其实是在读写内核缓冲区。pipe函数调用成功返回0，调用失败返回-1。</p>

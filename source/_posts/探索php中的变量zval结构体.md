@@ -25,6 +25,7 @@ typedef unsigned char zend_uchar;
 
 ```
 
+<!--more-->
 保存变量值的value则是zvalue_value类型(PHP5)，它是一个union，同样定义在了Zend/zend.h文件里：
 ``` c
 typedef union _zvalue_value {

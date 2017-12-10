@@ -1,0 +1,189 @@
+---
+title: github自动化测试
+date: 2017-09-27 22:39:54
+tags: 技术 php
+---
+前段时间我们组对项目进行重构，将多个项目中例如log，app的更新这些重复的内容抽出来做了composer包，为了保证这些composer包的代码质量，
+使用了github上的一些工具。下面我以自己的一个利用经纬度查询地理位置的composer包geolocation[https://github.com/Graychen/geolocation/tree/master/tests]为例来详细描述下我们的做法。
+## Style CI(php格式检查)
+在项目根目录，新建.styleci.yml 配置文件，并编写配置内容：
+```
+preset: psr2
+```
+打开 https://styleci.io/ ，使用Gitlab账号登录，找到对应的项目，点击右侧的 ENABLE STYLECI 启用按钮，即可使用，
+每次提交代码，都会看到检测结果
+如果没有找到自己的项目，打开 https://styleci.io/account#repos 点击 Sync With GitHub 同步，就会看到
+## Travis-CI
+### 配置单元测试(自动化测试)
+1先引入phpunit单元测试包,
+```
+composer require --dev phpunit/phpunit ^6.2
+```
+2编写配置文件phpunit.xml.dist,放到根根根目录
+白名单是你要测试的目录文件，用于生成代码覆盖率
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="./tests/bootstrap.php"
+         colors="true"
+         verbose="true"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnFailure="false">
+    <testsuites>
+        <testsuite name="Test Suite">
+            <directory>./tests</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist>
+            <directory suffix=".php">./src</directory>
+        </whitelist>
+    </filter>
+</phpunit>
+```
+
+3然后建立测试目录test，并在里面建立bootstrap.php来引入composer中的引导文件
+``` php
+<?php
+// ensure we get report on all possible php errors
+error_reporting(-1);
+require_once(__DIR__ . '/../vendor/autoload.php');
+```
+4composerjson.json文件里自动载入,否则找不到tests里面的TestCase
+``` 
+ "autoload-dev": {
+        "psr-4": {
+            "graychen\\Test\\": "tests/"
+        }
+    },
+```
+
+5编写.travil.yml文件(在https://travis-ci.com/ 注册账号,然后在github添加service,这样每次提交代码就会自动同步到travis)
+
+``` 
+
+php:
+  - 5.6
+
+  - 7.1
+
+ # cache vendor dirs
+cache:
+  directories:
+    - $HOME/.composer/cache
+    - vendor
+
+#安装依赖
+install:
+
+  - travis_retry composer self-update
+
+  - travis_retry composer install --prefer-dist --no-interaction
+
+
+before_script:
+
+  - travis_retry composer self-update
+
+  - travis_retry composer install --no-interaction --prefer-source --dev
+
+#单元测试
+script:
+
+  - phpunit --coverage-text --coverage-clover=coverage.clover --debug
+
+#需要在https://scrutinizer-ci.com注册账号 并绑定github账号同步github项目
+after_script:
+
+  - wget https://scrutinizer-ci.com/ocular.phar
+
+  - php ocular.phar code-coverage:upload  --format=php-clover coverage.clover
+```
+
+
+## Scrutinizer ()
+Scrutinizer具有可用于PHP代码的最先进的静态分析引擎。 它能跟踪数据如何流经我们的应用程序以检测代码安全，错误，未使用的代码等。默认情况下，Scrutinizer将分析项目中以.php结尾的所有文件。
+
+1.Scrutinizer测试以后会有三个指标供我们对代码来改进
+
+Code Quality（代码质量）
+
+   代码质量评测来源主要是代码耦合度,代码的复杂度,冗余,未使用变量等. 
+Code Coverage（单元测试覆盖率）
+
+  提高单元测试覆盖率， 如果方法里有多个条件分支，尽可能传递不同参数或者使用其它方法让每一行都执行
+Build Status
+
+  这一项由代码分析来决定，比如依赖是否可以加载，测试报告是否接收到（travis-ci提供）
+  如果travis-ci已经build成功，Scrutinizer中却因为某些依赖无法加载可通过以下配置来过滤依赖分析
+  excluded_dependencies:
+                         - phpunit/php-timer
+                         - or-another/package-name
+  
+2.基本配置文件
+
+   #测试项目根目录创建.scrutinizer.yml文件
+```
+   imports:
+         - php
+    tools:
+        external_code_coverage:
+            timeout: 1800 # Timeout in seconds.
+        # disable copy paste detector and similarity analyzer as they have no real value
+        # and a huge bunch of false-positives
+        php_sim: false
+        php_cpd: false
+```
+参考文档地址https://scrutinizer-ci.com/docs/guides/php/automated-code-reviews
+## Codeclimate简介及使用
+Code Climate可以看作是开发团队的云机器人，无需执行代码就可对代码进行标准化测试，为项目提供静态分析功能，与GitHub集成可以进行漏洞排查工作 每个人都可能用正确的风格写出质量低下的代码，这其中可能包括：
+
+重复的代码，它们可能存在于同一个类或不同类中
+不一致或没有标识性的对象、变量或方法命名
+过长的代码段
+让人费解的布尔表达式
+过于复杂的逻辑判断
+对象错误地暴露其内部状态
+遭废弃但没有删除的类或方法 Code Climate可以帮我们 Review 这部分代码
+
+### 使用
+
+首先在项目中添加配置文件 。codeclimate.yml配置如下:
+```
+engines:
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - php
+  eslint:
+    enabled: true
+  fixme:
+    enabled: true
+  phpmd:
+    enabled: true
+    config:
+    checks:
+      UnusedLocalVariable:
+        enabled: false
+ratings:
+  paths:
+  - "**.php"
+exclude_paths:
+- tests/
+```
+配置分析
+
+引擎通道将您的分析映射到引擎的特定发行版本。例如，发动机可具有四个可用信道：stable，alpha，v1，和v2。未指定，分析运行发动机的稳定通道。
+
+engines:
+  some-engine:
+    enabled: true
+    channel: "new-hotness"
+Github 集成
+
+1首先登录[climatecode网站]https://codeclimate.com/dashboard 2 添加仓库 3入库 4显示成功,这些是分析数据
+
+

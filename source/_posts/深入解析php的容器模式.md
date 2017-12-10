@@ -99,6 +99,7 @@ class Container implements \ArrayAccess{
 
 ```
 
+<!--more-->
 ### 使用方式
 
 ``` php

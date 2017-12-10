@@ -25,6 +25,7 @@ categories: 技术
 - F 在新标签中进入f模式 
 - i 聚焦在第一个输入框
 - esc 退出
+<!--more-->
 ## 进阶篇
 - ctrl+f 下一页
 - ctrl+b 上一页

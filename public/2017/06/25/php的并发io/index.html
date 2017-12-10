@@ -16,7 +16,11 @@
 多进程/多线程同步阻塞最早的服务器端都是通过多进程来解决IO的问题,通过Accept一个客户端连接就创建一个进程，然后子进程进入循环同步阻塞与客户端进行交互，收发数据。 因为线程之间是共">
 <meta property="og:image" content="http://graychen.git.io/assets/blogImg/manyporcess.png">
 <meta property="og:image" content="http://graychen.git.io/assets/blogImg/reactor.png">
+<<<<<<< HEAD
 <meta property="og:updated_time" content="2017-08-16T15:48:31.076Z">
+=======
+<meta property="og:updated_time" content="2017-09-27T16:11:08.954Z">
+>>>>>>> origin/master
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="php的并发io">
 <meta name="twitter:description" content="计算领域一直是分为计算密集和IO密集型，web程序一直是io密集型，从最早的同步阻塞直接Fork进程，到Worker进程池，到现在的异步IO协程，io一直是服务器的难点，下面文章，将详细解析php的并发io问题。
@@ -107,9 +111,7 @@
 							
 								<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
 					        
-								<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
-					        
-								<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+								<a class="mail" target="_blank" href="/455803034@qq.com" title="mail">mail</a>
 					        
 						</div>
 					</nav>
@@ -118,7 +120,11 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
+<<<<<<< HEAD
 						<a href="/tags/devops/" style="font-size: 10px;">devops</a> <a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
+=======
+						<a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/技术-php/" style="font-size: 10px;">技术 php</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
+>>>>>>> origin/master
 					</div>
 				</section>
 				
@@ -176,9 +182,7 @@
 					
 						<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
 			        
-						<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
-			        
-						<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+						<a class="mail" target="_blank" href="/455803034@qq.com" title="mail">mail</a>
 			        
 				</div>
 			</nav>
@@ -229,6 +233,7 @@
       
         <p>计算领域一直是分为计算密集和IO密集型，web程序一直是io密集型，从最早的同步阻塞直接Fork进程，到Worker进程池，到现在的异步IO协程，io一直是服务器的难点，下面文章，将详细解析php的并发io问题。</p>
 <h2 id="多进程-多线程同步阻塞"><a href="#多进程-多线程同步阻塞" class="headerlink" title="多进程/多线程同步阻塞"></a>多进程/多线程同步阻塞</h2><p>最早的服务器端都是通过多进程来解决IO的问题,通过Accept一个客户端连接就创建一个进程，然后子进程进入循环同步阻塞与客户端进行交互，收发数据。<br> <img src="/assets/blogImg/manyporcess.png" alt="&quot;我是傲娇的效果图&quot;"><br>因为线程之间是共享内存堆栈,所以不同的线程之间进行交互比较容易实现。比如聊天室这样的程序，客户端连接之间可以交互，比聊天室中的玩家可以任意的其他人发消息。用多线程模式实现非常简单，线程中可以直接向某一个客户端连接发送数据。而多进程模式就要用到管道、消息队列、共享内存，统称进程间通信（IPC）复杂的技术才能实现。<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">$serv = stream_socket_server(<span class="string">"tcp://0.0.0.0.8000"</span>,$errno,$errstr) <span class="keyword">or</span> <span class="keyword">die</span>(<span class="string">"create server failed"</span>);</div><div class="line"><span class="keyword">while</span>(<span class="number">1</span>) &#123;</div><div class="line">        $conn = stream_socket_accept($serv);</div><div class="line">        <span class="keyword">if</span>(pcntl_fork() ==<span class="number">0</span>) &#123;</div><div class="line">                $request = fread($conn);</div><div class="line">                fwite($repose);</div><div class="line">                fclose($conn);</div><div class="line">                <span class="keyword">exit</span>(<span class="number">0</span>);</div><div class="line">        &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<a id="more"></a>
 <h2 id="多进程-线程模型的流程"><a href="#多进程-线程模型的流程" class="headerlink" title="多进程/线程模型的流程"></a>多进程/线程模型的流程</h2><p>1创建一个 socket，绑定服务器端口（bind），监听端口（listen），在PHP中用stream_socket_server一个函数就能完成上面3个步骤，当然也可以使用更底层的sockets扩展分别实现<br>2进入while循环，阻塞在accept操作上，等待客户端连接进入。此时程序会进入随眠状态，直到有新的客户端发起connect到服务器，操作系统会唤醒此进程。accept函数返回客户端连接的socket<br>3主进程在多进程模型下通过fork（php: pcntl_fork）创建子进程，多线程模型下使用pthread_create（php: new Thread）创建子线程。下文如无特殊声明将使用进程同时表示进程/线程。<br>4子进程创建成功后进入while循环，阻塞在recv（php: fread）调用上，等待客户端向服务器发送数据。收到数据后服务器程序进行处理然后使用send（php: fwrite）向客户端发送响应。长连接的服务会持续与客户端交互，而短连接服务一般收到响应就会close。<br>5当客户端连接关闭时，子进程退出并销毁所有资源。主进程会回收掉此子进程。<br><strong>这种模式最大的问题是，进程/线程创建和销毁的开销很大。所以上面的模式没办法应用于非常繁忙的服务器程序。对应的改进版解决了此问题，这就是经典的Leader-Follower模型。</strong><br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="meta">&lt;?php</span></div><div class="line">$serv = stream_socket_server(<span class="string">"tcp://0.0.0.0:8000"</span>,$error,$errstr) <span class="keyword">or</span> <span class="keyword">die</span>(<span class="string">"create server failed"</span>);</div><div class="line"><span class="keyword">for</span>($i=<span class="number">0</span>; $i&lt; <span class="number">32</span>;$i++)&#123;</div><div class="line">        <span class="keyword">if</span> (pcntl_fork() == <span class="number">0</span> )&#123;</div><div class="line">                <span class="keyword">while</span>(<span class="number">1</span>) &#123;</div><div class="line">                        $conn = stream_socket_accept($serv);</div><div class="line">                        <span class="keyword">if</span>($conn == <span class="keyword">false</span>) <span class="keyword">continue</span>;</div><div class="line">                        $request = fread($conn);</div><div class="line">                        fwrite($reponse);</div><div class="line">                        fclose($conn);</div><div class="line">                &#125;</div><div class="line">                <span class="keyword">exit</span>(<span class="number">0</span>);</div><div class="line">        &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p>他的特点是程序启动后就会创建N个进程。每个子进程就会进入Accept,等待新的连接进入。当客户端连接到服务器时，其中一个子进程就会被唤醒，开始处理客户端请求，并且不再接受新的TCP连接。当连接关闭，子进程才会释放，重新进入Accept,参与处理新的连接。<br>优点:复用进程，没有额外消耗，性能好。应用案例：Apache.PHP-FPM<br>缺点：严重依赖初始创建的进程数，操作系统可以创建的进程数有限。进程带来额外的进程调度，如果启动数千甚至数万个进程，消耗就会直线上升。调度消耗可能占到CPU的百分之几十甚至100%。<br>还有一种场景也是多进程模型的软肋。通常Web服务器启动100个进程，如果一个请求消耗100ms，100个进程可以提供1000qps，这样的处理能力还是不错的。但是如果请求内要调用外网Http接口，像QQ、微博登录，耗时会很长，一个请求需要10s。那一个进程1秒只能处理0.1个请求，100个进程只能达到10qps，这样的处理能力就太差了。</p>
 <p>有没有一种技术可以在一个进程内处理所有并发IO呢？答案是有，这就是IO复用技术。</p>

@@ -34,6 +34,7 @@ stdout_logfile = /var/www/html/yii-queue-worker.log
 ```
 然后在Dockerfile-web-volumes里面添加
 
+<!--more-->
 ```
 - ./services/supervisor:/etc/supervisor/conf.d
 ```

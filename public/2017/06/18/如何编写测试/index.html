@@ -14,7 +14,11 @@
 <meta property="og:site_name" content="Graychen的博客">
 <meta property="og:description" content="如何编写测试Yii2高级应用程序使用Codeception作为其主要测试框架。
 搭建测试环境为了运行测试用例，你需要安装 Codeception 。 一个较好的安装方式是：123composer global require &quot;codeception/codeception=2.1.*&quot;composer global require &quot;codeception/specify=*&quot;composer">
+<<<<<<< HEAD
 <meta property="og:updated_time" content="2017-08-16T15:48:31.076Z">
+=======
+<meta property="og:updated_time" content="2017-09-27T16:12:11.346Z">
+>>>>>>> origin/master
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Codeception测试框架如何编写测试">
 <meta name="twitter:description" content="如何编写测试Yii2高级应用程序使用Codeception作为其主要测试框架。
@@ -104,9 +108,7 @@
 							
 								<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
 					        
-								<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
-					        
-								<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+								<a class="mail" target="_blank" href="/455803034@qq.com" title="mail">mail</a>
 					        
 						</div>
 					</nav>
@@ -115,7 +117,11 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
+<<<<<<< HEAD
 						<a href="/tags/devops/" style="font-size: 10px;">devops</a> <a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
+=======
+						<a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/技术-php/" style="font-size: 10px;">技术 php</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
+>>>>>>> origin/master
 					</div>
 				</section>
 				
@@ -173,9 +179,7 @@
 					
 						<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
 			        
-						<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
-			        
-						<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+						<a class="mail" target="_blank" href="/455803034@qq.com" title="mail">mail</a>
 			        
 				</div>
 			</nav>
@@ -229,6 +233,7 @@
 <p>创建测试目录<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">codecept bootstrap</div></pre></td></tr></table></figure></p>
 <p>构建测试套件：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">codecept build</div></pre></td></tr></table></figure></p>
 <p>如果测试需要在 Production 环境中执行， yii_test 和 yii_test.bat 必须从 environments/dev 文件夹手动复制到项目根目录。 测试需要一个 额外的数据库 ，这将在测试之间清除。 在mysql中创建数据库 yii2advanced_test （根据 common/config/test.php 中的配置）并执行：<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./yii_test migrate</div></pre></td></tr></table></figure></p>
+<a id="more"></a>
 <p>然后所有的样例测试可以通过运行如下代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">codecept run</div></pre></td></tr></table></figure></p>
 <p>docker环境下运行搭建并运行测试：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">docker exec -it health_web_1 ./vendor/bin/codecept boostrap</div><div class="line">docker exec -it health_web_1 ./vendor/bin/./yii_test migrate</div><div class="line">docker exec -it health_web_1 ./vendor/bin/codecept build</div><div class="line">docker exec -it health_web_1 ./vendor/bin/codecept run</div></pre></td></tr></table></figure></p>
 <p>测试套件描述：</p>

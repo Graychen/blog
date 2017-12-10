@@ -25,6 +25,7 @@ composer require yiisoft/yii2-queue
 ``` php
 在composer中添加"yiisoft/yii2-queue": "~2.0.0",然后持续composer install
 ```
+<!--more-->
 
 ## 操作步骤
 发送到队列的每个任务应该被定义为一个单独的类。例如，如果您需要下载并保存文件，则该类可能如下所示：

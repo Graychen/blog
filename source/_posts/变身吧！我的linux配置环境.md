@@ -22,6 +22,7 @@ sudo apt-get install terminator
 从放大的某一窗口回到多窗口格局         `Ctrl+Shift+z`
  !["我是傲娇的效果图"](/assets/blogImg/多窗终端.png)
 
+<!--more-->
 ### 终端主题
  ``` shell
  apt-get install zsh
