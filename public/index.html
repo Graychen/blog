@@ -111,7 +111,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
+						<a href="/tags/devops/" style="font-size: 10px;">devops</a> <a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
 					</div>
 				</section>
 				
@@ -180,6 +180,94 @@
 </nav>
 
       <div class="body-wrap">
+  
+    <article id="post-使用Prometheus-Grafana监控" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/12/10/使用Prometheus-Grafana监控/" class="article-date">
+  	<time datetime="2017-12-10T10:09:37.000Z" itemprop="datePublished">2017-12-10</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/12/10/使用Prometheus-Grafana监控/">使用Prometheus+Grafana监控</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Prometheus（普罗米修斯）是一套开源的监控&amp;报警&amp;时间序列数据库的组合，起始是由SoundCloud公司开发的。随着发展，越来越多公司和组织接受采用Prometheus，社会也十分活跃，他们便将它独立成开源项目，并且有公司来运作。Google SRE的书内也曾提到跟他们BorgMon监控系统相似的实现是Prometheus。现在最常见的Kubernetes容器管理系统中，通常会搭配Prometheus进行监控。<br>Prometheus基本原理是通过HTTP协议周期性抓取被监控组件的状态，这样做的好处是任意组件只要提供HTTP接口就可以接入监控系统，不需要任何SDK或者其他的集成过程。这样做非常适合虚拟化环境比如VM或者Docker 。<br>Prometheus应该是为数不多的适合Docker、Mesos、Kubernetes环境的监控系统之一。</p>
+<p>输出被监控组件信息的HTTP接口被叫做exporter 。目前互联网公司常用的组件大部分都有exporter可以直接使用，比如Varnish、Haproxy、Nginx、MySQL、Linux 系统信息 (包括磁盘、内存、CPU、网络等等)，具体支持的源看：<a href="https://github.com/prometheus。">https://github.com/prometheus。</a></p>
+<p>与其他监控系统相比，Prometheus的主要特点是：</p>
+<ul>
+<li>一个多维数据模型（时间序列由指标名称定义和设置键/值尺寸）。</li>
+<li>非常高效的存储，平均一个采样数据占~3.5bytes左右，320万的时间序列，每30秒采样，保持60天，消耗磁盘大概228G。</li>
+<li>一种灵活的查询语言。</li>
+<li>不依赖分布式存储，单个服务器节点。</li>
+<li>时间集合通过HTTP上的PULL模型进行。</li>
+<li>通过中间网关支持推送时间。</li>
+<li>通过服务发现或静态配置发现目标。</li>
+<li>多种模式的图形和仪表板支持。</li>
+</ul>
+<h2 id="Prometheus架构概览"><a href="#Prometheus架构概览" class="headerlink" title="Prometheus架构概览"></a>Prometheus架构概览</h2><p>该图说明了普罗米修斯（Prometheus）及其一些生态系统组件的整体架构：<br><img src="http://ww1.sinaimg.cn/large/0060OHG5gy1fm4pg7j25ej30l60dw40p.jpg" alt="Prometheus架构概览"><br>它的服务过程是这样的Prometheus daemon负责定时去目标上抓取metrics(指标) 数据，每个抓取目标需要暴露一个http服务的接口给它定时抓取。</p>
+<ul>
+<li><p>Prometheus：支持通过配置文件、文本文件、zookeeper、Consul、DNS SRV lookup等方式指定抓取目标。支持很多方式的图表可视化，例如十分精美的Grafana，自带的Promdash，以及自身提供的模版引擎等等，还提供HTTP API的查询方式，自定义所需要的输出。</p>
+</li>
+<li><p>Alertmanager：是独立于Prometheus的一个组件，可以支持Prometheus的查询语句，提供十分灵活的报警方式。</p>
+</li>
+<li><p>PushGateway：这个组件是支持Client主动推送metrics到PushGateway，而Prometheus只是定时去Gateway上抓取数据。</p>
+</li>
+</ul>
+<h2 id="Prometheus的数据模型"><a href="#Prometheus的数据模型" class="headerlink" title="Prometheus的数据模型"></a>Prometheus的数据模型</h2><p>Prometheus从根本上所有的存储都是按时间序列去实现的，相同的metrics(指标名称) 和label(一个或多个标签) 组成一条时间序列，不同的label表示不同的时间序列。为了支持一些查询，有时还会临时产生一些时间序列存储。<br>metrics name&amp;label指标名称和标签</p>
+<p>每条时间序列是由唯一的”指标名称”和一组”标签（key=value）”的形式组成。</p>
+<h3 id="指标名称："><a href="#指标名称：" class="headerlink" title="指标名称："></a>指标名称：</h3><p>一般是给监测对像起一名字，例如http_requests<em>total这样，它有一些命名规则，可以包字母数字</em>之类的的。通常是以应用名称开头<em>监测对像</em>数值类型_单位这样。例如：push_total、userlogin_mysql_duration_seconds、app_memory_usage_bytes。</p>
+<h3 id="标签："><a href="#标签：" class="headerlink" title="标签："></a>标签：</h3><p>就是对一条时间序列不同维度的识别了，例如一个http请求用的是POST还是GET，它的endpoint是什么，这时候就要用标签去标记了。最终形成的标识便是这样了：http_requests_total{method=”POST”,endpoint=”/api/tracks”}。</p>
+<p>记住，针对http_requests_total这个metrics name无论是增加标签还是删除标签都会形成一条新的时间序列。</p>
+<p>查询语句就可以跟据上面标签的组合来查询聚合结果了。</p>
+<p>如果以传统数据库的理解来看这条语句，则可以考虑http_requests_total是表名，标签是字段，而timestamp是主键，还有一个float64字段是值了。（Prometheus里面所有值都是按float64存储）。</p>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/devops/">devops</a></li></ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a  href="/2017/12/10/使用Prometheus-Grafana监控/#more">more >></a>
+        </p>
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+
   
     <article id="post-yii2-queue队列的使用说明" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -950,69 +1038,6 @@
       
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/categories/技术/">技术</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-
-  
-    <article id="post-Webpack595错误" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2017/05/13/Webpack595错误/" class="article-date">
-  	<time datetime="2017-05-13T15:39:40.000Z" itemprop="datePublished">2017-05-13</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/05/13/Webpack595错误/">Webpack595错误</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="错误情况"><a href="#错误情况" class="headerlink" title="错误情况"></a>错误情况</h2><p>Mix incompatible with Webpack 2.3.0? #595</p>
-<h2 id="错误原因"><a href="#错误原因" class="headerlink" title="错误原因"></a>错误原因</h2><p>这是laravel5.4的错误webpack依赖包兼容问题</p>
-<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><p>在package,json 修改”aravel-mix”: “^0.10.0” 修复这个错误</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/错误日志/">错误日志</a></li></ul>
-	</div>
-
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/错误日志/">错误日志</a>
 	</div>
 
 
