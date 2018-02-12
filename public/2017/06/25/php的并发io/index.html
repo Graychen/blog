@@ -6,25 +6,19 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <title>php的并发io | Graychen的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="计算领域一直是分为计算密集和IO密集型，web程序一直是io密集型，从最早的同步阻塞直接Fork进程，到Worker进程池，到现在的异步IO协程，io一直是服务器的难点，下面文章，将详细解析php的并发io问题。
-多进程/多线程同步阻塞最早的服务器端都是通过多进程来解决IO的问题,通过Accept一个客户端连接就创建一个进程，然后子进程进入循环同步阻塞与客户端进行交互，收发数据。 因为线程之间是共">
+  <meta name="description" content="计算领域一直是分为计算密集和IO密集型，web程序一直是io密集型，从最早的同步阻塞直接Fork进程，到Worker进程池，到现在的异步IO协程，io一直是服务器的难点，下面文章，将详细解析php的并发io问题。 多进程/多线程同步阻塞最早的服务器端都是通过多进程来解决IO的问题,通过Accept一个客户端连接就创建一个进程，然后子进程进入循环同步阻塞与客户端进行交互，收发数据。 因为线程之间是共">
+<meta name="keywords" content="php">
 <meta property="og:type" content="article">
 <meta property="og:title" content="php的并发io">
 <meta property="og:url" content="http://graychen.git.io/2017/06/25/php的并发io/index.html">
 <meta property="og:site_name" content="Graychen的博客">
-<meta property="og:description" content="计算领域一直是分为计算密集和IO密集型，web程序一直是io密集型，从最早的同步阻塞直接Fork进程，到Worker进程池，到现在的异步IO协程，io一直是服务器的难点，下面文章，将详细解析php的并发io问题。
-多进程/多线程同步阻塞最早的服务器端都是通过多进程来解决IO的问题,通过Accept一个客户端连接就创建一个进程，然后子进程进入循环同步阻塞与客户端进行交互，收发数据。 因为线程之间是共">
+<meta property="og:description" content="计算领域一直是分为计算密集和IO密集型，web程序一直是io密集型，从最早的同步阻塞直接Fork进程，到Worker进程池，到现在的异步IO协程，io一直是服务器的难点，下面文章，将详细解析php的并发io问题。 多进程/多线程同步阻塞最早的服务器端都是通过多进程来解决IO的问题,通过Accept一个客户端连接就创建一个进程，然后子进程进入循环同步阻塞与客户端进行交互，收发数据。 因为线程之间是共">
 <meta property="og:image" content="http://graychen.git.io/assets/blogImg/manyporcess.png">
 <meta property="og:image" content="http://graychen.git.io/assets/blogImg/reactor.png">
-<<<<<<< HEAD
-<meta property="og:updated_time" content="2017-08-16T15:48:31.076Z">
-=======
-<meta property="og:updated_time" content="2017-09-27T16:11:08.954Z">
->>>>>>> origin/master
+<meta property="og:updated_time" content="2018-01-14T16:02:59.190Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="php的并发io">
-<meta name="twitter:description" content="计算领域一直是分为计算密集和IO密集型，web程序一直是io密集型，从最早的同步阻塞直接Fork进程，到Worker进程池，到现在的异步IO协程，io一直是服务器的难点，下面文章，将详细解析php的并发io问题。
-多进程/多线程同步阻塞最早的服务器端都是通过多进程来解决IO的问题,通过Accept一个客户端连接就创建一个进程，然后子进程进入循环同步阻塞与客户端进行交互，收发数据。 因为线程之间是共">
+<meta name="twitter:description" content="计算领域一直是分为计算密集和IO密集型，web程序一直是io密集型，从最早的同步阻塞直接Fork进程，到Worker进程池，到现在的异步IO协程，io一直是服务器的难点，下面文章，将详细解析php的并发io问题。 多进程/多线程同步阻塞最早的服务器端都是通过多进程来解决IO的问题,通过Accept一个客户端连接就创建一个进程，然后子进程进入循环同步阻塞与客户端进行交互，收发数据。 因为线程之间是共">
 <meta name="twitter:image" content="http://graychen.git.io/assets/blogImg/manyporcess.png">
   
     <link rel="alternative" href="/atom.xml" title="Graychen的博客" type="application/atom+xml">
@@ -111,7 +105,9 @@
 							
 								<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
 					        
-								<a class="mail" target="_blank" href="/455803034@qq.com" title="mail">mail</a>
+								<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
+					        
+								<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
 					        
 						</div>
 					</nav>
@@ -120,11 +116,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-<<<<<<< HEAD
-						<a href="/tags/devops/" style="font-size: 10px;">devops</a> <a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
-=======
-						<a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/技术-php/" style="font-size: 10px;">技术 php</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
->>>>>>> origin/master
+						<a href="/tags/devops/" style="font-size: 13.33px;">devops</a> <a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 13.33px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/技术/" style="font-size: 10px;">技术</a> <a href="/tags/技术-php/" style="font-size: 13.33px;">技术 php</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
 					</div>
 				</section>
 				
@@ -182,7 +174,9 @@
 					
 						<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
 			        
-						<a class="mail" target="_blank" href="/455803034@qq.com" title="mail">mail</a>
+						<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
+			        
+						<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
 			        
 				</div>
 			</nav>
@@ -242,7 +236,7 @@
 <p>Reactor模型还可以与多进程、多线程结合起来用，既实现异步非阻塞IO，又利用到多核。目前流行的异步服务器程序都是这样的方式：如<br> Nginx：多进程Reactor<br> Nginx+Lua：多进程Reactor+协程<br> Golang：单线程Reactor+多线程协程<br> Swoole：多线程Reactor+多进程Worker</p>
 </blockquote>
 <p> 协程是什么<br> 协程从底层技术角度看实际上还是异步IO Reactor模型，应用层自行实现了任务调度，借助Reactor切换各个当前执行的用户态线程，但用户代码中完全感知不到Reactor的存在</p>
-<h2 id="参考文章"><a href="#参考文章" class="headerlink" title=" 参考文章:"></a> 参考文章:</h2><p><a href="http://rango.swoole.com/archives/508" target="_blank" rel="external">PHP并发IO编程之路</a></p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title=" 参考文章:"></a> 参考文章:</h2><p><a href="http://rango.swoole.com/archives/508" target="_blank" rel="noopener">PHP并发IO编程之路</a></p>
 
       
     </div>
@@ -304,7 +298,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2017 Graychen
+    		&copy; 2018 Graychen
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten

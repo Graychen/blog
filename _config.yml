@@ -22,7 +22,7 @@ permalink_defaults:
 source_dir: source
 public_dir: public
 tag_dir: tags
-#archive_dir: archives
+archive_dir: archives
 category_dir: categories
 code_dir: downloads/code
 i18n_dir: :lang
@@ -69,9 +69,9 @@ theme: yilia
 # ## Docs: http://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repository: git@github.com:Graychen/graychen.github.io.git
+  repository: https://github.com/Graychen/graychen.github.io.git
   branch: master
-#
+
 #:Header
 menu:
   主页: /
@@ -82,14 +82,14 @@ menu:
 # SubNav
 subnav:
   github: "https://github.com/Graychen"
-  #weibo: "#"
+  weibo: "http://weibo.com/u/5508881293/home?topnav=1&wvr=6"
   #rss: "#"
   #zhihu: "#"
   #douban: "#"
-  mail: "455803034@qq.com"
+  #mail: "455803034@qq.com"
   #facebook: "#"
   #google: "#"
-  #twitter: ""
+  twitter: "https://twitter.com/huashendung"
   #linkedin: "#"
 
 rss: /atom.xml
@@ -115,14 +115,29 @@ tagcloud: true
 
 #是否开启友情链接
 #不开启——
-friends: false
+friends: true
 #开启——
 
 #是否开启“关于我”。
 #不开启——
-#aboutme: false
+#aboutme: true
 #开启——
 aboutme: 我是谁，我从哪里来，我到哪里去？我就是我，是颜色不一样的吃货…
-archive: 1
-category: 1
-tag: 1
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: false
+    tags: true

@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+  <title>gitlab-ci由浅入深 | Graychen的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="概述持续集成（CI）和 持续交付(CD) 是一种流行的软件开发实践，每次提交都通过自动化的构建（测试、编译、发布）来验证，从而尽早的发现错误。 持续集成实现了DevOps, 使开发人员和运维人员从繁琐的工作中解放出来。另外，这种形式极大地提高了开发者的开发效率和开发质量。 持续集成有多种工具，如Jenkins. GitLab内置了GitLab-CI，通过配置一段YAML脚本来实现持续集成. 功能持">
+<meta property="og:type" content="article">
+<meta property="og:title" content="gitlab-ci由浅入深">
+<meta property="og:url" content="http://graychen.git.io/2018/02/11/gitlab-ci由浅入深/index.html">
+<meta property="og:site_name" content="Graychen的博客">
+<meta property="og:description" content="概述持续集成（CI）和 持续交付(CD) 是一种流行的软件开发实践，每次提交都通过自动化的构建（测试、编译、发布）来验证，从而尽早的发现错误。 持续集成实现了DevOps, 使开发人员和运维人员从繁琐的工作中解放出来。另外，这种形式极大地提高了开发者的开发效率和开发质量。 持续集成有多种工具，如Jenkins. GitLab内置了GitLab-CI，通过配置一段YAML脚本来实现持续集成. 功能持">
+<meta property="og:updated_time" content="2018-02-12T15:54:25.586Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="gitlab-ci由浅入深">
+<meta name="twitter:description" content="概述持续集成（CI）和 持续交付(CD) 是一种流行的软件开发实践，每次提交都通过自动化的构建（测试、编译、发布）来验证，从而尽早的发现错误。 持续集成实现了DevOps, 使开发人员和运维人员从繁琐的工作中解放出来。另外，这种形式极大地提高了开发者的开发效率和开发质量。 持续集成有多种工具，如Jenkins. GitLab内置了GitLab-CI，通过配置一段YAML脚本来实现持续集成. 功能持">
+  
+    <link rel="alternative" href="/atom.xml" title="Graychen的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="//favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img src="/assets/blogImg/avatar.jpg" class="js-avatar" style="width: 100%;height: 100%;opacity: 1;">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">Graychen</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">这个世界需要更多的英雄</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>Menu</li>
+						<li>Tags</li>
+						
+						
+						<li>Über</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/categories/随笔">随笔</a></li>
+				        
+							<li><a href="/categories/技术">技术文章</a></li>
+				        
+							<li><a href="/categories/错误日志">错误日志</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
+					        
+								<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/devops/" style="font-size: 13.33px;">devops</a> <a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 13.33px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/技术/" style="font-size: 10px;">技术</a> <a href="/tags/技术-php/" style="font-size: 13.33px;">技术 php</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">我是谁，我从哪里来，我到哪里去？我就是我，是颜色不一样的吃货…</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">Graychen</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				
+					<img src="/assets/blogImg/avatar.jpg" class="js-avatar" style="width: 100%;height: 100%;opacity: 1;">
+				
+			</div>
+			<hgroup>
+			  <h1 class="header-author">Graychen</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">这个世界需要更多的英雄</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/categories/随笔">随笔</a></li>
+		        
+					<li><a href="/categories/技术">技术文章</a></li>
+		        
+					<li><a href="/categories/错误日志">错误日志</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
+			        
+						<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-gitlab-ci由浅入深" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2018/02/11/gitlab-ci由浅入深/" class="article-date">
+  	<time datetime="2018-02-11T14:57:07.000Z" itemprop="datePublished">2018-02-11</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      gitlab-ci由浅入深
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>持续集成（CI）和 持续交付(CD) 是一种流行的软件开发实践，每次提交都通过自动化的构建（测试、编译、发布）来验证，从而尽早的发现错误。</p>
+<p>持续集成实现了DevOps, 使开发人员和运维人员从繁琐的工作中解放出来。另外，这种形式极大地提高了开发者的开发效率和开发质量。 持续集成有多种工具，如Jenkins. GitLab内置了GitLab-CI，通过配置一段YAML脚本来实现持续集成.</p>
+<h1 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h1><h2 id="持续集成可以实现的功能"><a href="#持续集成可以实现的功能" class="headerlink" title="持续集成可以实现的功能:"></a>持续集成可以实现的功能:</h2><ul>
+<li>代码审核: 自动化代码规范审查, 甚至代码质量检查</li>
+<li>自动化测试: 单元测试, 功能测试和验收测试</li>
+<li>编译发布: 将源代码编译成可执行程序, 并将程序上传到托管发布平台实现自动发布</li>
+<li>构建部署: 通过构建Docker镜像, 或登录远程服务器执行相关部署命令和脚本, 实现自动化部署<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2></li>
+</ul>
+<p>GitLab-CI 检测每次代码变动, 通过.gitlab-ci.yml脚本执行构建命令, 将命令发布到GitLab-Runners(运行机)上, 进而执行命令.<br>GitLab-Runners 基于Docker执行持续集成的每项任务, 这样就解决了环境依赖问题.<br>GitLab-Runners把实时将执行结果输出到GitLab网页上, 任务执行完后, 通过徽章标记和邮箱告知执行结果.<br><a id="more"></a><br>在仓库根目录创建 .gitlab-ci.yml 文件, 内容如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">job-1:</div><div class="line">  script:</div><div class="line">      - echo &quot;Hello World&quot;</div></pre></td></tr></table></figure></p>
+<pre><code>这样, 在每次提交代码后, 都会自动执行以上脚本. 其中job-1是任务名称, 可以定义多个任务,
+script下面是 shell 命令, 只要命令执行成功, 就代表本次构建通过(出现passed标记)
+</code></pre><p>  这样, 一次简单的持续集成已经搞定了.</p>
+<p>  如何编写GitLab-CI配置文件</p>
+<p>  见文档 如何编写GitLab-CI配置文件</p>
+<p>  远程拉取代码</p>
+<p>  使用ssh远程登录服务器, 然后执行git pull 拉取代码, 实现代码热更新</p>
+<p>  由于ssh无密码登录需要用到密钥, 所以首先需要注入私钥</p>
+<p>  如<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">release-doc:</div><div class="line">    stage: deploy</div><div class="line">        script:</div><div class="line">          - ssh root@$DEPLOY_SERVER &quot;cd /mnt/data/docker-gollum/wiki &amp;&amp; git pull origin master&quot;</div></pre></td></tr></table></figure></p>
+<h2 id="关键词"><a href="#关键词" class="headerlink" title="关键词"></a>关键词</h2><h3 id="根主要关键词一览"><a href="#根主要关键词一览" class="headerlink" title="根主要关键词一览"></a>根主要关键词一览</h3><table>
+<thead>
+<tr>
+<th>关键词</th>
+<th>含义</th>
+<th>可选</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>image</td>
+<td>声明使用的Docker镜像</td>
+<td>为空时使用默认镜像</td>
+<td>该镜像应当满足脚本执行的环境依赖</td>
+</tr>
+<tr>
+<td>services</td>
+<td>Docker镜像使用的服务, 通过链接的方式来调用所需服务</td>
+<td>可空</td>
+<td>常用于链接数据库</td>
+</tr>
+<tr>
+<td>stages</td>
+<td>定义构建阶段</td>
+<td>为空时, 单纯定义jobs</td>
+<td>项目的构建分为多个阶段, 例如: 安装依赖/准备, 编译, 测试, 发布等, 同时每个阶段包含若干任务</td>
+</tr>
+<tr>
+<td>before_script</td>
+<td>定义每个job之前执行的脚本</td>
+<td>可空</td>
+<td>每个job启动时会先执行该脚本</td>
+</tr>
+<tr>
+<td>after_script</td>
+<td>定义每个job之后执行的脚本</td>
+<td>可空</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>variables</td>
+<td>定义变量</td>
+<td>可空</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>cache</td>
+<td>定义与后续job之间应缓存的文件</td>
+<td>可空</td>
+<td>同上</td>
+</tr>
+</tbody>
+</table>
+<h3 id="Demo"><a href="#Demo" class="headerlink" title="Demo:"></a>Demo:</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">image: aipline</div><div class="line">services:</div><div class="line">  - mysql</div><div class="line">  - redis</div><div class="line">stages:</div><div class="line">  - build</div><div class="line">  - test</div><div class="line">  - deploy</div><div class="line">before_script:</div><div class="line">  - bundle install  </div><div class="line">after_script:</div><div class="line">  - rm secrets</div><div class="line">cache:</div><div class="line">paths:</div><div class="line">  - binaries/</div><div class="line">  - .config</div></pre></td></tr></table></figure>
+<h2 id="Jobs中的关键词"><a href="#Jobs中的关键词" class="headerlink" title="Jobs中的关键词"></a>Jobs中的关键词</h2><h3 id="jobs中存在一些与根中相同的关键词-这些一旦定义-则会向前覆盖-即根中定义的则不会在该job执行"><a href="#jobs中存在一些与根中相同的关键词-这些一旦定义-则会向前覆盖-即根中定义的则不会在该job执行" class="headerlink" title="jobs中存在一些与根中相同的关键词, 这些一旦定义, 则会向前覆盖, 即根中定义的则不会在该job执行"></a>jobs中存在一些与根中相同的关键词, 这些一旦定义, 则会向前覆盖, 即根中定义的则不会在该job执行</h3><h4 id="job-这里译为任务"><a href="#job-这里译为任务" class="headerlink" title="job 这里译为任务"></a>job 这里译为任务</h4><table>
+<thead>
+<tr>
+<th>关键词</th>
+<th>含义</th>
+<th>可选</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>image</td>
+<td>声明任务使用的Docker镜像</td>
+<td>为空时使用根中的定义</td>
+<td>该镜像应当满足脚本执行的环境依赖</td>
+</tr>
+<tr>
+<td>services</td>
+<td>任务中Docker镜像使用的服务, 通过链接的方式来调用所需服务</td>
+<td>可空</td>
+<td>常用于链接数据库</td>
+</tr>
+<tr>
+<td>stage</td>
+<td>所属构建阶段</td>
+<td>为空时则不使用stages</td>
+<td>一个任务属于一个构建阶段</td>
+</tr>
+<tr>
+<td>before_script</td>
+<td>定义每个job之前执行的脚本</td>
+<td>可选</td>
+<td>如果在job中定义则会覆盖根中的内容</td>
+</tr>
+<tr>
+<td>script</td>
+<td>定义每个job执行的脚本</td>
+<td>必须</td>
+</tr>
+<tr>
+<td>after_script</td>
+<td>定义每个job之后执行的脚本</td>
+<td>可选</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>variables</td>
+<td>定义任务中使用的变量</td>
+<td>可选</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>cache</td>
+<td>定义与后续job之间应缓存的文件</td>
+<td>可选</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>only</td>
+<td>指定应用的Git分支</td>
+<td>可选</td>
+<td>可以是分支名称, 可用正则匹配分支, 也可是tags来指定打过标签的分支</td>
+</tr>
+<tr>
+<td>except</td>
+<td>排除应用的Git分支</td>
+<td>可选</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>tags</td>
+<td>指定执行的GitLab-Runners</td>
+<td>可选</td>
+<td>通过匹配Runners的标签选定</td>
+</tr>
+<tr>
+<td>allow_failure</td>
+<td>允许失败</td>
+<td>默认为false 如果允许失败, 本次任务不会影响整个构建的结果</td>
+</tr>
+<tr>
+<td>when</td>
+<td>定义合适执行任务</td>
+<td>默认为always</td>
+<td>有on_success, on_failure, always or manual可选</td>
+</tr>
+<tr>
+<td>dependencies</td>
+<td>定义合任务所需要的工件</td>
+<td>可空</td>
+<td>需要首先定义工件</td>
+</tr>
+<tr>
+<td>artifacts</td>
+<td>定义工件</td>
+<td>可空</td>
+<td>工件中指定的目录会在任务执行成功后压缩传到GitLab, 后面需要该工件的任务执行时, 再自行下载解压</td>
+</tr>
+<tr>
+<td>environment</td>
+<td>定义环境</td>
+<td>可空</td>
+<td>在部署任务中, 定义该任务所属的环境</td>
+</tr>
+</tbody>
+</table>
+<p>示例<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">installing-dependencies:</div><div class="line">  script:</div><div class="line">    - composer install --prefer-dist --optimize-autoloader -n --no-interaction -v --no-suggest</div><div class="line">    - composer dump-autoload --optimize</div><div class="line">  artifacts:</div><div class="line">    - name: &quot;vendor&quot;</div><div class="line">    - untracked: true</div><div class="line">    - expire_in: 60 mins</div><div class="line">    - paths:</div><div class="line">    - vendor/    </div><div class="line">deleteocker-build-image:    </div><div class="line">  stage: test</div><div class="line">  only:</div><div class="line">    - master</div><div class="line">  except:</div><div class="line">    - develop</div><div class="line">  tags:</div><div class="line">    - ruby</div><div class="line">    - postgres</div><div class="line">  allow_failure: true</div><div class="line">  dependencies:</div><div class="line">    - installing-dependencies</div><div class="line">  script:        </div><div class="line">    - docker build -t registry.com/mops/image:latest .</div><div class="line">    - docker push registry.com/mops/image:latest</div></pre></td></tr></table></figure></p>
+<blockquote>
+<p>注意:<br>jobs的名称不能重名<br>同一阶段中的任务, 是并行执行的<br>上一阶段所有任务执行完后, 才会进入下一阶段<br>定义工件时, 务必定义工件的过期时间, 否则工件会一直寸在GitLab上, 占用空间<br>如果需要在任务中传递文件, 优先选择使用 dependencies (结合artifacts)</p>
+</blockquote>
+<h3 id="验证配置文件合法性"><a href="#验证配置文件合法性" class="headerlink" title="验证配置文件合法性"></a>验证配置文件合法性</h3><p>  在GitLab中, 打开 /ci/lint网址, 将配置文件粘贴在些, 进行验证</p>
+<h2 id="通过gitlab-ci实现文件的自动部署"><a href="#通过gitlab-ci实现文件的自动部署" class="headerlink" title="通过gitlab-ci实现文件的自动部署"></a>通过gitlab-ci实现文件的自动部署</h2><h3 id="实现过程"><a href="#实现过程" class="headerlink" title="实现过程"></a>实现过程</h3><p>  文档托管在gitlab上, 每次代码更新, 会自动出发gitlab-ci构建 在构建脚本中, 通过ssh 登录远程服务器执行git拉取文档的命令</p>
+<h3 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h3><h4 id="生成ssh证书"><a href="#生成ssh证书" class="headerlink" title="生成ssh证书"></a>生成ssh证书</h4><p>  在服务器上, 使用ssh-keygen生成root用户(或其他有权访问的用户)的公钥和私钥<br>  在用户根目录(~)中, 创建authorized_keys并设置权限: chmod 600 authorized_keys</p>
+<h4 id="添加公钥"><a href="#添加公钥" class="headerlink" title="添加公钥"></a>添加公钥</h4><p>  添加公钥: cat id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys<br>  id_rsa.pub为第一步生成的公钥<br>  注意该证书的用户必须与ssh远程登录的用户一样, 例如我们的用户名是root<br>  将公钥添加到gitlab上, 以便于该用于可以拉取代码, 在User Settings找到 SSH Keys, 添加上面拿到的公钥</p>
+<h4 id="设置CI-CD变量"><a href="#设置CI-CD变量" class="headerlink" title="设置CI/CD变量"></a>设置CI/CD变量</h4><p>  在 CI/CD Piplines中设置 Secret Variables, 包括 DEPLOY_SERVER 和 SSH_PRIVATE_KEY<br>  其中 SSH_PRIVATE_KEY 的内容是服务器上的私钥, DEPLOY_SERVER 是服务器地址<br>  编写 .gitlab-ci.yml 文件, 注入密钥, 通过ssh执行远程命令<br>  完整代码<br>  <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line"># 使用alpine镜像, 该镜像很少,只有几兆</div><div class="line">image: alpine</div><div class="line">stages:</div><div class="line">  - deploy</div><div class="line">before_script:</div><div class="line">  # 预先装 ssh-agent</div><div class="line">  - &apos;which ssh-agent || ( apk update &amp;&amp; apk add openssh-client)&apos;</div><div class="line">  # 启动服务</div><div class="line">  - eval $(ssh-agent -s)</div><div class="line">  # 将私钥写入deploy.key 文件</div><div class="line">  - echo &quot;$SSH_PRIVATE_KEY&quot; &gt; deploy.key</div><div class="line">  # 配置较低权限</div><div class="line">  - chmod 0600 deploy.key</div><div class="line">  # 注入密钥</div><div class="line">  - ssh-add deploy.key</div><div class="line">  - mkdir -p ~/.ssh    </div><div class="line">  - &apos;[[ -f /.dockerenv ]] &amp;&amp; echo -e &quot;Host *\n\tStrictHostKeyChecking no\n\n&quot; &gt; ~/.ssh/config&apos;</div><div class="line"></div><div class="line">release-doc:</div><div class="line">  stage: deploy</div><div class="line">  variables:</div><div class="line">    GIT_STRATEGY: none     </div><div class="line">  script:</div><div class="line">    # 连接远程服务器并执行拉取代码的命令</div><div class="line">    - ssh root@$DEPLOY_SERVER &quot;cd /path/to/wiki &amp;&amp; git pull origin master&quot;</div><div class="line">  only:</div><div class="line">    - master</div><div class="line">  environment:</div><div class="line">    name: production</div><div class="line">    url: http://$DEPLOY_SERVER</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/02/12/利用gitlab进行持续部署/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          利用gitlab进行持续部署
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/02/11/git使用规范/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">git使用规范</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="gitlab-ci由浅入深" data-title="gitlab-ci由浅入深" data-url="http://graychen.git.io/2018/02/11/gitlab-ci由浅入深/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"true"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2018 Graychen
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: undefined,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: undefined,
+		root: /
+	}
+</script>
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  </div>
+</body>
+</html>

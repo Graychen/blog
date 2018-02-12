@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+  <title>nginx配置优化 | Graychen的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="最近由于刚看完nginx高性能web服务器详解，就想结合自己工作的经历，对nginx的优化配置做一个系统的总结，这篇是初级篇，是单机的nginx优化配置首先我们看一份较简单的nginx.conf配置文件123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354">
+<meta name="keywords" content="php">
+<meta property="og:type" content="article">
+<meta property="og:title" content="nginx配置优化">
+<meta property="og:url" content="http://graychen.git.io/2018/01/04/nginx配置优化/index.html">
+<meta property="og:site_name" content="Graychen的博客">
+<meta property="og:description" content="最近由于刚看完nginx高性能web服务器详解，就想结合自己工作的经历，对nginx的优化配置做一个系统的总结，这篇是初级篇，是单机的nginx优化配置首先我们看一份较简单的nginx.conf配置文件123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354">
+<meta property="og:updated_time" content="2018-01-14T16:03:40.850Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="nginx配置优化">
+<meta name="twitter:description" content="最近由于刚看完nginx高性能web服务器详解，就想结合自己工作的经历，对nginx的优化配置做一个系统的总结，这篇是初级篇，是单机的nginx优化配置首先我们看一份较简单的nginx.conf配置文件123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354">
+  
+    <link rel="alternative" href="/atom.xml" title="Graychen的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="//favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img src="/assets/blogImg/avatar.jpg" class="js-avatar" style="width: 100%;height: 100%;opacity: 1;">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">Graychen</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">这个世界需要更多的英雄</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>Menu</li>
+						<li>Tags</li>
+						
+						
+						<li>Über</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/categories/随笔">随笔</a></li>
+				        
+							<li><a href="/categories/技术">技术文章</a></li>
+				        
+							<li><a href="/categories/错误日志">错误日志</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
+					        
+								<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/devops/" style="font-size: 13.33px;">devops</a> <a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 13.33px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/技术/" style="font-size: 10px;">技术</a> <a href="/tags/技术-php/" style="font-size: 13.33px;">技术 php</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">我是谁，我从哪里来，我到哪里去？我就是我，是颜色不一样的吃货…</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">Graychen</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				
+					<img src="/assets/blogImg/avatar.jpg" class="js-avatar" style="width: 100%;height: 100%;opacity: 1;">
+				
+			</div>
+			<hgroup>
+			  <h1 class="header-author">Graychen</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">这个世界需要更多的英雄</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/categories/随笔">随笔</a></li>
+		        
+					<li><a href="/categories/技术">技术文章</a></li>
+		        
+					<li><a href="/categories/错误日志">错误日志</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
+			        
+						<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-nginx配置优化" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2018/01/04/nginx配置优化/" class="article-date">
+  	<time datetime="2018-01-04T14:52:38.000Z" itemprop="datePublished">2018-01-04</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      nginx配置优化
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/php/">php</a></li></ul>
+	</div>
+
+        
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/技术/">技术</a>
+	</div>
+
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近由于刚看完nginx高性能web服务器详解，就想结合自己工作的经历，对nginx的优化配置做一个系统的总结，这篇是初级篇，是单机的nginx优化配置<br>首先我们看一份较简单的nginx.conf配置文件<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div></pre></td><td class="code"><pre><div class="line">#### 全局块开始 ####</div><div class="line">user nobody nobody; #配置允许Nginx服务器的用户和用户组</div><div class="line">worker_processes 3; #配置Nginx进程生成的worker_processes数目</div><div class="line">error_log logs/error_log; #配置Nginx服务器允许对错误日志存放路径</div><div class="line">pid nginx.pid; #配置Nginx服务允许时的错误日志存放路径</div><div class="line">#### 全局块结束 ####</div><div class="line"></div><div class="line">#### event开始 ####</div><div class="line">events &#123;</div><div class="line">        use epoll; #配置事件驱动模型</div><div class="line">        worker_connections 1024; #配置最大连接数</div><div class="line">&#125;</div><div class="line">#### event结束 ####</div><div class="line">#### http块开始 ####</div><div class="line">http &#123;</div><div class="line">        include mime.types; #定义MIME-TYPE</div><div class="line">        default_type application/octet-stream; </div><div class="line">        sendfile on; #配置允许使用sendfile方式传输</div><div class="line">        keepalive_timeout 65; #配置连接超时</div><div class="line">        log_format access.log #配置请求处理日志的分格</div><div class="line">        &apos;$remote_addr-[$time_local]-&quot;$request&quot;-&quot;$http_user_agent&quot;&apos;</div><div class="line"></div><div class="line">        gzip on; #gzip功能设置</div><div class="line">        gzip_min_length 1024; #响应页数据上限</div><div class="line">        gzip_buffers 4 16k; # 缓存空间大小</div><div class="line">        gzip_comp_level 2; # 压缩级别为2</div><div class="line">        gzip_types text/plain application/x-javascript text/css application/xml; #压缩文件类型</div><div class="line">        gzip_vary on #启用压缩标识</div><div class="line">        gzip_disable &quot;MISIE[1-6]&quot;; #ie1-6不开启压缩功能</div><div class="line">        gunzip_static no #检查预压缩文件</div><div class="line">        gzip_static on;</div><div class="line">        gzup_http_version 1.0;</div><div class="line">#### server块开始 ####</div><div class="line">        server &#123; #配置虚拟主机1</div><div class="line">                listen 8081; </div><div class="line">                server_name myServer1; #监听端口和主机名称</div><div class="line">                access_log /myweb/server1/log/access_log; #配置请求处理日志存放路径</div><div class="line">                error_page 404 /404.html; </div><div class="line">                location /server1/location1 &#123; #配置处理/server1/location1 请求的location</div><div class="line">                        root /myweb;</div><div class="line">                        index index.svr1-local.htm;</div><div class="line">                &#125;</div><div class="line">                location /server2/location2 &#123; #配置处理/server2/location2 请求的location</div><div class="line">                        root /myweb;</div><div class="line">                        index index.svr2-local.htm;</div><div class="line">                &#125;</div><div class="line">        &#125;</div><div class="line">        server &#123; #配置虚拟主机2</div><div class="line">                listen 8082; </div><div class="line">                gzip off; #主机2关闭压缩</div><div class="line">                server_name 192.168.1.3; #监听端口和主机名称</div><div class="line">                access_log /myweb/server2/log/access_log; #配置请求处理日志存放路径</div><div class="line">                error_page 404 /404.html; </div><div class="line">                location /server2/location1 &#123; #配置处理/server2/location1 请求的location</div><div class="line">                        root /myweb;</div><div class="line">                        index index.svr2-local.htm;</div><div class="line">                &#125;</div><div class="line">                location /server2/loc2 &#123; #配置处理/server2/location2 请求的location</div><div class="line">                        root /myweb;</div><div class="line">                        index index.svr2-local.htm;</div><div class="line">                &#125;</div><div class="line">                location = /404.html &#123;</div><div class="line">                        root /myweb/;</div><div class="line">                        index 404.html;</div><div class="line">                &#125;</div><div class="line">        &#125;</div><div class="line">#### server块结束 ####</div><div class="line">&#125;</div><div class="line">#### http块结束 ####</div></pre></td></tr></table></figure></p>
+<p>通过这个我们认识了nginx配置的基本组成:</p>
+<ul>
+<li>全局块：配置整体允许的配置指令，包括用户组，worker process数，Nginx进程,日志存放路径，配置文件引入</li>
+<li>event块：与用户的网络连接,事件模型的选择，worker process下的网络序列化,是否允许同事接受多个网络连接，每个worker process最大支持连接数</li>
+<li>http块：代理,缓存,日志定义,第三方模块的配置</li>
+<li>server块：虚拟主机</li>
+<li>location块: 基于请求对除虚拟主机之外的字符串进行匹配,包括地址定向，数据缓存，应答控制<a id="more"></a>
+<h2 id="Nginx如何处理请求"><a href="#Nginx如何处理请求" class="headerlink" title="Nginx如何处理请求"></a>Nginx如何处理请求</h2><blockquote>
+<p><em>同步和异步</em>：同步是指发送方发送请求后，需要等待接收到接收方发回的响应后，才接着发送下一个请求；异步是指发送第一个请求后，不等待接收方响应请求，就继续发送下个请求。在同步机制中，发送方和接收方的步调是一致的；异步中，所有请求形成队列，接收方处理完成后通知发送方。<br><em>阻塞和非阻塞</em>：描述进程处理调度方式，在网络通信中，主要指网络套接字Socket的阻塞和非阻塞，Socket的调用方式是调用结果返回之前，当前线程从运行状态被挂起，一直等到调用结果返回之后，才进入就绪状态，获取CPU后继续执行;Socket的非阻塞调用方式，如果调用结果不能返回，当前线程不会挂起，而是立即放回执行下一个调用。</p>
+</blockquote>
+</li>
+</ul>
+<p>Nginx主要使用Master-Worker模式，每个工作进程使用异步非阻塞方式，可以处理多个客户端请求。当某个工作进程接收到客户端的请求后，调用IO进行处理，如果不能立即得到结果，就去处理其他请求，而客户端再次期间也无需等待响应，可以去处理其他事情。当IO调用放回结果，就会通知此工作进程；该进程得到通知，暂时挂起当前处理的事物，去响应客户端请求。</p>
+<h2 id="Nginx的事件驱动模型"><a href="#Nginx的事件驱动模型" class="headerlink" title="Nginx的事件驱动模型"></a>Nginx的事件驱动模型</h2><p>IO调用是如何把自己的状态通知给工作进程的呢？IO调用在完成后能主动通知工作进程主要是使用事件驱动模型。</p>
+<blockquote>
+<p><em>select</em>: 支持linux和windows，首先创建所关注事件的描述符集合（收集读事件的描述符，写事件的描述符，异常事件描述符）,然后调用select函数，轮询事件描述符，检查是否有相应事件发生。使用–with-select_module和–without-select_module是否编译该库。<br><em>poll</em>: 支持linux，是select的优化版本，在一个描述符上设置了读，写，异常事件,轮询时可以同时检查事件是否发生。<br><em>epoll</em>: 支持linux2.6以上，将待处理事件表直接放到内核中，然后给这些描述符设置所关注的事件，把它添加到事件列表中，在具体编码过程中通过相关调用对事件的描述符进行修改和删除。它支持一个进程打开大数目的事件描述符，上限是系统打开文件的最大数目，同时，epoll库的IO效率不随描述符怎家二线性下降，因为只对内核上报的活跃描述符进行操作。</p>
+</blockquote>
+<h3 id="主进程"><a href="#主进程" class="headerlink" title="主进程:"></a>主进程:</h3><ul>
+<li>读取Nginx配置文件并验证其有效性和正确性</li>
+<li>建立，绑定和关闭Socket</li>
+<li>按照配置生成管理和结束进程</li>
+<li>接收外界指令，比如重启，升级及退出服务器等指令</li>
+<li>不中断服务，实现平滑重启，升级及退出服务</li>
+<li>开启日志文件，获取文件描述符</li>
+<li>编译和处理Perl脚本<h3 id="工作进程："><a href="#工作进程：" class="headerlink" title="工作进程："></a>工作进程：</h3></li>
+<li>接收客户端请求</li>
+<li>将请求一次送入各个功能模块进行过滤处理</li>
+<li>IO调用，获取响应数据</li>
+<li>与后端服务器通信，接收后端服务器处理结果</li>
+<li>数据缓存，访问索引，查询和调用缓存数据</li>
+<li>发送请求结果，响应客户端请求</li>
+<li>接收主程序指令，比如重启升级和退出<h3 id="缓存索引重建及管理进程"><a href="#缓存索引重建及管理进程" class="headerlink" title="缓存索引重建及管理进程"></a>缓存索引重建及管理进程</h3>缓存索引重建:在Nginx启动一段时间后由主进程生成，在缓存元数据重建完成后退出,根据本地磁盘在内存中建立索引元数据<br>魂村索引管理:存在主进程的整个生命周期，主要在索引数据更新后，判断是否过期<h2 id="优化配置"><a href="#优化配置" class="headerlink" title="优化配置"></a>优化配置</h2><h3 id="针对ipv4的内核参数配置优化"><a href="#针对ipv4的内核参数配置优化" class="headerlink" title="针对ipv4的内核参数配置优化"></a>针对ipv4的内核参数配置优化</h3>在/etc/sysctl.conf中追加下面的参数,然后使用<em>/sbin/sysctl -p</em>命令使配置生效</li>
+<li>net.core.netdev_max_backlog=262144 #表示当每个接收数据包的速率比内核处理这些包的速率快时，允许发送到队列的数据包的最大数目</li>
+<li>net.core.somaxconn=262144 #TCP连接数，高并发下，可能导致连接超时或重传问题</li>
+<li>net.ipv4.tcp_max_orphans=262144 #允许最多Tcp套接字关联到用户文件句柄上，防止Dos攻击</li>
+<li>net.ipv4.tcp_timestamps=0 # 禁用对时间戳的支持</li>
+<li>net.ipv4.tcp_synack_retries=1 # 放弃tcp连接之前发送一次SYN+ACK包 </li>
+<li>net.ipv4.tcp_syn_retries=1 # 设置放弃连接之前发送SYN包的数量<h3 id="针对CPU的Nginx配置优化"><a href="#针对CPU的Nginx配置优化" class="headerlink" title="针对CPU的Nginx配置优化"></a>针对CPU的Nginx配置优化</h3></li>
+<li>worker_processes 4; #针对cpu核数</li>
+<li>worker_cpu_affinity 0001 0100 1000 0010 #为每个分配分配他的cpu<h3 id="与网络连接相关的配置"><a href="#与网络连接相关的配置" class="headerlink" title="与网络连接相关的配置"></a>与网络连接相关的配置</h3></li>
+<li>keepalive_timeout 60 50 #（1）服务端与客户端保持连接的超时时间 （2）Keep-Alive消息头，客户端连接事件</li>
+<li>send_timeout 10s # 设置Nginx服务器响应客户端的超时事件，某次会话等待客户端响应超过10s，断开连接</li>
+<li>client_header_buffer_size 4k #客户端响应头部的缓冲区大小<h3 id="与事件驱动相关-event模块"><a href="#与事件驱动相关-event模块" class="headerlink" title="与事件驱动相关(event模块)"></a>与事件驱动相关(event模块)</h3>use epoll #事件驱动模型<br>worker_connections 65535 #每个工作进程允许同时连接客户端的最大数量，Client=worker_processes * worker_connections /2<br>worker_rlimit_sigpending 1024 #Linux事件信号队列长度上限<h4 id="poll事件驱动"><a href="#poll事件驱动" class="headerlink" title="poll事件驱动"></a>poll事件驱动</h4>devpoll_change 32 #传递给内核的事件数<br>devpoll_events 32 #从内核获取事件数量<h4 id="kqueue事件驱动"><a href="#kqueue事件驱动" class="headerlink" title="kqueue事件驱动"></a>kqueue事件驱动</h4>kqueue_changes 512 #传递给内核的事件数<br>kqueue_events 512 #从内核获取事件数量<h4 id="epoll-events驱动"><a href="#epoll-events驱动" class="headerlink" title="epoll_events驱动"></a>epoll_events驱动</h4>epoll_changes 512 #发送和收到内核的事件数<h4 id="rtsig"><a href="#rtsig" class="headerlink" title="rtsig"></a>rtsig</h4>rtsig_signo signo<br>###Gzip压缩(http模块)<h4 id="ngx-http-gip-module模块-适用于大文件下载"><a href="#ngx-http-gip-module模块-适用于大文件下载" class="headerlink" title="ngx_http_gip_module模块(适用于大文件下载)"></a>ngx_http_gip_module模块(适用于大文件下载)</h4>gzip on #开启压缩功能<br>gzip_buffers 32 4k | 16 8k #number*size存储压缩空间<br>gzip_comp_level 1 #压缩基本，1-9 1:压缩程度低，压缩效率高 9：压缩程度最高，压缩效率最低<br>gzip_disable MSIE [4-6]. #ie4-6不进行gzip压缩<br>gzip_http_version 1.0|1.1; # 开启Gzip功能的最低http协议版本<br>gzip_min_length 1024 #开启页面压缩的最小值,页面大于这个值才开启压缩<br>gzip_proxied on #开启对后端服务器返回结构的Gzip压缩<br>gzip_proxied expired #当后端服务器响应页头部包含只是响应数据过期时间的expired头域时，开启对响应数据的压缩<br>gzip_proxied no-cache #当后端服务器响应页头部包含只是响应数据过期时间的expired头域时，开启对响应数据的压缩<br>gzip_proxied no-store #当后端服务器响应页头部Cache-Control的指令为no-store时，开启对响应数据的Gzip压缩<br>gzip_proxied private #当后端服务器响应页头部Cache-Control的指令为private时，开启对响应数据的Gzip压缩<br>gzip_proxied no_last_modified #当后端服务器响应页头部不包含Last-Modified时，开启对响应数据的压缩<br>gzip_proxied no_etag #当后端服务器响应页头部不包含ETag时，开启对响应数据的压缩<br>gzip_proxied auth #当后端服务器响应页头部用于标示HTTP授权证书时，开启对响应数据的压缩<br>gzip_proxied any #无条件开启对响应数据的压缩<br>gzip_types text/plain application/x-javascript text/css text/html application/xml #根据响应页的MIME-TYPE选择性地开启Gzip压缩功能<br>gzip_vary on #经过压缩处理的响应会在头部添加”Vary:Accept-Encoding:gizp”也可用add_header Vary Accept-Encoding gzip<h4 id="ngx-http-gzip-static-module模块-可确定数据长度"><a href="#ngx-http-gzip-static-module模块-可确定数据长度" class="headerlink" title="ngx_http_gzip_static_module模块(可确定数据长度)"></a>ngx_http_gzip_static_module模块(可确定数据长度)</h4>编译添加–with-http_gzip_static_module<br>gzip_static on | off | aways; #开启 | 关闭 | 不检查客户端是否支持压缩,直接发送压缩文件<br>gzip_proxied no-cache no-store private auth;<h4 id="ngx-http-gunzip-module模块-不支持解压的浏览器，对数据进行解压"><a href="#ngx-http-gunzip-module模块-不支持解压的浏览器，对数据进行解压" class="headerlink" title="ngx_http_gunzip_module模块(不支持解压的浏览器，对数据进行解压)"></a>ngx_http_gunzip_module模块(不支持解压的浏览器，对数据进行解压)</h4>编译添加–with-http_gunzip_module<br>gunzip_static on<br>gunzip_buffers 32 4k | 16 8k</li>
+</ul>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/01/15/集群的nginx配置/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          集群的nginx配置
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/01/03/websocket结合swoole进行wss访问/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">swoole利用websocket进行wss访问</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="nginx配置优化" data-title="nginx配置优化" data-url="http://graychen.git.io/2018/01/04/nginx配置优化/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"true"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2018 Graychen
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: undefined,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: undefined,
+		root: /
+	}
+</script>
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  </div>
+</body>
+</html>

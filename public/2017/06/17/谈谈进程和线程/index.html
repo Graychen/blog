@@ -6,26 +6,20 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <title>谈谈进程和线程 | Graychen的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="最近对于进程和线程之间的关系及其本质有所疑惑，在网上查询了多个答案之后有了些感想，记录下
-多任务现代操作系统比如Mac OS X，UNIX，Linux，Windows等，都是支持“多任务”的操作系统。什么叫“多任务”呢？简单地说，就是操作系统可以同时运行多个任务。打个比方，你一边在用浏览器上网，一边在听MP3，一边在用Word赶作业，这就是多任务，至少同时有3个任务正在运行。还有很多任务悄悄地在后">
+  <meta name="description" content="最近对于进程和线程之间的关系及其本质有所疑惑，在网上查询了多个答案之后有了些感想，记录下 多任务现代操作系统比如Mac OS X，UNIX，Linux，Windows等，都是支持“多任务”的操作系统。什么叫“多任务”呢？简单地说，就是操作系统可以同时运行多个任务。打个比方，你一边在用浏览器上网，一边在听MP3，一边在用Word赶作业，这就是多任务，至少同时有3个任务正在运行。还有很多任务悄悄地在后">
+<meta name="keywords" content="linux基础">
 <meta property="og:type" content="article">
 <meta property="og:title" content="谈谈进程和线程">
 <meta property="og:url" content="http://graychen.git.io/2017/06/17/谈谈进程和线程/index.html">
 <meta property="og:site_name" content="Graychen的博客">
-<meta property="og:description" content="最近对于进程和线程之间的关系及其本质有所疑惑，在网上查询了多个答案之后有了些感想，记录下
-多任务现代操作系统比如Mac OS X，UNIX，Linux，Windows等，都是支持“多任务”的操作系统。什么叫“多任务”呢？简单地说，就是操作系统可以同时运行多个任务。打个比方，你一边在用浏览器上网，一边在听MP3，一边在用Word赶作业，这就是多任务，至少同时有3个任务正在运行。还有很多任务悄悄地在后">
+<meta property="og:description" content="最近对于进程和线程之间的关系及其本质有所疑惑，在网上查询了多个答案之后有了些感想，记录下 多任务现代操作系统比如Mac OS X，UNIX，Linux，Windows等，都是支持“多任务”的操作系统。什么叫“多任务”呢？简单地说，就是操作系统可以同时运行多个任务。打个比方，你一边在用浏览器上网，一边在听MP3，一边在用Word赶作业，这就是多任务，至少同时有3个任务正在运行。还有很多任务悄悄地在后">
 <meta property="og:image" content="http://graychen.git.io/assets/blogImg/process.png">
 <meta property="og:image" content="http://graychen.git.io/assets/blogImg/process.pipe.png">
 <meta property="og:image" content="http://graychen.git.io/assets/blogImg/thread.corrupt.png">
-<<<<<<< HEAD
-<meta property="og:updated_time" content="2017-08-16T15:48:31.076Z">
-=======
-<meta property="og:updated_time" content="2017-09-27T16:13:22.054Z">
->>>>>>> origin/master
+<meta property="og:updated_time" content="2018-02-10T05:53:45.434Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="谈谈进程和线程">
-<meta name="twitter:description" content="最近对于进程和线程之间的关系及其本质有所疑惑，在网上查询了多个答案之后有了些感想，记录下
-多任务现代操作系统比如Mac OS X，UNIX，Linux，Windows等，都是支持“多任务”的操作系统。什么叫“多任务”呢？简单地说，就是操作系统可以同时运行多个任务。打个比方，你一边在用浏览器上网，一边在听MP3，一边在用Word赶作业，这就是多任务，至少同时有3个任务正在运行。还有很多任务悄悄地在后">
+<meta name="twitter:description" content="最近对于进程和线程之间的关系及其本质有所疑惑，在网上查询了多个答案之后有了些感想，记录下 多任务现代操作系统比如Mac OS X，UNIX，Linux，Windows等，都是支持“多任务”的操作系统。什么叫“多任务”呢？简单地说，就是操作系统可以同时运行多个任务。打个比方，你一边在用浏览器上网，一边在听MP3，一边在用Word赶作业，这就是多任务，至少同时有3个任务正在运行。还有很多任务悄悄地在后">
 <meta name="twitter:image" content="http://graychen.git.io/assets/blogImg/process.png">
   
     <link rel="alternative" href="/atom.xml" title="Graychen的博客" type="application/atom+xml">
@@ -112,7 +106,9 @@
 							
 								<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
 					        
-								<a class="mail" target="_blank" href="/455803034@qq.com" title="mail">mail</a>
+								<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
+					        
+								<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
 					        
 						</div>
 					</nav>
@@ -121,11 +117,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-<<<<<<< HEAD
-						<a href="/tags/devops/" style="font-size: 10px;">devops</a> <a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
-=======
-						<a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/技术-php/" style="font-size: 10px;">技术 php</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
->>>>>>> origin/master
+						<a href="/tags/devops/" style="font-size: 13.33px;">devops</a> <a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 13.33px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/技术/" style="font-size: 10px;">技术</a> <a href="/tags/技术-php/" style="font-size: 13.33px;">技术 php</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
 					</div>
 				</section>
 				
@@ -183,7 +175,9 @@
 					
 						<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
 			        
-						<a class="mail" target="_blank" href="/455803034@qq.com" title="mail">mail</a>
+						<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
+			        
+						<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
 			        
 				</div>
 			</nav>
@@ -250,7 +244,7 @@
 <h2 id="线程的通信"><a href="#线程的通信" class="headerlink" title="线程的通信"></a>线程的通信</h2><p>多个线程同时访问共享数据时可能会冲突，线程中的内存是共享的，导致所处理的变量是同一个，比如两个线程都要把某个全局变量增加1，这个操作在某平台需要三条指令完成：<br>1.从内存读变量值到寄存器<br>2.寄存器的值加1<br>3.将寄存器的值写回内存<br>假设两个线程在多处理器平台上同时执行这三条指令，则可能导致下图所示的结果，最后变量只加了一次而非两次。<br> <img src="/assets/blogImg/thread.corrupt.png" alt="&quot;我是傲娇的效果图&quot;"><br> 对于多线程的程序，访问冲突的问题是很普遍的，解决的办法是引入互斥锁（Mutex，Mutual Exclusive Lock），获得锁的线程可以完成“读-修改-写”的操作，然后释放锁给其它线程，没有获得锁的线程只能等待而不能访问共享数据，这样“读-修改-写”三步操作组成一个原子操作，要么都执行，要么都不执行，不会执行到中间被打断，也不会在其它处理器上并行做这个操作。<br> pthread_mutex_init函数对Mutex做初始化，参数attr设定Mutex的属性，如果attr为NULL则表示缺省属性，本章不详细介绍Mutex属性，感兴趣的读者可以参考[APUE2e]。用pthread_mutex_init函数初始化的Mutex可以用pthread_mutex_destroy销毁。如果Mutex变量是静态分配的（全局变量或static变量），也可以用宏定义PTHREAD_MUTEX_INITIALIZER来初始化，相当于用pthread_mutex_init初始化并且attr参数为NULL。Mutex的加锁和解锁操作可以用下列函数：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pthread.h&gt;</span></span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">pthread_mutex_lock</span><span class="params">(<span class="keyword">pthread_mutex_t</span> *mutex)</span></span>;</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">pthread_mutex_trylock</span><span class="params">(<span class="keyword">pthread_mutex_t</span> *mutex)</span></span>;</div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">pthread_mutex_unlock</span><span class="params">(<span class="keyword">pthread_mutex_t</span> *mutex)</span></span>;</div></pre></td></tr></table></figure></p>
 <p>返回值：成功返回0，失败返回错误号。<br>一个线程可以调用pthread_mutex_lock获得Mutex，如果这时另一个线程已经调用pthread_mutex_lock获得了该Mutex，则当前线程需要挂起等待，直到另一个线程调用pthread_mutex_unlock释放Mutex，当前线程被唤醒，才能获得该Mutex并继续执行。<br>如果一个线程既想获得锁，又不想挂起等待，可以调用pthread_mutex_trylock，如果Mutex已经被另一个线程获得，这个函数会失败返回EBUSY，而不会使线程挂起等待。<br>Mutex的两个基本操作lock和unlock是如何实现的呢？假设Mutex变量的值为1表示互斥锁空闲，这时某个进程调用lock可以获得锁，而Mutex的值为0表示互斥锁已经被某个线程获得，其它线程再调用lock只能挂起等待。那么lock和unlock的伪代码如下：<br>lock:<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span>(mutex &gt; <span class="number">0</span>)&#123;</div><div class="line">        mutex = <span class="number">0</span>;</div><div class="line">        <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125; <span class="keyword">else</span></div><div class="line">        <span class="comment">//挂起等待;</span></div><div class="line">        <span class="keyword">goto</span> lock;</div><div class="line">unlock:</div><div class="line">        mutex = <span class="number">1</span>;</div><div class="line">        <span class="comment">//唤醒等待Mutex的线程;</span></div><div class="line">        <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">        unlock操作中唤醒等待线程的步骤可以有不同的实现，可以只唤醒一个等待线程，也可以唤醒所有等待该Mutex的线程，然后让被唤醒的这些线程去竞争获得这个Mutex，竞争失败的线程继续挂起等待。</div></pre></td></tr></table></figure></p>
 <h2 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h2><p>1.一般情况下，如果同一个线程先后两次调用lock，在第二次调用时，由于锁已经被占用，该线程会挂起等待别的线程释放锁，然而锁正是被自己占用着的，该线程又被挂起而没有机会释放锁，因此就永远处于挂起等待状态了，这叫做死锁（Deadlock）。<br>2.另一种典型的死锁情形是这样：线程A获得了锁1，线程B获得了锁2，这时线程A调用lock试图获得锁2，结果是需要挂起等待线程B释放锁2，而这时线程B也调用lock试图获得锁1，结果是需要挂起等待线程A释放锁1，于是线程A和B都永远处于挂起状态了。不难想象，如果涉及到更多的线程和更多的锁，有没有可能死锁的问题将会变得复杂和难以判断。</p>
-<h2 id="参考文章"><a href="#参考文章" class="headerlink" title=" 参考文章:"></a> 参考文章:</h2><p><a href="https://akaedu.github.io/book/ch35s04.html" target="_blank" rel="external">线程</a><br><a href="https://akaedu.github.io/book/ch30s04.html" target="_blank" rel="external">进程间通信</a><br><a href="http://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a000/0013868322563729e03f6905ea94f0195528e3647887415000" target="_blank" rel="external">进程和线程</a></p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title=" 参考文章:"></a> 参考文章:</h2><p><a href="https://akaedu.github.io/book/ch35s04.html" target="_blank" rel="noopener">线程</a><br><a href="https://akaedu.github.io/book/ch30s04.html" target="_blank" rel="noopener">进程间通信</a><br><a href="http://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a000/0013868322563729e03f6905ea94f0195528e3647887415000" target="_blank" rel="noopener">进程和线程</a></p>
 
       
     </div>
@@ -312,7 +306,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2017 Graychen
+    		&copy; 2018 Graychen
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten

@@ -1,0 +1,172 @@
+---
+title: swoole利用websocket进行wss访问
+date: 2018-01-03 21:32:26
+tags: 技术
+---
+最近利用swoole的websocket对扫码登录进行重构，原本是利用长轮循监听用户的的扫码，但对服务器的资源消耗太大，所以改用websocket节省带宽和服务器资源。
+> **websocket**: 一种在单个 TCP 连接上进行全双工通讯的协议。使得客户端和服务器之间的数据交换变得更加简单，允许服务端主动向客户端推送数据。在WebSocket API 中，浏览器和服务器只需要完成一次握手，两者之间就直接可以创建持久性的连接，并进行双向数据传输。
+
+## 在docker中搭建swoole的环境
+* 先建立build_swoole.sh这样的安装shell文件
+``` shell
+apk add git autoconf build-base linux-headers libaio-dev pcre-dev openssl-dev icu-dev
+ln -s /usr/bin/php-config7 /usr/bin/php-config
+ln -s /usr/bin/phpize7 /usr/bin/phpize
+cd /root/
+git clone https://github.com/swoole/swoole-src.git
+cd /root/swoole-src
+phpize
+./configure --enable-openssl
+make && make install
+apk del libaio-dev php-dev git autoconf build-base linux-headers pcre-dev
+apk del --no-cache php-dev
+apk del --no-cache git
+apk del --no-cache build-base
+apk del --no-cache make
+apk del --no-cache openssl-dev
+apk del --no-cache linux-headers
+apk del --no-cache libaio-dev
+apk del --no-cache pcre-dev
+apk del --no-cache autoconf
+apk del --no-cache .persistent-deps
+apk del --no-cache libmcrypt-dev
+apk del --no-cache g++
+# apk del --no-cache icu-dev
+apk info
+php -m
+rm -rf /var/cache/apk/*
+rm -rf /root/swoole-src/
+rm -rf /tmp/*
+```
+* 然后在Dockerfile中使用我们的安装脚本,编译安装成功后，修改php.ini加入`extension=swoole.so`
+``` shell
+FROM zacksleo/php:7.1-alpine-fpm-supervisor
+COPY build_swoole.sh /root
+RUN sh /root/build_swoole.sh
+```
+* 接着`docker-composer build 创建对应的docker镜像`，并且运行`docker-composer up`，在进入对应的docker容器中`docker exec 你的镜像名`,执行命令`php -m`,如果出现swoole，那我们的swoole扩展就安装好了
+## 创建服务器的swoole的监听
+``` php
+<?php
+
+namespace console\controllers;
+
+use common\models\QrcodeToken;
+use yii;
+use common\models\User;
+use yii\console\Controller;
+use Swoole\WebSocket\Server;
+
+/**
+ * Class PremiumController
+ * @package console\controllers
+ * @auth graychen <455803034@qq.com>
+ */
+class WebSocketController extends Controller
+{
+    public $server;
+
+    /**
+     * websocket 监听扫码登录
+     */
+    public function actionListenLogin()
+    {
+        $setConfig = array(
+            'ssl_key_file' => '/var/www/html/services/nginx/ssl-cert/ssl.key',
+            'ssl_cert_file' => '/var/www/html/services/nginx/ssl-cert/ssl.crt'
+        );
+        $this->server = new Server('0.0.0.0', 9502, SWOOLE_PROCESS, SWOOLE_SOCK_TCP | SWOOLE_SSL);
+        $this->server->set($setConfig);
+        $this->server->on('open', function (Server $server, $request) {
+            echo "server: handshake success with fd{$request->fd}\n";
+        });
+        $this->server->on('message', function (Server $server, $frame) {
+            echo "receive from {$frame->fd}:{$frame->data},opcode:{$frame->opcode},fin:{$frame->finish}\n";
+            $message = json_decode($frame->data);
+            $timestamp = $message->timestamp;
+            $token = $message->token;
+            swoole_timer_tick(1000, function ($timerId) use ($token, $server, $frame) {
+                $token = $this->findModel($token);
+                if ($token === null || $token->status == QrcodeToken::STATUS_EXPIRED) {
+                    $response = json_encode([
+                        'timestamp' => time(),
+                        'status' => QrcodeToken::STATUS_EXPIRED
+                    ]);
+                    $server->push($frame->fd, $response);
+                    swoole_timer_clear($timerId);
+                } else {
+                    if ($server->exist($frame->fd) && in_array($token->status, [QrcodeToken::STATUS_SCANNED, QrcodeToken::STATUS_LOGGED_IN])) {
+                        $response = json_encode([
+                            'timestamp' => $token->updated_at,
+                            'status' => $token->status
+                        ]);
+                        $server->push($frame->fd, $response);
+                    }
+                };
+            });
+        });
+        $this->server->on('close', function (Server $server, $fd) {
+            echo "client {$fd} closed\n";
+        });
+        $this->server->start();
+    }
+
+    private function findModel($id)
+    {
+        clearstatcache();
+        $token = QrcodeToken::findOne(['id' => $id]);
+        return $token;
+    }
+}
+
+```
+* 
+``` js
+var error = false;
+    var timestamp = {$timestamp};
+    var _t = '{$token}';
+    function startWebSocket(){
+        var host=document.domain;
+        websocket = new WebSocket('wss://' + host + ':9502');
+        websocket.onopen = function (evt) {
+            var message={
+                timestamp:timestamp,
+                token:_t
+            };
+            if(message!==null){
+                websocket.send(JSON.stringify(message));
+            }
+        };
+        websocket.onclose = function (evt) {
+            console.log(\"关闭连接\");
+        };
+        websocket.onmessage = function (evt) {
+            var response=JSON.parse(evt.data);
+            if(response.status==1){                  
+              $('#fn-tips').text('已扫码, 请点击确认');
+              timestamp = response.timestamp;
+            }
+            if(response.status==2){
+              $('#fn-tips').text('已登录, 正在跳转···');
+              setTimeout(function(){
+                $('#ff-qrcode-token').submit();                    
+              },500);                  
+            }
+            if(response.status==-2){
+              alert('二维码已失效, 请刷新页面');
+            }
+            error = false;
+            timestamp = response.timestamp;                
+        };
+        
+        websocket.onerror = function (evt, e) {
+            console.log('错误代码: ' + evt.data);
+        };
+    }
+
+```
+
+
+
+
+

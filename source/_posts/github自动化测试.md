@@ -2,6 +2,7 @@
 title: github上composer自动化测试
 date: 2017-09-27 22:39:54
 tags: 技术 php
+
 ---
 前段时间我们组对项目进行重构，将多个项目中例如log，app的更新这些重复的内容抽出来做了composer包，为了保证这些composer包的代码质量，
 使用了github上的一些工具。下面我以自己的一个利用经纬度查询地理位置的composer包geolocation[https://github.com/Graychen/geolocation/tree/master/tests]为例来详细描述下我们的做法。

@@ -7,6 +7,7 @@
   <title>使用Prometheus+Grafana监控 | Graychen的博客</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="简介Prometheus（普罗米修斯）是一套开源的监控&amp;amp;报警&amp;amp;时间序列数据库的组合，起始是由SoundCloud公司开发的。随着发展，越来越多公司和组织接受采用Prometheus，社会也十分活跃，他们便将它独立成开源项目，并且有公司来运作。Google SRE的书内也曾提到跟他们BorgMon监控系统相似的实现是Prometheus。现在最常见的Kubernetes容器管理系统中">
+<meta name="keywords" content="devops">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用Prometheus+Grafana监控">
 <meta property="og:url" content="http://graychen.git.io/2017/12/10/使用Prometheus-Grafana监控/index.html">
@@ -15,7 +16,7 @@
 <meta property="og:image" content="http://ww1.sinaimg.cn/large/0060OHG5gy1fm4pg7j25ej30l60dw40p.jpg">
 <meta property="og:image" content="http://ww1.sinaimg.cn/large/0060OHG5gy1fm4tb10am7j30mh093jsh.jpg">
 <meta property="og:image" content="http://ww1.sinaimg.cn/large/0060OHG5gy1fm4tbxey4xj30mo08k3zm.jpg">
-<meta property="og:updated_time" content="2017-12-10T10:15:01.354Z">
+<meta property="og:updated_time" content="2017-12-10T12:38:46.108Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用Prometheus+Grafana监控">
 <meta name="twitter:description" content="简介Prometheus（普罗米修斯）是一套开源的监控&amp;amp;报警&amp;amp;时间序列数据库的组合，起始是由SoundCloud公司开发的。随着发展，越来越多公司和组织接受采用Prometheus，社会也十分活跃，他们便将它独立成开源项目，并且有公司来运作。Google SRE的书内也曾提到跟他们BorgMon监控系统相似的实现是Prometheus。现在最常见的Kubernetes容器管理系统中">
@@ -116,7 +117,7 @@
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/devops/" style="font-size: 10px;">devops</a> <a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 10px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
+						<a href="/tags/devops/" style="font-size: 13.33px;">devops</a> <a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 13.33px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/技术/" style="font-size: 10px;">技术</a> <a href="/tags/技术-php/" style="font-size: 13.33px;">技术 php</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
 					</div>
 				</section>
 				
@@ -222,7 +223,7 @@
     <div class="article-entry" itemprop="articleBody">
       
         <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Prometheus（普罗米修斯）是一套开源的监控&amp;报警&amp;时间序列数据库的组合，起始是由SoundCloud公司开发的。随着发展，越来越多公司和组织接受采用Prometheus，社会也十分活跃，他们便将它独立成开源项目，并且有公司来运作。Google SRE的书内也曾提到跟他们BorgMon监控系统相似的实现是Prometheus。现在最常见的Kubernetes容器管理系统中，通常会搭配Prometheus进行监控。<br>Prometheus基本原理是通过HTTP协议周期性抓取被监控组件的状态，这样做的好处是任意组件只要提供HTTP接口就可以接入监控系统，不需要任何SDK或者其他的集成过程。这样做非常适合虚拟化环境比如VM或者Docker 。<br>Prometheus应该是为数不多的适合Docker、Mesos、Kubernetes环境的监控系统之一。</p>
-<p>输出被监控组件信息的HTTP接口被叫做exporter 。目前互联网公司常用的组件大部分都有exporter可以直接使用，比如Varnish、Haproxy、Nginx、MySQL、Linux 系统信息 (包括磁盘、内存、CPU、网络等等)，具体支持的源看：<a href="https://github.com/prometheus。" target="_blank" rel="external">https://github.com/prometheus。</a></p>
+<p>输出被监控组件信息的HTTP接口被叫做exporter 。目前互联网公司常用的组件大部分都有exporter可以直接使用，比如Varnish、Haproxy、Nginx、MySQL、Linux 系统信息 (包括磁盘、内存、CPU、网络等等)，具体支持的源看：<a href="https://github.com/prometheus。" target="_blank" rel="noopener">https://github.com/prometheus。</a></p>
 <p>与其他监控系统相比，Prometheus的主要特点是：</p>
 <ul>
 <li>一个多维数据模型（时间序列由指标名称定义和设置键/值尺寸）。</li>
@@ -260,9 +261,9 @@
 <h3 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h3><p>Summary和Histogram十分相似，常用于跟踪事件发生的规模，例如：请求耗时、响应大小。同样提供 count 和 sum 全部值的功能。</p>
 <p>例如：count=7次，sum=7次的值求值。</p>
 <p>它提供一个quantiles的功能，可以按%比划分跟踪的结果。例如：quantile取值0.95，表示取采样值里面的95%数据。</p>
-<h2 id="配置文件解析"><a href="#配置文件解析" class="headerlink" title="配置文件解析"></a>配置文件解析</h2><p>###下面的例子以这个项目为例(promethes项目)[<a href="https://mops-gitlab.lianluo.com/chenjiahui/Prometheus/tree/master" target="_blank" rel="external">https://mops-gitlab.lianluo.com/chenjiahui/Prometheus/tree/master</a>]</p>
+<h2 id="配置文件解析"><a href="#配置文件解析" class="headerlink" title="配置文件解析"></a>配置文件解析</h2><p>###下面的例子以这个项目为例(promethes项目)[<a href="https://mops-gitlab.lianluo.com/chenjiahui/Prometheus/tree/master" target="_blank" rel="noopener">https://mops-gitlab.lianluo.com/chenjiahui/Prometheus/tree/master</a>]</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># docker-compose.yml</span></div><div class="line"><span class="attr">version:</span> <span class="string">'2.0'</span></div><div class="line"></div><div class="line"><span class="attr">services:</span></div><div class="line"><span class="attr">  prometheus:</span> </div><div class="line"><span class="attr">    image:</span> prom/prometheus:v1<span class="number">.0</span><span class="number">.1</span></div><div class="line"><span class="attr">    volumes:</span></div><div class="line"><span class="bullet">        -</span> ./prometheus.yml:/etc/prometheus/prometheus.yml</div><div class="line"><span class="attr">        - prometheus_data:</span>/prometheus</div><div class="line"><span class="bullet">        -</span> ./alert.rules:/etc/prometheus/alert.rules</div><div class="line"><span class="attr">    command:</span></div><div class="line"><span class="bullet">        -</span> <span class="string">'-config.file=/etc/prometheus/prometheus.yml'</span></div><div class="line"><span class="bullet">        -</span> <span class="string">'-alertmanager.url=http://alertmanager:9093'</span></div><div class="line"><span class="attr">    ports:</span></div><div class="line"><span class="bullet">        -</span> <span class="string">'9090:9090'</span></div><div class="line"></div><div class="line"><span class="attr">  grafana:</span></div><div class="line"><span class="attr">    image:</span> <span class="string">"grafana/grafana:3.1.1"</span></div><div class="line"><span class="attr">    environment:</span></div><div class="line"><span class="bullet">        -</span> GF_SECURITY_ADMIN_PASSWORD=pass</div><div class="line"><span class="attr">    depends_on:</span></div><div class="line"><span class="bullet">        -</span> prometheus</div><div class="line"><span class="attr">    volumes:</span></div><div class="line"><span class="attr">        - grafana_data:</span>/var/lib/grafana</div><div class="line"><span class="bullet">        -</span> ./alert.rules:/etc/prometheus/alert.rules</div><div class="line"><span class="attr">    ports:</span></div><div class="line"><span class="bullet">        -</span> <span class="string">"3000:3000"</span></div><div class="line"></div><div class="line"><span class="attr">  alertmanager:</span></div><div class="line"><span class="attr">    image:</span> <span class="string">"prom/alertmanager:v0.8.0"</span></div><div class="line"><span class="attr">    volumes:</span></div><div class="line"><span class="bullet">        -</span> ./alertmanager.yml:/alertmanager.yml</div><div class="line"><span class="attr">    command:</span></div><div class="line"><span class="bullet">        -</span> <span class="string">'-config.file=/alertmanager.yml'</span></div><div class="line">    </div><div class="line"><span class="attr">volumes:</span></div><div class="line"><span class="attr">  prometheus_data:</span> &#123;&#125;</div><div class="line"><span class="attr">  grafana_data:</span> &#123;&#125;</div></pre></td></tr></table></figure>
-<p>Prometheus内置了一个web界面，我们可通过<a href="http://monitor_host:9090进行访问：" target="_blank" rel="external">http://monitor_host:9090进行访问：</a><br><img src="http://ww1.sinaimg.cn/large/0060OHG5gy1fm4tb10am7j30mh093jsh.jpg" alt=""><br>但是自带的图形工具过于简陋，grafana是他的替代品，您可以通过http：// localhost：3000 / login访问Grafana,<br><img src="http://ww1.sinaimg.cn/large/0060OHG5gy1fm4tbxey4xj30mo08k3zm.jpg" alt=""></p>
+<p>Prometheus内置了一个web界面，我们可通过<a href="http://monitor_host:9090进行访问：" target="_blank" rel="noopener">http://monitor_host:9090进行访问：</a><br><img src="http://ww1.sinaimg.cn/large/0060OHG5gy1fm4tb10am7j30mh093jsh.jpg" alt=""><br>但是自带的图形工具过于简陋，grafana是他的替代品，您可以通过http：// localhost：3000 / login访问Grafana,<br><img src="http://ww1.sinaimg.cn/large/0060OHG5gy1fm4tbxey4xj30mo08k3zm.jpg" alt=""></p>
 <p>在状态页面的“配置”下方，您会看到一个“目标”部分，其中列出了“prometheus”端点。<br>这相当于scrape_configs相同的设置，job_name 并且是普罗米修斯提供的指标的来源。换句话说，普罗米修斯服务器带有一个度量端点<br>或者上面所说的出口商，它报告普罗米修斯服务器本身的统计数据。</p>
 <h3 id="cAdvisor-容器数据采集"><a href="#cAdvisor-容器数据采集" class="headerlink" title="cAdvisor 容器数据采集"></a>cAdvisor 容器数据采集</h3><p>因为promethus是通过主动去指定的地址拉取数据，所以要监听的项目需要配置导出器</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line">cadvisor:</div><div class="line"> image: google/cadvisor</div><div class="line"> volumes:</div><div class="line">   - /:/rootfs:ro</div><div class="line">   - /var/run:/var/run:rw</div><div class="line">   - /sys:/sys:ro</div><div class="line">   - /var/lib/docker/:/var/lib/docker:ro</div><div class="line"> ports:</div><div class="line">     - &quot;8080:8080&quot;</div><div class="line"> expose:</div><div class="line">     - &quot;8080&quot;</div></pre></td></tr></table></figure>
@@ -278,14 +279,14 @@
 <p>FOR子句使得Prometheus等待第一个传进来的向量元素（例如高HTTP错误的实例），并计数一个警报。如果元素是active，但是没有firing的，就处于pending状态。<br>LABELS（标签）子句允许指定一组附加的标签附到警报上。现有的任何标签都会被覆盖，标签值可以被模板化。<br>ANNOTATIONS（注释）子句指定另一组未查明警报实例的标签，它们被用于存储更长的其他信息，例如警报描述或者链接，注释值可以被模板化。<br>示例：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"># alert.rules</div><div class="line">ALERT service_down</div><div class="line">  IF up == 0</div><div class="line">ALERT high_load</div><div class="line">  IF node_load1 &gt; 0.5</div><div class="line">  ANNOTATIONS &#123;</div><div class="line">      summary = &quot;Instance &#123;&#123; $labels.instance &#125;&#125; under high load&quot;,</div><div class="line">      description = &quot;&#123;&#123; $labels.instance &#125;&#125; of job &#123;&#123; $labels.job &#125;&#125; is under highload.&quot;,</div><div class="line">  &#125;</div></pre></td></tr></table></figure>
 <h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
-<li><a href="https://prometheus.io" target="_blank" rel="external">prometheus</a></li>
-<li><a href="http://grafana.org" target="_blank" rel="external">grafana</a></li>
-<li><a href="https://sagittariusyx.github.io/2016/03/07/prometheus-alertmanager/index.html" target="_blank" rel="external">Prometheus监控 - Alertmanager报警模块</a></li>
-<li><a href="https://www.ctl.io/developers/blog/post/monitoring-docker-services-with-prometheus/" target="_blank" rel="external">Monitoring Docker Services with Prometheus - CenturyLink Cloud Developer Center</a></li>
-<li><a href="http://www.ywnds.com/?p=9656" target="_blank" rel="external">使用Prometheus+Grafana监控MySQL实践 – 运维那点事</a></li>
-<li><a href="http://blog.frognew.com/2017/02/use-prometheus-on-centos7.html" target="_blank" rel="external">使用Prometheus监控服务器</a></li>
-<li><a href="http://yunlzheng.github.io/2017/07/04/prometheus-kubernates/" target="_blank" rel="external">Prometheus在Kubernetes下的监控实践</a></li>
-<li><a href="https://finestructure.co/blog/2016/5/16/monitoring-with-prometheus-grafana-docker-part-1" target="_blank" rel="external">通过Prometheus，Grafana和Docker进行监控</a></li>
+<li><a href="https://prometheus.io" target="_blank" rel="noopener">prometheus</a></li>
+<li><a href="http://grafana.org" target="_blank" rel="noopener">grafana</a></li>
+<li><a href="https://sagittariusyx.github.io/2016/03/07/prometheus-alertmanager/index.html" target="_blank" rel="noopener">Prometheus监控 - Alertmanager报警模块</a></li>
+<li><a href="https://www.ctl.io/developers/blog/post/monitoring-docker-services-with-prometheus/" target="_blank" rel="noopener">Monitoring Docker Services with Prometheus - CenturyLink Cloud Developer Center</a></li>
+<li><a href="http://www.ywnds.com/?p=9656" target="_blank" rel="noopener">使用Prometheus+Grafana监控MySQL实践 – 运维那点事</a></li>
+<li><a href="http://blog.frognew.com/2017/02/use-prometheus-on-centos7.html" target="_blank" rel="noopener">使用Prometheus监控服务器</a></li>
+<li><a href="http://yunlzheng.github.io/2017/07/04/prometheus-kubernates/" target="_blank" rel="noopener">Prometheus在Kubernetes下的监控实践</a></li>
+<li><a href="https://finestructure.co/blog/2016/5/16/monitoring-with-prometheus-grafana-docker-part-1" target="_blank" rel="noopener">通过Prometheus，Grafana和Docker进行监控</a></li>
 </ul>
 
       
@@ -296,9 +297,18 @@
     
 <nav id="article-nav">
   
+    <a href="/2018/01/03/websocket结合swoole进行wss访问/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          swoole利用websocket进行wss访问
+        
+      </div>
+    </a>
   
-    <a href="/2017/07/28/yii2-queue队列的使用说明/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">yii2-queue队列的使用说明</div>
+  
+    <a href="/2017/09/27/github自动化测试/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">github上composer自动化测试</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
@@ -339,7 +349,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2017 Graychen
+    		&copy; 2018 Graychen
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+  <title>git使用规范 | Graychen的博客</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Git工作流程分支 master: 用于生产环境部署, 只接受合并请求, 不直接提交 testing: 用于测试环境测试 develop: 用于日常开发主线, 其他分支只能合并到 develop 分支 feature-xxx: 用于增加一个新功能 hotfix-xxx: 用于修复一个紧急bug每次开发新功能，都应该新建一个单独的分支 工作流 如果要贡献代码, 首先应阅读贡献指南, 确认如果贡献代码">
+<meta name="keywords" content="技术 php">
+<meta property="og:type" content="article">
+<meta property="og:title" content="git使用规范">
+<meta property="og:url" content="http://graychen.git.io/2018/02/11/git使用规范/index.html">
+<meta property="og:site_name" content="Graychen的博客">
+<meta property="og:description" content="Git工作流程分支 master: 用于生产环境部署, 只接受合并请求, 不直接提交 testing: 用于测试环境测试 develop: 用于日常开发主线, 其他分支只能合并到 develop 分支 feature-xxx: 用于增加一个新功能 hotfix-xxx: 用于修复一个紧急bug每次开发新功能，都应该新建一个单独的分支 工作流 如果要贡献代码, 首先应阅读贡献指南, 确认如果贡献代码">
+<meta property="og:updated_time" content="2018-02-11T14:44:16.550Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="git使用规范">
+<meta name="twitter:description" content="Git工作流程分支 master: 用于生产环境部署, 只接受合并请求, 不直接提交 testing: 用于测试环境测试 develop: 用于日常开发主线, 其他分支只能合并到 develop 分支 feature-xxx: 用于增加一个新功能 hotfix-xxx: 用于修复一个紧急bug每次开发新功能，都应该新建一个单独的分支 工作流 如果要贡献代码, 首先应阅读贡献指南, 确认如果贡献代码">
+  
+    <link rel="alternative" href="/atom.xml" title="Graychen的博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="//favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			
+			<img src="/assets/blogImg/avatar.jpg" class="js-avatar" style="width: 100%;height: 100%;opacity: 1;">
+			
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">Graychen</a></h1>
+		</hgroup>
+
+		
+		<p class="header-subtitle">这个世界需要更多的英雄</p>
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+						<div class="icon-wrap icon-me hide" data-idx="3">
+							<div class="user"></div>
+							<div class="shoulder"></div>
+						</div>
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>Menu</li>
+						<li>Tags</li>
+						
+						
+						<li>Über</li>
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/categories/随笔">随笔</a></li>
+				        
+							<li><a href="/categories/技术">技术文章</a></li>
+				        
+							<li><a href="/categories/错误日志">错误日志</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
+					        
+								<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/devops/" style="font-size: 13.33px;">devops</a> <a href="/tags/linux/" style="font-size: 13.33px;">linux</a> <a href="/tags/linux基础/" style="font-size: 13.33px;">linux基础</a> <a href="/tags/php/" style="font-size: 20px;">php</a> <a href="/tags/php-php扩展-c/" style="font-size: 16.67px;">php php扩展 c</a> <a href="/tags/工具/" style="font-size: 10px;">工具</a> <a href="/tags/技术/" style="font-size: 10px;">技术</a> <a href="/tags/技术-php/" style="font-size: 13.33px;">技术 php</a> <a href="/tags/编辑器/" style="font-size: 13.33px;">编辑器</a> <a href="/tags/错误日志/" style="font-size: 10px;">错误日志</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+				
+				<section class="switch-part switch-part3">
+				
+					<div id="js-aboutme">我是谁，我从哪里来，我到哪里去？我就是我，是颜色不一样的吃货…</div>
+				</section>
+				
+			</div>
+		</div>
+	</header>				
+</div>
+
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">Graychen</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				
+					<img src="/assets/blogImg/avatar.jpg" class="js-avatar" style="width: 100%;height: 100%;opacity: 1;">
+				
+			</div>
+			<hgroup>
+			  <h1 class="header-author">Graychen</h1>
+			</hgroup>
+			
+			<p class="header-subtitle">这个世界需要更多的英雄</p>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/categories/随笔">随笔</a></li>
+		        
+					<li><a href="/categories/技术">技术文章</a></li>
+		        
+					<li><a href="/categories/错误日志">错误日志</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/Graychen" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/u/5508881293/home?topnav=1&wvr=6" title="weibo">weibo</a>
+			        
+						<a class="twitter" target="_blank" href="https://twitter.com/huashendung" title="twitter">twitter</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+
+      <div class="body-wrap"><article id="post-git使用规范" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2018/02/11/git使用规范/" class="article-date">
+  	<time datetime="2018-02-11T14:30:54.000Z" itemprop="datePublished">2018-02-11</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      git使用规范
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/技术-php/">技术 php</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Git工作流程"><a href="#Git工作流程" class="headerlink" title="Git工作流程"></a>Git工作流程</h1><h2 id="分支"><a href="#分支" class="headerlink" title="分支"></a>分支</h2><ul>
+<li>master: 用于生产环境部署, 只接受合并请求, 不直接提交</li>
+<li>testing: 用于测试环境测试</li>
+<li>develop: 用于日常开发主线, 其他分支只能合并到 develop 分支</li>
+<li>feature-xxx: 用于增加一个新功能</li>
+<li><p>hotfix-xxx: 用于修复一个紧急bug<br>每次开发新功能，都应该新建一个单独的分支</p>
+<h2 id="工作流"><a href="#工作流" class="headerlink" title="工作流"></a>工作流</h2></li>
+<li><p>如果要贡献代码, 首先应阅读贡献指南, 确认如果贡献代码</p>
+</li>
+<li>Fork对应的项目, 然后基于develop分支, 新建一个分支, 在这个分支上进行开发</li>
+<li>开发时应遵守相应的编码规范和Git日志规范, 提交日志应当给出完整扼要的提交信息</li>
+<li>开发完毕后, 先在本项目库上合并到develop分支, 合并完成之后再PR到原项目库<h2 id="Commit-message-和-Change-log-编写指南"><a href="#Commit-message-和-Change-log-编写指南" class="headerlink" title="Commit message 和 Change log 编写指南"></a>Commit message 和 Change log 编写指南</h2></li>
+</ul>
+<p>Git 每次提交代码，都要写 Commit message（提交说明），否则就不允许提交 +Commit message 遵从<a href="http://blog.cheenwe.cn/2016-04-18/git-commit-message/" target="_blank" rel="noopener"> Angular 规范</a></p>
+<h3 id="安装-Commitizen-来格式化-commit-使其遵循以上规范"><a href="#安装-Commitizen-来格式化-commit-使其遵循以上规范" class="headerlink" title="安装 Commitizen 来格式化 commit , 使其遵循以上规范"></a>安装 Commitizen 来格式化 commit , 使其遵循以上规范</h3><p>首先注意将package.json和node_modules加入.gitignore文件<br>全局安装commitizen: <code>npm install -g commitizen</code><br>在项目根目录初始化package.json: <code>npm init --yes</code><br>项目根目录运行 <code>commitizen init cz-conventional-changelog --save --save-exact</code><br>每次提交代码时, 用 <code>git cz</code> 代替<code>git commit</code><br><a id="more"></a></p>
+<h2 id="自动生成-Change-log"><a href="#自动生成-Change-log" class="headerlink" title="自动生成 Change log"></a>自动生成 Change log</h2><p>安装 <code>npm install -g conventional-changelog-cli</code><br>使用<code>conventional-changelog</code>生成日志: <code>conventional-changelog -p angular -i CHANGELOG.md -s -r 0</code></p>
+<h2 id="版本号使用规范"><a href="#版本号使用规范" class="headerlink" title="版本号使用规范"></a>版本号使用规范</h2><p>版本号遵循语义化版本规范.</p>
+<p>版本格式：主版本号.次版本号.修订号，版本号递增规则如下：</p>
+<p>主版本号：当你做了不兼容的 API 修改，<br>次版本号：当你做了向下兼容的功能性新增，<br>修订号：当你做了向下兼容的问题修正。<br>先行版本号及版本编译信息可以加到“主版本号.次版本号.修订号”的后面，作为延伸。</p>
+<p>更多内容参见 <a href="http://semver.org/lang/zh-CN/" target="_blank" rel="noopener">语义化版本</a></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="http://www.ruanyifeng.com/blog/2015/08/git-use-process.html" target="_blank" rel="noopener">Git 使用规范流程</a><br><a href="http://www.ruanyifeng.com/blog/2016/01/commit_message_change_log.html" target="_blank" rel="noopener">Commit message 和 Change log 编写指南</a><br><a href="http://blog.cheenwe.cn/2016-04-18/git-commit-message/" target="_blank" rel="noopener">Git commit message 规范</a></p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/02/11/gitlab-ci由浅入深/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          gitlab-ci由浅入深
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/02/10/集中式日志管理elk搭建/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">集中式日志管理elk搭建</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+
+
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="git使用规范" data-title="git使用规范" data-url="http://graychen.git.io/2018/02/11/git使用规范/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"true"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2018 Graychen
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+
+<script>
+	var yiliaConfig = {
+		fancybox: true,
+		mathjax: true,
+		animate: undefined,
+		isHome: false,
+		isPost: true,
+		isArchive: false,
+		isTag: false,
+		isCategory: false,
+		open_in_new: undefined,
+		root: /
+	}
+</script>
+<script src="http://7.url.cn/edu/jslib/comb/require-2.1.6,jquery-1.9.1.min.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+  </div>
+</body>
+</html>
