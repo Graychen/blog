@@ -44,7 +44,7 @@ use Hprose\Client;
 $client=Client::create('http://localhost/',false);
 echo $client->hello("World");
 ```
-#案例(go)
+# 案例(go)
 ## 安装
 ```
 go get github.com/gorilla/websocket
