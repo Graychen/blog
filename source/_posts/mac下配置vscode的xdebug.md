@@ -5,6 +5,7 @@ tags: 技术
 ---
 # 最近将mac环境下的vscode配置了xdebug，因为配置的比较曲折，所以决定记录下思路
 ## 首先下载xdebug的扩展
+
 ``` php
 pecl install xdebug
 ```
