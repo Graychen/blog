@@ -61,6 +61,9 @@ ENTRYPOINT ["/usr/bin/supervisord", "-n", "-c",  "/etc/supervisor/conf.d/supervi
 composer require jaeger/querylist-puppeteer
 ```
 然后安装Node依赖（与composer一样在项目根目录下执行
+``` nodejs
+npm install @nesk/puphpeteer
+```
 下面是这个组件的用法
 在QueryList中注册插件
 ``` php
