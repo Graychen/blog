@@ -89,7 +89,14 @@ done
 ``` shell
 kubeadm init # 这一步注意，如果需要特定的网络插件，需要额外加参数，具体看网络插件的介绍
 ```
+# 配置授权信息
+所需的命令在init成功后也会有提示，主要是为了保存相关的配置信息在用户目录下，这样不用每次都输入相关的认证信息。
+``` shell
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
 添加网络插件,以下是各个网桥，选择其中一个就可以了
+```
 ## CNI bridge
 ``` shell
 mkdir -p /etc/cni/net.d
