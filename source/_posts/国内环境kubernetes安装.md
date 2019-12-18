@@ -155,9 +155,38 @@ kube-controller-manager-promote   1/1     Running             1          6h25m
 kube-proxy-6ml6w                  1/1     Running             1          6h26m
 kube-scheduler-promote            1/1     Running             1          6h25m
 ```
+# 从节点加入主节点
+在从节点重复上面的步骤，就是
+``` shell
+kubectl kubeadm join 主节点内部ip:6443 --token 你的token     --discovery-token-ca-cert-hash sha256:你的ca-cert
+```
+但是我的从节点没有执行成功，提示不对
+``` shell
+[root@iZ8vbcuptq5g86qk6lk4x1Z ~]# kubectl get pod
+The connection to the server localhost:8080 was refused - did you specify the right host or port?
+```
+后面进过查找原因，发现是从节点的
+问题原因是kubectl命令需使用kubernetes-admin来运行，解决方法如下，将主节点中的/etc/kubernetes/admin.conf文件拷贝到从节点相同目录下，然后配置环境变量：
+``` shell
+echo "export KUBECONFIG=/etc/kubernetes/admin.conf" >> ~/.bash_profile
+ ```
+可生效
+``` shell 
+source ~/.bash_profile
+[root@master kubernetes]# scp ./admin.conf root@你的ip:/etc/kubernetes/
+```
+然后再执行一次kubeadm reset，再kubeadm join的命令，
+后面
+``` shell
+[root@iZ8vbcuptq5g86qk6lk4x1Z kubernetes]# kubectl get nodes
+NAME                      STATUS   ROLES    AGE     VERSION
+iz8vbbld8tet39uo7wyi2jz   Ready    master   3h54m   v1.17.0
+iz8vbcuptq5g86qk6lk4x1z   Ready    <none>   86m     v1.17.0
+```
  参考文章:
 -------------------
 [kubernetes安装国内环境](https://zhuanlan.zhihu.com/p/46341911)
 [kubernetes部署](https://zhuanlan.zhihu.com/p/55740564)
 [深入剖析k8s之网络模型与CNI网络插件](https://blog.liu-kevin.com/2019/04/22/14-shen-ru-pou-xi-k8szhi-wang-luo-mo-xing-yu-cniwang-luo-cha-jian/)
+[从节点The connection to the server localhost:8080 was refused - did you specify the right host or port?](https://www.cnblogs.com/taoweizhong/p/11545953.html)
 
