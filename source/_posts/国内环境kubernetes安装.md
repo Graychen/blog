@@ -87,7 +87,7 @@ done
 然后chmod +x ./k8s.shell给这个shell文件加上执行权限，然后./k8s.shell执行它，它就会从阿里云拉取对应的组件的镜像了
 # 初始化环境
 ``` shell
-kubeadm init # 这一步注意，如果需要特定的网络插件，需要额外加参数，具体看网络插件的介绍
+kubeadm init --pod-network-cidr=10.244.0.0/16 # 这一步注意，如果需要特定的网络插件，需要额外加参数，具体看网络插件的介绍
 ```
 # 配置授权信息
 所需的命令在init成功后也会有提示，主要是为了保存相关的配置信息在用户目录下，这样不用每次都输入相关的认证信息。
@@ -127,7 +127,7 @@ EOF
 ## flannel
 需要在kubeadm init 时设置 --pod-network-cidr=10.244.0.0/16
 ``` shell
-kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.10.0/Documentation/kube-flannel.yml
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 ```
 weave
 ``` shell
