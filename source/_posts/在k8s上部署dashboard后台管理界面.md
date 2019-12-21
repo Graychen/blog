@@ -90,16 +90,24 @@ service/kubernetes-dashboard NodePort 10.104.4.26 <none> 443:30023/TCP 3m5s
 1）授权 (所有 namespace )
 
 // 创建serviceaccount
+``` shell
 # kubectl create serviceaccount dashboard-serviceaccount -n kube-system
+```
 // 创建clusterrolebinding
+``` shell
 # kubectl create clusterrolebinding dashboard-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:dashboard-serviceaccount
+```
 2）获取令牌（用于网页登录）
 
 // 查看口令列表
+``` shell
 # kubectl get secret -n kube-system |grep dashboard-serviceaccount-token
 dashboard-serviceaccount-token-f45wg kubernetes.io/service-account-token 3 22s
+```
 // 获取口令
+``` shell
 # kubectl describe secret dashboard-serviceaccount-token-f45wg -n kube-system
+```
 3）将获取到的token放在令牌里
 ![截屏2019-12-21上午9.25.38.png](https://ws1.sinaimg.cn/large/6919c235gy1ga434bjbalj227k13sgsr.jpg)
 4) 登录成功
