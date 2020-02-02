@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2020-01-05T03:26:20.892Z</updated>
+  <updated>2020-02-02T13:44:40.718Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,53 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>将mysql和github的action一起使用</title>
+    <link href="http://yoursite.com/2020/02/02/%E5%B0%86mysql%E5%92%8Cgithub%E7%9A%84action%E4%B8%80%E8%B5%B7%E4%BD%BF%E7%94%A8/"/>
+    <id>http://yoursite.com/2020/02/02/将mysql和github的action一起使用/</id>
+    <published>2020-02-02T13:43:28.000Z</published>
+    <updated>2020-02-02T13:44:40.718Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="将MySQL服务与Github操作一起使用"><a href="#将MySQL服务与Github操作一起使用" class="headerlink" title="将MySQL服务与Github操作一起使用"></a>将MySQL服务与Github操作一起使用</h1><p>借助新推出的Github Actions，现在可以基于事件在Githubs基础架构上自动运行单元测试和其他自动化任务。这是一篇简短的博客文章，描述了如何在Github Actions中使用MySQL / MariaDB服务。</p><p>Ubuntu映像已经包含一个预先配置的MySQL服务器，但是如果您要使用特定或更新的版本，甚至是MariaDB服务器，则需要使用服务。Github Actions中的服务只是一个运行特定映像并将其端口公开给localhost的Docker容器。您也可以通过安装所需的服务，apt-get但是在这种情况下使用Docker可能会更容易。</p><p>您需要谨慎使用此设置，因为如果使用默认端口，则您的应用或测试将连接到本地mysql服务器，而不是docker服务器。为确保应用使用正确的数据库，请确保使用$变量并将其传递给您的配置。由于启动脚本正在运行，由于Docker中的MySQL可能需要几分钟才能使用，因此您需要等待服务器准备就绪，否则它将无法接受连接，并且由于缺少数据库连接，以下步骤可能会失败。</p><p>以下YML代码可以用作此类操作的示例。</p><p>在本services节中，我们定义要启动的数据库docker映像（mariadb:latest在这种情况下）以及公开的端口。docker镜像使用传递给它的Environment变量来创建初始数据库并指定用户。有关更多详细信息，请参见<a href="https://hub.docker.com/_/mariadb/或https://hub.docker.com/_/mysql。该options规定被传递到码头工人为它的内部状况检查。此命令可确保在测试期间数据库可访问，并且如果指定的命令health-retries多次失败，则docker将自动重启容器。在本Verify" target="_blank" rel="noopener">https://hub.docker.com/_/mariadb/或https://hub.docker.com/_/mysql。该options规定被传递到码头工人为它的内部状况检查。此命令可确保在测试期间数据库可访问，并且如果指定的命令health-retries多次失败，则docker将自动重启容器。在本Verify</a> MariaDB connection节中，简单mysqladmin ping在继续测试之前，请执行以确保数据库已完全启动并运行。当容器中的端口映射到主机上的随机端口时，我们还需要通过暴露变量来捕获它$，并将其通过环境变量传递给命令。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">name: Tests</span><br><span class="line"></span><br><span class="line">on: [push]</span><br><span class="line"></span><br><span class="line">jobs:</span><br><span class="line">  build:</span><br><span class="line">    runs-on: ubuntu-latest</span><br><span class="line"></span><br><span class="line">    services:</span><br><span class="line">      mariadb:</span><br><span class="line">        image: mariadb:latest</span><br><span class="line">        ports:</span><br><span class="line">          - 3306</span><br><span class="line">        env:</span><br><span class="line">          MYSQL_USER: user</span><br><span class="line">          MYSQL_PASSWORD: password</span><br><span class="line">          MYSQL_DATABASE: test</span><br><span class="line">          MYSQL_ROOT_PASSWORD: password</span><br><span class="line">        options: --health-cmd=&quot;mysqladmin ping&quot; --health-interval=5s --health-timeout=2s --health-retries=3</span><br><span class="line"></span><br><span class="line">    steps:</span><br><span class="line">    - uses: actions/checkout@v1</span><br><span class="line"></span><br><span class="line">    - name: Verify MariaDB connection</span><br><span class="line">      env:</span><br><span class="line">        PORT: $&#123;&#123; job.services.mariadb.ports[3306] &#125;&#125;</span><br><span class="line">      run: |</span><br><span class="line">        while ! mysqladmin ping -h&quot;127.0.0.1&quot; -P&quot;$PORT&quot; --silent; do</span><br><span class="line">          sleep 1</span><br><span class="line">        done</span><br><span class="line"></span><br><span class="line">    - name: Test</span><br><span class="line">      run: |</span><br><span class="line">        your tests</span><br></pre></td></tr></table></figure></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;将MySQL服务与Github操作一起使用&quot;&gt;&lt;a href=&quot;#将MySQL服务与Github操作一起使用&quot; class=&quot;headerlink&quot; title=&quot;将MySQL服务与Github操作一起使用&quot;&gt;&lt;/a&gt;将MySQL服务与Github操作一起使用&lt;/
+      
+    
+    </summary>
+    
+    
+      <category term="技术" scheme="http://yoursite.com/tags/%E6%8A%80%E6%9C%AF/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>flutter环境搭建</title>
+    <link href="http://yoursite.com/2020/01/16/flutter%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/"/>
+    <id>http://yoursite.com/2020/01/16/flutter环境搭建/</id>
+    <published>2020-01-16T15:48:48.000Z</published>
+    <updated>2020-01-16T16:29:05.454Z</updated>
+    
+    <content type="html"><![CDATA[<p>最近开始接触flutter,今天配置了flutter的开发环境，现在把这个过程记录下来.</p><h1 id="系统环境要求"><a href="#系统环境要求" class="headerlink" title="系统环境要求"></a>系统环境要求</h1><p>macOS (64-bit)<br>硬盘空间: 700 MB (不包含android studio等编辑器工具).<br>命令行工具:bash, mkdir, rm, git, curl, unzip, which,brew需要保证上述命令在命令行下能使用，</p><h1 id="下载flutter"><a href="#下载flutter" class="headerlink" title="下载flutter"></a>下载flutter</h1><p><a href="https://flutter.dev/docs/get-started/install/macos" target="_blank" rel="noopener">https://flutter.dev/docs/get-started/install/macos</a></p><ul><li>解压安装包到你想安装的目录，如：<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd ~/development</span><br><span class="line">unzip ~/Downloads/flutter_macos_v0.5.1-beta.zip</span><br></pre></td></tr></table></figure></li></ul><p>添加flutter相关工具到path中：<br>export PATH=<code>pwd</code>/flutter/bin:$PATH</p><blockquote><p>这个目前只能暂时配置flutter，要永久的话可以vi ~/.bash_profile,<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PATH=~/Documents/flutter/bin:$PATH</span><br></pre></td></tr></table></figure></p></blockquote><h1 id="运行-flutter-doctor"><a href="#运行-flutter-doctor" class="headerlink" title="运行 flutter doctor"></a>运行 flutter doctor</h1><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flutter doctor</span><br></pre></td></tr></table></figure><p>这是我的结果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">➜  Documents flutter doctor</span><br><span class="line">Doctor summary (to see all details, run flutter doctor -v):</span><br><span class="line">[✓] Flutter (Channel stable, v1.12.13+hotfix.5, on Mac OS X 10.15.2 19C57, locale zh-Hans-CN)</span><br><span class="line"></span><br><span class="line">[✓] Android toolchain - develop for Android devices (Android SDK version 29.0.2)</span><br><span class="line">[✓] Xcode - develop for iOS and macOS (Xcode 11.3)</span><br><span class="line">[!] Android Studio (version 3.5)</span><br><span class="line">    ✗ Flutter plugin not installed; this adds Flutter specific functionality.</span><br><span class="line">    ✗ Dart plugin not installed; this adds Dart specific functionality.</span><br><span class="line">[✓] VS Code (version 1.41.1)</span><br><span class="line">[!] Connected device</span><br><span class="line">    ! No devices available</span><br></pre></td></tr></table></figure></p><p>解决步骤:<br>打开Android Studio &gt; Preferences &gt; Plugins &gt; flutter 下载过来</p><h2 id="iOS-设置"><a href="#iOS-设置" class="headerlink" title="iOS 设置"></a>iOS 设置</h2><p>安装 Xcode</p><ul><li>要为iOS开发Flutter应用程序，您需要Xcode 7.2或更高版本:</li><li>安装Xcode 7.2或更新版本(通过链接下载或苹果应用商店).</li><li>配置Xcode命令行工具以使用新安装的Xcode版本 sudo xcode-select –switch /Applications/Xcode.app/Contents/Developer 对于大多数情况，当您想要使用最新版本的Xcode时，这是正确的路径。如果您需要使用不同的版本，请指定相应路径。</li><li>确保Xcode许可协议是通过打开一次Xcode或通过命令sudo xcodebuild -license同意过了.<br>使用Xcode，您可以在iOS设备或模拟器上运行Flutter应用程序。<br>设置iOS模拟器<br>要准备在iOS模拟器上运行并测试您的Flutter应用，请按以下步骤操作：<br>在Mac上，通过Spotlight或使用以下命令找到模拟器:<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">open -a Simulator</span><br></pre></td></tr></table></figure></li></ul><p>通过检查模拟器 硬件&gt;设备 菜单中的设置，确保您的模拟器正在使用64位设备（iPhone 5s或更高版本）.<br>根据您的开发机器的屏幕大小，模拟的高清屏iOS设备可能会使您的屏幕溢出。在模拟器的 Window&gt; Scale 菜单下设置设备比例<br>运行 flutter run启动您的应用.<br>安装到iOS设备<br>要将您的Flutter应用安装到iOS真机设备，您需要一些额外的工具和一个Apple帐户，您还需要在Xcode中进行设置。<br>安装 homebrew （如果已经安装了brew,跳过此步骤）.<br>打开终端并运行这些命令来安装用于将Flutter应用安装到iOS设备的工具<br>brew update<br>然后我们在执行flutter doctor<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">➜  Documents flutter doctor</span><br><span class="line">Doctor summary (to see all details, run flutter doctor -v):</span><br><span class="line">[✓] Flutter (Channel stable, v1.12.13+hotfix.5, on Mac OS X 10.15.2 19C57, locale zh-Hans-CN)</span><br><span class="line"></span><br><span class="line">[✓] Android toolchain - develop for Android devices (Android SDK version 29.0.2)</span><br><span class="line">[✓] Xcode - develop for iOS and macOS (Xcode 11.3)</span><br><span class="line">[✓] Android Studio (version 3.5)</span><br><span class="line">[✓] VS Code (version 1.41.1)</span><br><span class="line">[✓] Connected device (1 available)</span><br><span class="line"></span><br><span class="line">• No issues found!</span><br></pre></td></tr></table></figure></p><p>然后我们创建第一个app项目<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flutter create my_app</span><br></pre></td></tr></table></figure></p><p>然后运行<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd my_app</span><br><span class="line">flutter run</span><br></pre></td></tr></table></figure></p><p>这样就可以运行第一个flutter的app了</p><h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul><li><a href="https://flutter.dev/docs/get-started/install/macos" target="_blank" rel="noopener">flutter macOS install</a></li><li><a href="https://flutterchina.club/setup-macos/" target="_blank" rel="noopener">入门: 在macOS上搭建Flutter开发环境</a></li><li><a href="https://segmentfault.com/a/1190000014845833" target="_blank" rel="noopener">flutter环境搭建mac版</a></li><li><a href="https://stackoverflow.com/questions/49045393/flutter-run-no-connected-devices" target="_blank" rel="noopener">flutter run: No connected devices</a></li></ul>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;最近开始接触flutter,今天配置了flutter的开发环境，现在把这个过程记录下来.&lt;/p&gt;
+&lt;h1 id=&quot;系统环境要求&quot;&gt;&lt;a href=&quot;#系统环境要求&quot; class=&quot;headerlink&quot; title=&quot;系统环境要求&quot;&gt;&lt;/a&gt;系统环境要求&lt;/h1&gt;&lt;p&gt;ma
+      
+    
+    </summary>
+    
+    
+      <category term="技术" scheme="http://yoursite.com/tags/%E6%8A%80%E6%9C%AF/"/>
+    
+  </entry>
   
   <entry>
     <title>阿里云linux系统挂载磁盘</title>
@@ -434,44 +481,6 @@
     
     
       <category term="技术" scheme="http://yoursite.com/tags/%E6%8A%80%E6%9C%AF/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>秒杀防止库存超卖的思路</title>
-    <link href="http://yoursite.com/2019/07/25/%E7%A7%92%E6%9D%80%E9%98%B2%E6%AD%A2%E5%BA%93%E5%AD%98%E8%B6%85%E5%8D%96%E7%9A%84%E6%80%9D%E8%B7%AF/"/>
-    <id>http://yoursite.com/2019/07/25/秒杀防止库存超卖的思路/</id>
-    <published>2019-07-25T08:09:11.000Z</published>
-    <updated>2019-07-25T08:09:11.055Z</updated>
-    
-    <summary type="html">
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
-    <title>mysql优化总结</title>
-    <link href="http://yoursite.com/2019/04/27/mysql%E4%BC%98%E5%8C%96%E6%80%BB%E7%BB%93/"/>
-    <id>http://yoursite.com/2019/04/27/mysql优化总结/</id>
-    <published>2019-04-27T09:00:21.000Z</published>
-    <updated>2019-07-23T12:19:48.282Z</updated>
-    
-    <content type="html"><![CDATA[<p>最近总结下mysql的优化思路，希望接下来能看到这篇文章回忆和参考</p><h1 id="优化sql语句"><a href="#优化sql语句" class="headerlink" title="优化sql语句"></a>优化sql语句</h1><h2 id="通过show-status命令了解各种sql的执行效率"><a href="#通过show-status命令了解各种sql的执行效率" class="headerlink" title="通过show status命令了解各种sql的执行效率"></a>通过show status命令了解各种sql的执行效率</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show status like &apos;Com_%&apos;;</span><br></pre></td></tr></table></figure><ul><li>Com_select:执行select操作的次数，一次查询只增加1</li><li>Com_insert:执行insert操作的次数，对于批量插入的insert操作，只累加一次</li><li>Com_update: 执行update操作的次数</li><li>Com_delete: 执行delete操作的次数<br>对InnoDB存储引擎<br>Innodb_rows_read: select查询返回的行数<br>Innodb_rows_inserted: 执行insert操作的行数<br>Innodb_rows_update: 执行update操作更新的行数<br>Innodb_rows_delete: 执行delete操作的行数<br>了解当前数据以插入更新为主还是以查询为主，各种类型sql的执行比例。对于更新操作的计数，是执行次数的计数。通过com_commit和Com_rollback可以了解事务提交和回滚的情况<h2 id="定位执行效率较低的sql语句"><a href="#定位执行效率较低的sql语句" class="headerlink" title="定位执行效率较低的sql语句"></a>定位执行效率较低的sql语句</h2></li><li>通过慢查询日志定位那些执行效率低的sql语句，用–log-slow-queries=[filename]</li><li>通过show processlist命令查看mysql进行的线程，包括线程的状态，是否锁表<h2 id="通过explain分析sql的执行计划"><a href="#通过explain分析sql的执行计划" class="headerlink" title="通过explain分析sql的执行计划"></a>通过explain分析sql的执行计划</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"> mysql&gt; explain select sum(amount) from customer a , payment b where <span class="number">1</span>=<span class="number">1</span> a.customer_id = b.customer_id <span class="keyword">and</span> email = <span class="string">'JANE.BENNETT@SAKILACUSTOMER.org'</span>\G</span><br><span class="line">***************<span class="number">1.</span> row*********************</span><br><span class="line">id:<span class="number">1</span></span><br><span class="line">select_type:SIMPLE</span><br><span class="line">table:a</span><br><span class="line">type:ALL</span><br><span class="line">possible_keys:PRIMARY</span><br><span class="line">key:<span class="keyword">NULL</span></span><br><span class="line">key_len:<span class="keyword">NULL</span></span><br><span class="line">ref:<span class="keyword">NULL</span></span><br><span class="line">ROWS:<span class="number">583</span></span><br><span class="line">***************<span class="number">2.</span> row*********************</span><br><span class="line">id:<span class="number">2</span></span><br><span class="line">select_type:SIMPLE</span><br><span class="line">table:b</span><br><span class="line">type: ref</span><br><span class="line">possible_keys:idx_fk_customer_id</span><br><span class="line">key:idx_fk_customer_id</span><br><span class="line">key_len:<span class="number">2</span></span><br><span class="line">ref:sakila.a.customer_id</span><br><span class="line">ROWS:<span class="number">12</span></span><br><span class="line">************************************</span><br></pre></td></tr></table></figure></li></ul><blockquote></blockquote><p>slect_type: select的类型</p><ul><li>SIMPLE(简单表，不使用表连接或者子查询)</li><li>PRIMARY(主查询:外层的查询)</li><li>UNION(UNION中的第二个或者后面的查询语句)</li><li>SUBQUERY(子查询中的第一个SELECT)<br>table:输出结果集的表<br>type:</li><li>ALL 全表扫描（表里全表来找到匹配的行）</li><li>index 索引全扫描 (遍历索引来查询匹配的行)</li><li>range 索引范围扫描 (常见&lt; &gt; &lt;= &gt;= between)</li><li>ref 非唯一索引扫描表</li><li>eq_ref 唯一索引扫描表 </li><li>const/system 最多有一个匹配行<br>NULL：不用访问表或者索引</li></ul>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;p&gt;最近总结下mysql的优化思路，希望接下来能看到这篇文章回忆和参考&lt;/p&gt;
-&lt;h1 id=&quot;优化sql语句&quot;&gt;&lt;a href=&quot;#优化sql语句&quot; class=&quot;headerlink&quot; title=&quot;优化sql语句&quot;&gt;&lt;/a&gt;优化sql语句&lt;/h1&gt;&lt;h2 id=&quot;通过sh
-      
-    
-    </summary>
-    
-      <category term="技术" scheme="http://yoursite.com/categories/%E6%8A%80%E6%9C%AF/"/>
-    
     
   </entry>
   
